@@ -9,6 +9,12 @@ TOKEN = "OTk0OTQxODk4NTg4NDM4NTI5.GAo6zJ.lB9k_RyfMIkbhhZrXwJzcW9ZfV-PRzmCYEw5Ik"
 command_prefix = "."
 bot = commands.Bot(command_prefix=command_prefix)
 
+puzzle_urls = {
+    "rebus": None,
+    "cryptic": None,
+    "minipuzzz": None
+}
+
 day_names = {
     0: "Monday",
     1: "Tuesday",
@@ -31,6 +37,35 @@ def format_datetime(date:datetime.datetime) -> str:
     strdatetime = date.strftime("%d/%m/%Y %H:%M")
 
     return strdatetime
+
+@bot.command()
+# assumes rebus is an image
+async def setrebus(ctx):
+    user = ctx.author
+    await ctx.send(f"The current rebus is: {puzzle_urls['rebus']} \nPlease send the image of the new rebus.")
+
+    # only check is for whether the user is the author
+    def check(m):
+        return m.author == user
+    
+    is_image = False
+    while not is_image:
+        msg = await bot.wait_for("message", check=check)
+
+        if msg.attachments:
+            is_image = True
+            puzzle_urls["rebus"] = msg.attachments[0].url
+
+    await ctx.send(f"The rebus is now:")
+    await ctx.send(puzzle_urls["rebus"])
+
+@bot.command()
+async def rebus(ctx):
+    if not puzzle_urls["rebus"]:
+        await ctx.send("The current rebus is: None")
+    else:
+        await ctx.send("The current rebus is:")
+        await ctx.send(puzzle_urls["rebus"])
 
 @bot.command()
 async def bird(ctx):
