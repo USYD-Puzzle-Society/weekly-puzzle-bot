@@ -1,3 +1,4 @@
+from urllib.parse import _NetlocResultMixinStr
 import discord
 import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -9,11 +10,37 @@ TOKEN = "OTk0OTQxODk4NTg4NDM4NTI5.GAo6zJ.lB9k_RyfMIkbhhZrXwJzcW9ZfV-PRzmCYEw5Ik"
 command_prefix = "."
 bot = commands.Bot(command_prefix=command_prefix)
 
-puzzle_urls = {
-    "rebus": None,
-    "cryptic": None,
-    "minipuzzz": None
-}
+num_puzzles = 3
+puzzle_urls = [None, None, None]
+
+puzz_channel_id = 994948949536407612
+puzz_release_datetime = datetime.datetime.now()
+
+ciyk_id = 1002487377958281276
+
+week_count = 1
+speed_bonus = 30
+puzz_submission_link = "There is no link yet"
+jigsaw_emoji = ":jigsaw:"
+brain_emoji = ":brain:"
+speech_emoji = ":speech_balloon:"
+heart_emoji = ":heart:"
+cross_emoji = ":x:"
+
+puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {week_count}**\n\n"
+puzz_line2 = f"SPEED BONUS: {speed_bonus} MINUTES\n"
+puzz_line3 = f"Hints will be unlimited after {speed_bonus} minutes is up OR after the top 3 solvers have finished!\n\n"
+puzz_line4 = f"Submit your answers here: {puzz_submission_link}"
+puzz_release_text = puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4
+
+second_best_line1 = f"{brain_emoji} **SECOND BEST: WEEK {week_count}** {brain_emoji}\n\n"
+second_best_line2 = f"Try your best to guess what the second most popular answer will be!"
+second_best_text = second_best_line1 + second_best_line2
+
+ciyk_line1 = f"{speech_emoji} **COMMENT IF YOU KNOW: WEEK {week_count}** {speech_emoji}\n\n"
+ciyk_line2 = f"If you think you know the pattern, comment an answer that follows it in <#{ciyk_id}>\n"
+ciyk_line3 = f"We'll react with a {heart_emoji} if you're right and a {cross_emoji} if you're wrong!"
+ciyk_text = ciyk_line1 + ciyk_line2 + ciyk_line3
 
 day_names = {
     0: "Monday",
@@ -24,9 +51,6 @@ day_names = {
     5: "Saturday",
     6: "Sunday"
 }
-
-puzz_channel_id = 994948949536407612
-puzz_release_datetime = datetime.datetime.now()
 
 def format_date(date: datetime.datetime) -> str:
     strdate = date.strftime("%d/%m/%Y")
@@ -40,10 +64,9 @@ def format_datetime(date:datetime.datetime) -> str:
 
 @bot.command()
 # assumes rebus is an image
-async def setrebus(ctx):
+async def setpuzzles(ctx):
     user = ctx.author
-    await ctx.send(f"The current rebus is: {puzzle_urls['rebus']} \nPlease send the image of the new rebus.")
-
+    await ctx.send("Please send the puzzles.")
     # only check is for whether the user is the author
     def check(m):
         return m.author == user
@@ -54,18 +77,35 @@ async def setrebus(ctx):
 
         if msg.attachments:
             is_image = True
-            puzzle_urls["rebus"] = msg.attachments[0].url
+            for i in range(num_puzzles):
+                puzzle_urls[i] = msg.attachments[i].url
 
-    await ctx.send(f"The rebus is now:")
-    await ctx.send(puzzle_urls["rebus"])
+    await ctx.send("Please type the speed bonus for this set of puzzles.")
+    
+    is_number = False
+    while not is_number:
+        msg = await bot.wait_for("message", check=check)
+
+    await ctx.send("These are the new puzzles:")
+    for i in range(num_puzzles):
+        await ctx.send(puzzle_urls[i])
+
+    await ctx.send(
+        f"The puzzles are set to release at {puzz_release_datetime}." + 
+        "Do `.setpuzztime` if you want to change the release time."
+    )
 
 @bot.command()
-async def rebus(ctx):
-    if not puzzle_urls["rebus"]:
-        await ctx.send("The current rebus is: None")
-    else:
-        await ctx.send("The current rebus is:")
-        await ctx.send(puzzle_urls["rebus"])
+async def puzzles(ctx):
+    await ctx.send(
+        "What you see below is exactly what will be released." + 
+        f"The puzzles are set to release at {puzz_release_datetime}." + 
+        "Do `.setpuzztime` if you want to change the release time."
+    )
+
+    await ctx.send(puzz_release_text)
+    for i in range(num_puzzles):
+        await ctx.send(puzzle_urls[i])
 
 @bot.command()
 async def bird(ctx):
@@ -135,9 +175,10 @@ async def setpuzztime(ctx):
 
     await ctx.send(f"The new puzzle release time is now {format_datetime(puzz_release_datetime)} ({puzzle_day}).")
 
-async def test():
-    puzz_channel = bot.get_channel(puzz_channel_id)
-    await puzz_channel.send(f"This is a message that was scheduled for {format_datetime(puzz_release_datetime)}.")
+@bot.command()
+async def test(ctx):
+    channel = f"<#{puzz_channel_id}"
+    await ctx.send(f"Hi. {channel}>")
 
 @bot.command()
 async def start(ctx):
