@@ -15,7 +15,7 @@ num_puzzles = 3
 
 ciyk_id = 1002487377958281276
 
-puzzles = Puzzles()
+puzzles = Puzzles(num_puzzles)
 
 week_count = 1
 jigsaw_emoji = ":jigsaw:"
@@ -123,11 +123,11 @@ async def setpuzzles(ctx):
     while not is_image:
         msg = await bot.wait_for("message", check=check)
 
-        if len(msg.attachments) == 3:
+        if len(msg.attachments) == num_puzzles:
             is_image = True
             puzzles.change_puzzles(msg.attachments)
         else:
-            await ctx.send("Please send all 3 puzzle images in a single message.")
+            await ctx.send(f"Please send all {num_puzzles} puzzle images in a single message.")
 
 
     await ctx.send("Please type the speed bonus for this set of puzzles.")
@@ -161,6 +161,11 @@ async def setpuzzles(ctx):
 
 @bot.command()
 async def showpuzzles(ctx):
+    # check if any puzzles have been set
+    if None in puzzles.urls:
+        await ctx.send("The puzzles have not been assigned, yet. Please do so by using `.setpuzzles`.")
+        return
+
     await ctx.send(
         f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>." +
         "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if" + 
