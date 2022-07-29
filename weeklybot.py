@@ -4,6 +4,7 @@ import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import datetime
 from discord.ext import tasks, commands
+from Puzzles import Puzzles
 
 TOKEN = "OTk0OTQxODk4NTg4NDM4NTI5.GAo6zJ.lB9k_RyfMIkbhhZrXwJzcW9ZfV-PRzmCYEw5Ik"
 
@@ -11,27 +12,26 @@ command_prefix = "."
 bot = commands.Bot(command_prefix=command_prefix)
 
 num_puzzles = 3
-puzzle_urls = [None, None, None]
-
-puzz_channel_id = 994948949536407612
-puzz_release_datetime = datetime.datetime.now()
 
 ciyk_id = 1002487377958281276
 
+puzzles = Puzzles()
+
 week_count = 1
-speed_bonus = 30
-puzz_submission_link = "There is no link yet"
 jigsaw_emoji = ":jigsaw:"
 brain_emoji = ":brain:"
 speech_emoji = ":speech_balloon:"
 heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
-puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {week_count}**\n\n"
-puzz_line2 = f"SPEED BONUS: {speed_bonus} MINUTES\n"
-puzz_line3 = f"Hints will be unlimited after {speed_bonus} minutes is up OR after the top 3 solvers have finished!\n\n"
-puzz_line4 = f"Submit your answers here: {puzz_submission_link}"
-puzz_release_text = puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4
+def get_puzz_text(puzzles: Puzzles):
+    puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {week_count}**\n\n"
+    puzz_line2 = f"SPEED BONUS: {puzzles.speed_bonus} MINUTES\n"
+    puzz_line3 = f"Hints will be unlimited after {puzzles.speed_bonus} minutes is up OR after the top 3 solvers have finished!\n\n"
+    puzz_line4 = f"Submit your answers here: {puzzles.submission_link}"
+    
+    puzz_release_text = puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4
+    return puzz_release_text
 
 second_best_line1 = f"{brain_emoji} **SECOND BEST: WEEK {week_count}** {brain_emoji}\n\n"
 second_best_line2 = f"Try your best to guess what the second most popular answer will be!"
@@ -63,49 +63,112 @@ def format_datetime(date:datetime.datetime) -> str:
     return strdatetime
 
 @bot.command()
-# assumes rebus is an image
+async def setpuzzchannel(ctx):
+    user = ctx.author
+    channel_id = puzzles.channel_id
+    text = ""
+    if not channel_id:
+        text += "No channel has been selected yet."
+    else:
+        text += f"The current channel is <#{puzzles.channel_id}>."
+
+    text += "Please enter the ID of the new channel where you would like the puzzles to be released."
+    text += "If you don't know how to get the ID of a channel, simply right click the channel and then click \"Copy ID\""
+
+    def check(m):
+        return m.author == user
+
+    msg = bot.wait_for("message", check=check)
+
+    # check if number
+    try:
+        new_id = int(msg.content)
+
+        # check if valid channel id
+        new_channel = bot.get_channel(new_id)
+
+        if not new_channel:
+            await ctx.send(f"{new_id} is not a valid channel id.")
+        else:
+            puzzles.change_channel_id(new_id)
+
+            await ctx.send(f"The puzzles will now be released in <#{puzzles.channel_id}>")
+    
+    except ValueError:
+        await ctx.send(f"{new_id} is not a valid channel id.")
+
+@bot.command()
 async def setpuzzles(ctx):
+    # first check if a channel has been set for the puzzles to release in
+    channel_id = puzzles.channel_id
+    if not channel_id:
+        await ctx.send("No channel has been set for the puzzles. Please first change this by using `.setpuzzchannel`.")
+        return
+    else:
+        # check if valid channel
+        channel = bot.get_channel(channel_id)
+
+        if not channel:
+            await ctx.send("The channel for the puzzles no longer exists. Please first change the channel by using `.setpuzzchannel`.")
+            return
+
     user = ctx.author
     await ctx.send("Please send the puzzles.")
     # only check is for whether the user is the author
     def check(m):
         return m.author == user
     
+    # get the puzzle images
     is_image = False
     while not is_image:
         msg = await bot.wait_for("message", check=check)
 
-        if msg.attachments:
+        if len(msg.attachments) == 3:
             is_image = True
-            for i in range(num_puzzles):
-                puzzle_urls[i] = msg.attachments[i].url
+            puzzles.change_puzzles(msg.attachments)
+        else:
+            await ctx.send("Please send all 3 puzzle images in a single message.")
+
 
     await ctx.send("Please type the speed bonus for this set of puzzles.")
-    
+    # get the speed bonus
     is_number = False
     while not is_number:
         msg = await bot.wait_for("message", check=check)
 
-    await ctx.send("These are the new puzzles:")
-    for i in range(num_puzzles):
-        await ctx.send(puzzle_urls[i])
+        try:
+            bonus = int(msg)
+            is_number = True
+
+            puzzles.change_bonus(bonus)
+
+        except ValueError:
+            await ctx.send("Please type a number.")
+
+    # get the submission link
+    await ctx.send("Please send the submission link for the puzzles.")
+    msg = await bot.wait_for("message", check=check)
+    puzzles.change_link(msg.content)
 
     await ctx.send(
-        f"The puzzles are set to release at {puzz_release_datetime}." + 
-        "Do `.setpuzztime` if you want to change the release time."
+        f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>." +
+        "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if" + 
+        "you want to change the channel the puzzles are released in."
     )
+
+    puzz_text = get_puzz_text(puzzles)
+    await ctx.send(puzz_text)
 
 @bot.command()
-async def puzzles(ctx):
+async def showpuzzles(ctx):
     await ctx.send(
-        "What you see below is exactly what will be released." + 
-        f"The puzzles are set to release at {puzz_release_datetime}." + 
-        "Do `.setpuzztime` if you want to change the release time."
+        f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>." +
+        "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if" + 
+        "you want to change the channel the puzzles are released in."
     )
 
-    await ctx.send(puzz_release_text)
-    for i in range(num_puzzles):
-        await ctx.send(puzzle_urls[i])
+    puzz_text = get_puzz_text(puzzles)
+    await ctx.send(puzz_text)
 
 @bot.command()
 async def bird(ctx):
@@ -115,15 +178,14 @@ async def bird(ctx):
 
 @bot.command()
 async def puzztime(ctx):
-    puzz_time = format_datetime(puzz_release_datetime)
+    puzz_time = format_datetime(puzzles.release_datetime)
     await ctx.send(f"The current puzzle release time is {puzz_time}.")
 
 @bot.command()
 async def setpuzztime(ctx):
     user = ctx.author
     
-    global puzz_release_datetime
-    puzz_time = format_datetime(puzz_release_datetime)
+    puzz_time = format_datetime(puzzles.release_datetime)
     await ctx.send(f"The current puzzle release time is {puzz_time}.")
 
     await ctx.send("Please enter the new release date of the puzzles in the format DD/MM/YYYY.")
@@ -171,19 +233,19 @@ async def setpuzztime(ctx):
         except ValueError:
             await ctx.send(f"{msg.content} is not a valid time. Please try again.")
 
-    puzz_release_datetime = datetime.datetime(year, month, day, hour, minute)
+    puzzles.release_datetime = datetime.datetime(year, month, day, hour, minute)
 
-    await ctx.send(f"The new puzzle release time is now {format_datetime(puzz_release_datetime)} ({puzzle_day}).")
+    await ctx.send(f"The new puzzle release time is now {format_datetime(puzzles.release_datetime)} ({puzzle_day}).")
 
 @bot.command()
 async def test(ctx):
-    channel = f"<#{puzz_channel_id}"
+    channel = f"<#{puzzles.channel_id}"
     await ctx.send(f"Hi. {channel}>")
 
 @bot.command()
 async def start(ctx):
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(test, next_run_time=puzz_release_datetime+datetime.timedelta(seconds=1.0))
+    scheduler.add_job(test, next_run_time=puzzles.release_datetime + datetime.timedelta(seconds=1.0))
     scheduler.start()
 
 bot.run(TOKEN)
