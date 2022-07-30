@@ -84,6 +84,7 @@ def check_setting_puzzles(user):
         return False
 
 @bot.command()
+@commands.has_role(980072529395847198)
 async def setpuzzchannel(ctx):
     user = ctx.author
     channel_id = puzzles.channel_id
@@ -194,6 +195,7 @@ async def setpuzzles(ctx):
         await ctx.send(puzzles.urls[i])
 
 @bot.command()
+@commands.has_role(980072529395847198)
 async def showpuzzles(ctx):
     await ctx.send(
         f"The below is what will be released at {format_datetime(puzzles.release_datetime)} in <#{puzzles.channel_id}>. " +
