@@ -26,31 +26,35 @@ speech_emoji = ":speech_balloon:"
 heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
+
 def get_puzz_text(ctx, puzzles: Puzzles):
     puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
-    puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {week_count}** {jigsaw_emoji}\n\n"
-    puzz_line2 = f"SPEED BONUS: {puzzles.speed_bonus} MINUTES\n"
+    puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {puzzles.week_count}** {jigsaw_emoji}\n\n"
+    puzz_line2 = f"**SPEED BONUS:** {puzzles.speed_bonus} MINUTES\n"
     puzz_line3 = f"*Hints will be unlimited after {puzzles.speed_bonus} minutes is up OR after the top 3 solvers have finished!*\n\n"
-    puzz_line4 = f"Submit your answers here: {puzzles.submission_link}"
+    puzz_line4 = f"**Submit your answers here:** {puzzles.submission_link}\n"
+    puzz_line5 = "You can submit as many times as you want!\n"
+    puzz_line6 = "Your highest score will be kept."
     
-    puzz_release_text = puzz_mention + puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4
+    puzz_release_text = puzz_mention + puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4 + puzz_line5 + puzz_line6
     return puzz_release_text
 
-def get_sb_text(ctx, puzzles: Puzzles):
-    sb_mention = f"{discord.utils.get(ctx.guild.roles, sb.role_id).mention}\n\n"
-    second_best_line1 = f"{brain_emoji} **SECOND BEST: WEEK {week_count}** {brain_emoji}\n\n"
-    second_best_line2 = f"Try your best to guess what the second most popular answer will be!"
+def get_sb_text(ctx, sb: SecondBest):
+    sb_mention = f"{discord.utils.get(ctx.guild.roles, id=sb.role_id).mention}\n\n"
+    second_best_line1 = f"{brain_emoji} **SECOND BEST: WEEK {sb.week_count}** {brain_emoji}\n\n"
+    second_best_line2 = f"Try your best to guess what the second most popular answer will be!\n\n"
+    second_best_line3 = f"**Submit your answer here:** {sb.submission_link}\n\n"
 
-    second_best_text = sb_mention + second_best_line1 + second_best_line2
+    second_best_text = sb_mention + second_best_line1 + second_best_line2 + second_best_line3 + sb.img_url
     return second_best_text
 
-def get_ciyk_text(ctx, puzzles: Puzzles):
-    ciyk_mention = f"{discord.utils.get(ctx.guild.roles, ciyk.role_id)}\n\n"
-    ciyk_line1 = f"{speech_emoji} **COMMENT IF YOU KNOW: WEEK {week_count}** {speech_emoji}\n\n"
+def get_ciyk_text(ctx, ciyk: CIYK):
+    ciyk_mention = f"{discord.utils.get(ctx.guild.roles, id=ciyk.role_id).mention}\n\n"
+    ciyk_line1 = f"{speech_emoji} **COMMENT IF YOU KNOW: WEEK {ciyk.week_count}** {speech_emoji}\n\n"
     ciyk_line2 = f"If you think you know the pattern, comment an answer that follows it in <#{ciyk.discuss_id}>\n"
-    ciyk_line3 = f"We'll react with a {heart_emoji} if you're right and a {cross_emoji} if you're wrong!"
-    
-    ciyk_text = ciyk_line1 + ciyk_line2 + ciyk_line3
+    ciyk_line3 = f"We'll react with a {heart_emoji} if you're right and a {cross_emoji} if you're wrong!\n\n"
+
+    ciyk_text = ciyk_mention + ciyk_line1 + ciyk_line2 + ciyk_line3 + ciyk.img_url
     return ciyk_text
 
 day_names = {
@@ -178,9 +182,10 @@ async def setpuzzles(ctx):
     setting_puzzles[user] = False
 
     await ctx.send(
-        f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>." +
+        f"The below is what will be released at {format_datetime(puzzles.release_datetime)} in <#{puzzles.channel_id}>." +
         "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if " + 
-        "you want to change the channel the puzzles are released in."
+        "you want to change the channel the puzzles are released in.\n" + 
+        "Remember to do `.startpuzz`"
     )
 
     puzz_text = get_puzz_text(ctx, puzzles)
@@ -196,9 +201,10 @@ async def showpuzzles(ctx):
         return
 
     await ctx.send(
-        f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>." +
+        f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>. " +
         "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if" + 
-        "you want to change the channel the puzzles are released in."
+        "you want to change the channel the puzzles are released in.\n" + 
+        "Remember to do `.startpuzz`"
     )
 
     puzz_text = get_puzz_text(ctx, puzzles)
@@ -217,6 +223,34 @@ async def puzztime(ctx):
     puzz_time = format_datetime(puzzles.release_datetime)
     await ctx.send(f"The current puzzle release time is {puzz_time}.")
 
+def check_is_date(msg: str):
+    try:
+        strday, strmonth, stryear = msg.content.split("/")
+
+        # check if it is a valid date
+        date = datetime.date(int(stryear), int(strmonth), int(strday))
+
+        day, month, year = int(strday), int(strmonth), int(stryear)
+
+        return day, month, year
+    
+    except ValueError:
+        return False
+
+def check_is_time(msg: str):
+    try:
+        strhour, strminute = msg.content.split(":")
+
+        # check if valid time
+        time = datetime.time(int(strhour), int(strminute))
+
+        hour, minute = int(strhour), int(strminute)
+
+        return hour, minute
+
+    except ValueError:
+        return False
+
 @bot.command()
 async def setpuzztime(ctx):
     user = ctx.author
@@ -234,21 +268,15 @@ async def setpuzztime(ctx):
     while not valid_date:
         msg = await bot.wait_for("message", check=check)
 
-        try:
-            strday, strmonth, stryear = msg.content.split("/")
-
-            # check if it is a valid date
-            date = datetime.date(int(stryear), int(strmonth), int(strday))
-
-            day, month, year = int(strday), int(strmonth), int(stryear)
-
+        date = check_is_date(msg)
+        if not date:
+            await ctx.send(f"\"{msg.content}\" is not a valid date. Please try again.")
+        else:
+            day, month, year = date
             valid_date = True
-        
-        except ValueError:
-            await ctx.send(f"{msg.content} is not a valid date. Please try again.")
 
-    new_puzz_date = format_date(date)
-    puzzle_day = day_names[date.weekday()]
+    new_puzz_date = format_date(datetime.datetime(year, month, day))
+    puzzle_day = day_names[datetime.datetime(year, month, day).weekday()]
     await ctx.send(f"The new puzzle release date is now {new_puzz_date} ({puzzle_day}).")
     await ctx.send("Please enter the new release time of the puzzles in the format HH:MM (24 hour time).")
 
@@ -256,22 +284,20 @@ async def setpuzztime(ctx):
     while not valid_time:
         msg = await bot.wait_for("message", check=check)
 
-        try:
-            strhour, strminute = msg.content.split(":")
+        time = check_is_time(msg)
 
-            # check if valid time
-            date = datetime.time(int(strhour), int(strminute))
-
-            hour, minute = int(strhour), int(strminute)
-
+        if not time:
+            await ctx.send(f"\"{msg.content}\" is not a valid time. Please try again.")
+        else:
+            hour, minute = time
             valid_time = True
-        
-        except ValueError:
-            await ctx.send(f"{msg.content} is not a valid time. Please try again.")
 
     puzzles.release_datetime = datetime.datetime(year, month, day, hour, minute)
 
-    await ctx.send(f"The new puzzle release time is now {format_datetime(puzzles.release_datetime)} ({puzzle_day}).")
+    await ctx.send(
+        f"The new puzzle release time is now {format_datetime(puzzles.release_datetime)} ({puzzle_day}). " + 
+        "Remember to do `.startpuzz`"
+    )
 
 @bot.command()
 async def setsb(ctx):
@@ -288,14 +314,76 @@ async def setsb(ctx):
         if not msg.attachments:
             await ctx.send("Please send the image for the Second Best game.")
         else:
-            ciyk.change_url(msg.attachments[0].url)
+            sb.change_url(msg.attachments[0].url)
             valid_image = True
-        
+
+    
+    await ctx.send("Please send the submission link for Second Best.")
+
+    msg = await bot.wait_for("message", check=check)
+    sb.change_link(msg.content)
+
     await ctx.send(
-        f"Below is what will be released at {format_datetime(sb.release_datetime)} in <#{sb.channel_id}>."
+        f"Below is what will be released at {format_datetime(sb.release_datetime)} in <#{sb.channel_id}>. " + 
+        "Remember to do `.startsb`"
     )
 
-    sb_text = get_sb_text()
+    sb_text = get_sb_text(ctx, sb)
+    await ctx.send(sb_text)
+
+@bot.command()
+async def setsbtime(ctx):
+    user = ctx.author
+
+    def check(m):
+        return m.author == user
+    
+    sb_time = format_datetime(sb.release_datetime)
+    await ctx.send(f"The current Second Best release time is {sb_time}.")
+
+    await ctx.send("Please enter the new release date of Second Best in the format DD/MM/YYYY.")
+
+    while True:
+        msg = await bot.wait_for("message", check=check)
+
+        date = check_is_date(msg)
+
+        if not date:
+            await ctx.send(f"\"{msg.content}\" is not a valid date. Please try again.")
+        else:
+            day, month, year = date
+            break
+
+    day_name = day_names[datetime.date(year, month, day).weekday()]
+    await ctx.send(f"Release date now set for: {datetime.date(year, month, day)} ({day_name}).")
+    await ctx.send("Please enter the new release time of Second Best in the format HH:MM (24 hour time).")
+
+    while True:
+        msg = await bot.wait_for("message", check=check)
+
+        time = check_is_time(msg)
+
+        if not time:
+            await ctx.send(f"\"{msg.content}\" is not a valid time. Please try again.")
+        else:
+            hour, minute = time
+            break
+    
+    sb.release_datetime = datetime.datetime(year, month, day, hour, minute)
+    await ctx.send(
+        f"The new Second Best release time is now {format_datetime(sb.release_datetime)}. " + 
+        "Remember to do `.startsb`"
+    )
+
+@bot.command()
+async def showsb(ctx):
+    sb_text = get_sb_text(ctx, sb)
+
+    await ctx.send(
+        f"Below is what will be released at {format_datetime(sb.release_datetime)} in <#{sb.channel_id}>. " + 
+        "Remember to do `.startsb`"
+    )
+
     await ctx.send(sb_text)
 
 @bot.command()
@@ -317,30 +405,163 @@ async def setciyk(ctx):
             valid_image = True
     
     await ctx.send(
-        f"Below is what will be released at {format_datetime(ciyk.release_datetime)} in <#{ciyk.channel_id}>."
+        f"Below is what will be released at {format_datetime(ciyk.release_datetime)} in <#{ciyk.channel_id}>. " +
+        "Remember to do `.startciyk`"
     )
 
-    ciyk_text = get_ciyk_text()
+    ciyk_text = get_ciyk_text(ctx, ciyk)
     await ctx.send(ciyk_text)
 
 @bot.command()
-async def test(ctx):
-    channel = f"<#{puzzles.channel_id}"
-    await ctx.send(f"Hi. {channel}>")
+async def setciyktime(ctx):
+    user = ctx.author
+
+    def check(m):
+        return m.author == user
+    
+    ciyk_time = format_datetime(ciyk.release_datetime)
+    await ctx.send(f"The current CIYK release time is {ciyk_time}.")
+
+    await ctx.send("Please enter the new release date of CIYK in the format DD/MM/YYYY.")
+
+    while True:
+        msg = await bot.wait_for("message", check=check)
+
+        date = check_is_date(msg)
+
+        if not date:
+            await ctx.send(f"\"{msg.content}\" is not a valid date. Please try again.")
+        else:
+            day, month, year = date
+            break
+
+    day_name = day_names[datetime.date(year, month, day).weekday()]
+    await ctx.send(f"Release date now set for: {datetime.date(year, month, day)} ({day_name}).")
+    await ctx.send("Please enter the new release time of CIYK in the format HH:MM (24 hour time).")
+
+    while True:
+        msg = await bot.wait_for("message", check=check)
+
+        time = check_is_time(msg)
+
+        if not time:
+            await ctx.send(f"\"{msg.content}\" is not a valid time. Please try again.")
+        else:
+            hour, minute = time
+            break
+    
+    ciyk.release_datetime = datetime.datetime(year, month, day, hour, minute)
+    await ctx.send(
+        f"The new CIYK release time is now {format_datetime(ciyk.release_datetime)}. " + 
+        "Remember to do `.startciyk`"
+    )
 
 @bot.command()
-async def start(ctx):
-    await ctx.send(f"Starting... Release set for {puzzles.release_datetime}")
-    # scheduler = AsyncIOScheduler()
-    # scheduler.add_job(test, next_run_time=puzzles.release_datetime + datetime.timedelta(seconds=1.0))
-    # scheduler.start()
+async def showciyk(ctx):
+    ciyk_text = get_ciyk_text(ctx, ciyk)
+
+    await ctx.send(
+        f"Below is what will be released at {format_datetime(ciyk.release_datetime)} in <#{ciyk.channel_id}>. " +
+        "Remember to do `.startciyk`"
+    )
+
+    await ctx.send(ciyk_text)
+
+@bot.command()
+async def startpuzz(ctx):
+    puzzles.releasing = True
+    await ctx.send(
+        f"Starting... Puzzle release set for {format_datetime(puzzles.release_datetime)}. " +
+        "Do `.stoppuzz` if you want to stop the release."
+    )
 
     now = datetime.datetime.now()
     wait_time = (puzzles.release_datetime - now).total_seconds()
-    await asyncio.sleep(wait_time)
+    
+    puzzles_channel = bot.get_channel(puzzles.channel_id)
     puzz_text = get_puzz_text(ctx, puzzles)
-    await ctx.send(puzz_text)
+    
+    await asyncio.sleep(wait_time+1)
+
+    if not puzzles.releasing:
+        return
+
+    await puzzles_channel.send(puzz_text)
     for i in range(num_puzzles):
-        await ctx.send(puzzles.urls[i])
+        await puzzles_channel.send(puzzles.urls[i])
+    
+    puzzles.change_week(puzzles.week_count + 1)
+
+@bot.command()
+async def stoppuzz(ctx):
+    puzzles.releasing = False
+    await ctx.send(f"The puzzles set for {format_datetime(puzzles.release_datetime)} will no longer be released.")
+
+@bot.command()
+async def startsb(ctx):
+    sb.releasing = True
+    await ctx.send(
+        f"Starting... Second Best release set for {format_datetime(sb.release_datetime)}. " + 
+        "Do `.stopsb` if you want to stop the release."
+    )
+
+    wait_time = (sb.release_datetime - datetime.datetime.now()).total_seconds()
+
+    await asyncio.sleep(wait_time+1)
+
+    if not sb.releasing:
+        return
+
+    sb_channel = bot.get_channel(sb.channel_id)
+    sb_text = get_sb_text(ctx, sb)
+
+    await sb_channel.send(sb_text)
+    sb.change_week(sb.week_count + 1)
+
+@bot.command()
+async def stopsb(ctx):
+    sb.releasing = False
+    await ctx.send(f"The Second Best game set for {format_datetime(sb.release_datetime)} will no longer be released.")
+
+@bot.command()
+async def startciyk(ctx):
+    ciyk.releasing = True
+    await ctx.send(
+        f"Starting... CIYK release set for {format_datetime(ciyk.release_datetime)}. " + 
+        "Do `.stopciyk` if you want to stop the release."
+    )
+
+    wait_time = (ciyk.release_datetime - datetime.datetime.now()).total_seconds()
+
+    ciyk_channel = bot.get_channel(ciyk.channel_id)
+    ciyk_text = get_ciyk_text(ctx, ciyk)
+
+    await asyncio.sleep(wait_time+1)
+
+    if not ciyk.releasing:
+        return
+
+    await ciyk_channel.send(ciyk_text)
+    ciyk.change_week(ciyk.week_count + 1)
+
+@bot.command()
+async def stopciyk(ctx):
+    ciyk.releasing = False
+    await ctx.send(f"The CIYK set for {format_datetime(ciyk.release_datetime)} will no longer be released.")
+
+# changes the week count for the weekly puzzles in case it increments when it's not supposed to
+# also used when a new semester begins
+@bot.command()
+async def changeweek(ctx, new_week_str):
+    # check if the new week is a number
+    try:
+        new_week = int(new_week_str)
+
+        puzzles.change_week(new_week)
+        ciyk.change_week(new_week)
+        sb.change_week(new_week)
+
+    except ValueError:
+        await ctx.send("A number must be used as the argument for this command.")
 
 bot.run(TOKEN)

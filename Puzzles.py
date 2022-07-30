@@ -9,6 +9,10 @@ class Puzzles:
 
         self.submission_link = None
 
+        self.week_count = 1
+
+        self.releasing = False
+
     def change_puzzles(self, urls: list[str]):
         self.urls = urls
 
@@ -20,3 +24,6 @@ class Puzzles:
 
     def change_link(self, new_link: str):
         self.submission_link = new_link
+
+    def change_week(self, new_week: int):
+        self.week_count = new_week
