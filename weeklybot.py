@@ -195,13 +195,8 @@ async def setpuzzles(ctx):
 
 @bot.command()
 async def showpuzzles(ctx):
-    # check if any puzzles have been set
-    if None in puzzles.urls:
-        await ctx.send("The puzzles have not been assigned, yet. Please do so by using `.setpuzzles`.")
-        return
-
     await ctx.send(
-        f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>. " +
+        f"The below is what will be released at {format_datetime(puzzles.release_datetime)} in <#{puzzles.channel_id}>. " +
         "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if" + 
         "you want to change the channel the puzzles are released in.\n" + 
         "Remember to do `.startpuzz`"
@@ -377,6 +372,16 @@ async def setsbtime(ctx):
 
 @bot.command()
 async def showsb(ctx):
+    if not sb.img_url:
+        await ctx.send("The image for Second Best has not been assigned. Please do that first with `.setsb`")
+        return
+
+    if not sb.submission_link:
+        await ctx.send(
+            "The submission link for Second Best has not been assigned yet. " +
+            "Please do that first with `.setsb`"
+        )
+
     sb_text = get_sb_text(ctx, sb)
 
     await ctx.send(
