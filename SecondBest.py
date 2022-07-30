@@ -2,8 +2,8 @@ class SecondBest:
     def __init__(self, release_time):
         self.img_url = "[Image]"
         self.release_datetime = release_time
-        self.role_id = 994945577718648956
-        self.channel_id = 994948949536407612
+        self.role_id = 1001743978938507276
+        self.channel_id = 1001742058601590824
 
         self.submission_link = "[Link]"
 
