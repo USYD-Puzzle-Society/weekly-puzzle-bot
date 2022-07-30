@@ -1,8 +1,9 @@
 class Puzzles:
-    def __init__(self, num_puzzles):
+    def __init__(self, num_puzzles, release_datetime):
         self.urls = [None for i in range(num_puzzles)]
-        self.release_datetime = None
-        self.channel_id = -1
+        self.release_datetime = release_datetime
+        self.role_id = 994945577718648956
+        self.channel_id = 994948949536407612
 
         self.speed_bonus = -1
 

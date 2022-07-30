@@ -1,10 +1,10 @@
-from urllib.parse import _NetlocResultMixinStr
 import discord
 import asyncio
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import datetime
-from discord.ext import tasks, commands
+from discord.ext import commands
 from Puzzles import Puzzles
+from SecondBest import SecondBest
+from CIYK import CIYK
 
 TOKEN = "OTk0OTQxODk4NTg4NDM4NTI5.GAo6zJ.lB9k_RyfMIkbhhZrXwJzcW9ZfV-PRzmCYEw5Ik"
 
@@ -13,9 +13,9 @@ bot = commands.Bot(command_prefix=command_prefix)
 
 num_puzzles = 2
 
-ciyk_id = 1002487377958281276
-
-puzzles = Puzzles(num_puzzles)
+puzzles = Puzzles(num_puzzles, datetime.datetime.now())
+sb = SecondBest(datetime.datetime.now())
+ciyk = CIYK(datetime.datetime.now())
 
 setting_puzzles = {}
 
@@ -26,23 +26,32 @@ speech_emoji = ":speech_balloon:"
 heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
-def get_puzz_text(puzzles: Puzzles):
-    puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {week_count}**{jigsaw_emoji}\n\n"
+def get_puzz_text(ctx, puzzles: Puzzles):
+    puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
+    puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {week_count}** {jigsaw_emoji}\n\n"
     puzz_line2 = f"SPEED BONUS: {puzzles.speed_bonus} MINUTES\n"
-    puzz_line3 = f"Hints will be unlimited after {puzzles.speed_bonus} minutes is up OR after the top 3 solvers have finished!\n\n"
+    puzz_line3 = f"*Hints will be unlimited after {puzzles.speed_bonus} minutes is up OR after the top 3 solvers have finished!*\n\n"
     puzz_line4 = f"Submit your answers here: {puzzles.submission_link}"
     
-    puzz_release_text = puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4
+    puzz_release_text = puzz_mention + puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4
     return puzz_release_text
 
-second_best_line1 = f"{brain_emoji} **SECOND BEST: WEEK {week_count}** {brain_emoji}\n\n"
-second_best_line2 = f"Try your best to guess what the second most popular answer will be!"
-second_best_text = second_best_line1 + second_best_line2
+def get_sb_text(ctx, puzzles: Puzzles):
+    sb_mention = f"{discord.utils.get(ctx.guild.roles, sb.role_id).mention}\n\n"
+    second_best_line1 = f"{brain_emoji} **SECOND BEST: WEEK {week_count}** {brain_emoji}\n\n"
+    second_best_line2 = f"Try your best to guess what the second most popular answer will be!"
 
-ciyk_line1 = f"{speech_emoji} **COMMENT IF YOU KNOW: WEEK {week_count}** {speech_emoji}\n\n"
-ciyk_line2 = f"If you think you know the pattern, comment an answer that follows it in <#{ciyk_id}>\n"
-ciyk_line3 = f"We'll react with a {heart_emoji} if you're right and a {cross_emoji} if you're wrong!"
-ciyk_text = ciyk_line1 + ciyk_line2 + ciyk_line3
+    second_best_text = sb_mention + second_best_line1 + second_best_line2
+    return second_best_text
+
+def get_ciyk_text(ctx, puzzles: Puzzles):
+    ciyk_mention = f"{discord.utils.get(ctx.guild.roles, ciyk.role_id)}\n\n"
+    ciyk_line1 = f"{speech_emoji} **COMMENT IF YOU KNOW: WEEK {week_count}** {speech_emoji}\n\n"
+    ciyk_line2 = f"If you think you know the pattern, comment an answer that follows it in <#{ciyk.discuss_id}>\n"
+    ciyk_line3 = f"We'll react with a {heart_emoji} if you're right and a {cross_emoji} if you're wrong!"
+    
+    ciyk_text = ciyk_line1 + ciyk_line2 + ciyk_line3
+    return ciyk_text
 
 day_names = {
     0: "Monday",
@@ -170,11 +179,11 @@ async def setpuzzles(ctx):
 
     await ctx.send(
         f"The below is what will be released at {puzzles.release_datetime} in <#{puzzles.channel_id}>." +
-        "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if" + 
+        "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if " + 
         "you want to change the channel the puzzles are released in."
     )
 
-    puzz_text = get_puzz_text(puzzles)
+    puzz_text = get_puzz_text(ctx, puzzles)
     await ctx.send(puzz_text)
     for i in range(num_puzzles):
         await ctx.send(puzzles.urls[i])
@@ -192,7 +201,7 @@ async def showpuzzles(ctx):
         "you want to change the channel the puzzles are released in."
     )
 
-    puzz_text = get_puzz_text(puzzles)
+    puzz_text = get_puzz_text(ctx, puzzles)
     await ctx.send(puzz_text)
     for i in range(num_puzzles):
         await ctx.send(puzzles.urls[i])
@@ -265,14 +274,73 @@ async def setpuzztime(ctx):
     await ctx.send(f"The new puzzle release time is now {format_datetime(puzzles.release_datetime)} ({puzzle_day}).")
 
 @bot.command()
+async def setsb(ctx):
+    user = ctx.author
+    await ctx.send("Please send the image for the Second Best game.")
+
+    def check(m):
+        return m.author == user
+    
+    valid_image = False
+    while not valid_image:
+        msg = await bot.wait_for("message", check=check)
+
+        if not msg.attachments:
+            await ctx.send("Please send the image for the Second Best game.")
+        else:
+            ciyk.change_url(msg.attachments[0].url)
+            valid_image = True
+        
+    await ctx.send(
+        f"Below is what will be released at {format_datetime(sb.release_datetime)} in <#{sb.channel_id}>."
+    )
+
+    sb_text = get_sb_text()
+    await ctx.send(sb_text)
+
+@bot.command()
+async def setciyk(ctx):
+    user = ctx.author
+    await ctx.send("Please send the image for the CIYK.")
+
+    def check(m):
+        return m.author == user
+
+    valid_image = False
+    while not valid_image:
+        msg = await bot.wait_for("message", check=check)
+
+        if not msg.attachments:
+            await ctx.send("Please send the image for the CIYK.")
+        else:
+            ciyk.change_url(msg.attachments[0].url)
+            valid_image = True
+    
+    await ctx.send(
+        f"Below is what will be released at {format_datetime(ciyk.release_datetime)} in <#{ciyk.channel_id}>."
+    )
+
+    ciyk_text = get_ciyk_text()
+    await ctx.send(ciyk_text)
+
+@bot.command()
 async def test(ctx):
     channel = f"<#{puzzles.channel_id}"
     await ctx.send(f"Hi. {channel}>")
 
 @bot.command()
 async def start(ctx):
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(test, next_run_time=puzzles.release_datetime + datetime.timedelta(seconds=1.0))
-    scheduler.start()
+    await ctx.send(f"Starting... Release set for {puzzles.release_datetime}")
+    # scheduler = AsyncIOScheduler()
+    # scheduler.add_job(test, next_run_time=puzzles.release_datetime + datetime.timedelta(seconds=1.0))
+    # scheduler.start()
+
+    now = datetime.datetime.now()
+    wait_time = (puzzles.release_datetime - now).total_seconds()
+    await asyncio.sleep(wait_time)
+    puzz_text = get_puzz_text(ctx, puzzles)
+    await ctx.send(puzz_text)
+    for i in range(num_puzzles):
+        await ctx.send(puzzles.urls[i])
 
 bot.run(TOKEN)
