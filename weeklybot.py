@@ -29,8 +29,8 @@ heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
 help_setup = [
-    ".setpuzzchannel\n\n",
-    ".setpuzzles\n\n",
+    ".setpuzzchannel\n\n\n",
+    ".setpuzzles\n\n\n\n",
     ".setpuzztime\n\n",
 
     ".setsb\n\n",
@@ -44,7 +44,7 @@ help_setup = [
 
 help_setup_desc = [
     "Changes the channel which the puzzles are released it. Default is <#892032997220573204>\n\n",
-    "Sets up the images, speed bonus and submission link for the puzzle release. Please do not use any other commands while using this command.\n\n\n",
+    "Sets up the images, speed bonus and submission link for the puzzle release. Please do not use any other commands while using this command.\n\n",
     "Changes the release time of the puzzles.\n\n",
 
     "Sets up the Second Best announcement.\n\n",
@@ -57,8 +57,8 @@ help_setup_desc = [
 ]
 
 help_start = [
-    ".startpuzz\n\n",
-    ".startsb\n\n",
+    ".startpuzz\n\n\n",
+    ".startsb\n\n\n",
     ".startciyk"
 ]
 
@@ -69,8 +69,8 @@ help_start_desc = [
 ]
 
 help_stop = [
-    ".stoppuzz\n\n",
-    ".stopsb\n\n",
+    ".stoppuzz\n\n\n",
+    ".stopsb\n\n\n",
     ".stopciyk"
 ]
 
@@ -98,22 +98,37 @@ async def help(ctx):
             is_exec = True
             break
     
-    embed_msg = discord.Embed(title="Commands")
+    embeds = []
 
     if is_exec:
-        embed_msg.add_field(name="Setup", value="".join(help_setup), inline=True)
-        embed_msg.add_field(name="Description", value="".join(help_setup_desc), inline=True)
+        embed_setup = discord.Embed(title="Setup")
+        embed_setup.add_field(name="Command", value="".join(help_setup), inline=True)
+        embed_setup.add_field(name="Description", value="".join(help_setup_desc), inline=True)
+        embeds.append(embed_setup)
 
-        embed_msg.add_field(name="Start", value="".join(help_start), inline=False)
-        embed_msg.add_field(name="Description", value="".join(help_start_desc), inline=True)
+        embed_start = discord.Embed(title="Start")
+        embed_start.add_field(name="Command", value="".join(help_start), inline=False)
+        embed_start.add_field(name="Description", value="".join(help_start_desc), inline=True)
+        embeds.append(embed_start)
 
-        embed_msg.add_field(name="Stop", value="".join(help_stop), inline=False),
-        embed_msg.add_field(name="Description", value="".join(help_stop_desc), inline=True)
+        embed_stop = discord.Embed(title="Stop")
+        embed_stop.add_field(name="Command", value="".join(help_stop), inline=False),
+        embed_stop.add_field(name="Description", value="".join(help_stop_desc), inline=True)
+        embeds.append(embed_stop)
 
-    embed_msg.add_field(name="Other", value="".join(help_other), inline=True)
-    embed_msg.add_field(name="Description", value="".join(help_other_desc), inline=True)
+        embed_other = discord.Embed(title="Other")
+        embed_other.add_field(name="Command", value="".join(help_other), inline=True)
+        embed_other.add_field(name="Description", value="".join(help_other_desc), inline=True)
+        embeds.append(embed_other)
 
-    await ctx.send(embed=embed_msg)
+    else:
+        embed_other = discord.Embed(title="Commands")
+        embed_other.add_field(name="Command", value="".join(help_other), inline=True)
+        embed_other.add_field(name="Description", value="".join(help_other_desc), inline=True)
+        embeds.append(embed_other)
+
+    for embed_msg in embeds:
+        await ctx.send(embed=embed_msg)
 
 def get_puzz_text(ctx, puzzles: Puzzles):
     puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
