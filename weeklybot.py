@@ -107,12 +107,12 @@ async def help(ctx):
         embeds.append(embed_setup)
 
         embed_start = discord.Embed(title="Start")
-        embed_start.add_field(name="Command", value="".join(help_start), inline=False)
+        embed_start.add_field(name="Command", value="".join(help_start), inline=True)
         embed_start.add_field(name="Description", value="".join(help_start_desc), inline=True)
         embeds.append(embed_start)
 
         embed_stop = discord.Embed(title="Stop")
-        embed_stop.add_field(name="Command", value="".join(help_stop), inline=False),
+        embed_stop.add_field(name="Command", value="".join(help_stop), inline=True),
         embed_stop.add_field(name="Description", value="".join(help_stop_desc), inline=True)
         embeds.append(embed_stop)
 
