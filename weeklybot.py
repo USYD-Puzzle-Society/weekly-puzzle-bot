@@ -29,6 +29,7 @@ heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
 help_setup = [
+    ".readme\n\n",
     ".setpuzzchannel\n\n\n",
     ".setpuzzles\n\n\n\n",
     ".setpuzztime\n\n",
@@ -39,10 +40,11 @@ help_setup = [
     ".setciyk\n\n",
     ".setciyktime\n\n"
 
-    ".changeweek"
+    ".changeweek [week number]"
 ]
 
 help_setup_desc = [
+    "Useful information to read.\n\n"
     "Changes the channel which the puzzles are released it. Default is <#892032997220573204>\n\n",
     "Sets up the images, speed bonus and submission link for the puzzle release. Please do not use any other commands while using this command.\n\n",
     "Changes the release time of the puzzles.\n\n",
@@ -54,6 +56,18 @@ help_setup_desc = [
     "Changes the release time of CIYK.\n\n",
 
     "Changes the week that is displayed for the puzzles, Second Best and CIYK announcments. Use this if the week count for the annoucements are somehow out of sync or wrong."
+]
+
+help_show = [
+    ".showpuzzles\n\n",
+    ".showsb\n\n",
+    ".showciyk"
+]
+
+help_show_desc = [
+    "Shows time and content of the release for the puzzles.\n\n",
+    "Shows time and content of the release for Second Best\n\n",
+    "Shows time and content of the release for CIYK"
 ]
 
 help_start = [
@@ -69,8 +83,8 @@ help_start_desc = [
 ]
 
 help_stop = [
-    ".stoppuzz\n\n\n",
-    ".stopsb\n\n\n",
+    ".stoppuzz\n\n",
+    ".stopsb\n\n",
     ".stopciyk"
 ]
 
@@ -87,6 +101,27 @@ help_other = [
 help_other_desc = [
     "bird"
 ]
+
+@bot.command()
+async def readme(ctx):
+    await ctx.send(
+        "When using one of the Setup commands, do not retype the command if you mess up. " +
+        "These commands will continue running until the setup is done. For example, if you are " +
+        "using `.setpuzztime` and type the date wrong when it asks for the date, do not retype `.setpuzztime`." +
+        "The command is still running so all you have to do is type the date again.\n" +
+        "However, this is not true for the `.changeweek [week number]` command.\n\n" +
+        
+        "For the most part, you do not have to worry about changing the week number since it will automatically " +
+        "increment after a puzzle release.\n"
+        "For example, after the week 1 CIYK is released, the week number for CIYK will change to week 2 by itself. " +
+        "This does not affect the week number for the puzzles or Second Best.\n" + 
+        "The release times for the puzzles, Second Best and CIYK are also set to increase by a week automatically " +
+        "after each announcement.\n\n"
+
+        "It is important to use the respective Start commands after setting each of the puzzles up. " +
+        "If you do not run this command, then the puzzles will not be released. " +
+        "If you want to stop a release after running a Start command, just use the respective Stop command."
+    )
 
 @bot.command()
 async def help(ctx):
@@ -111,6 +146,11 @@ async def help(ctx):
         embed_start.add_field(name="Description", value="".join(help_start_desc), inline=True)
         embeds.append(embed_start)
 
+        embed_show = discord.Embed(title="Show")
+        embed_show.add_field(name="Command", value="".join(help_show), inline=True)
+        embed_show.add_field(name="Command", value="".join(help_show_desc), inline=True)
+        embeds.append(embed_show)
+
         embed_stop = discord.Embed(title="Stop")
         embed_stop.add_field(name="Command", value="".join(help_stop), inline=True),
         embed_stop.add_field(name="Description", value="".join(help_stop_desc), inline=True)
@@ -129,6 +169,7 @@ async def help(ctx):
 
     for embed_msg in embeds:
         await ctx.send(embed=embed_msg)
+
 
 def get_puzz_text(ctx, puzzles: Puzzles):
     puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
@@ -605,6 +646,7 @@ async def startpuzz(ctx):
         await puzzles_channel.send(puzzles.urls[i])
     
     puzzles.change_week(puzzles.week_count + 1)
+    puzzles.change_release(puzzles.release_datetime + datetime.timedelta(days=7))
 
 @bot.command()
 @commands.has_role(exec_id)
@@ -633,6 +675,7 @@ async def startsb(ctx):
 
     await sb_channel.send(sb_text)
     sb.change_week(sb.week_count + 1)
+    sb.change_release(sb.release_datetime + datetime.timedelta(days=7))
 
 @bot.command()
 @commands.has_role(exec_id)
@@ -661,6 +704,7 @@ async def startciyk(ctx):
 
     await ciyk_channel.send(ciyk_text)
     ciyk.change_week(ciyk.week_count + 1)
+    ciyk.change_release(ciyk.release_datetime + datetime.timedelta(days=7))
 
 @bot.command()
 @commands.has_role(exec_id)

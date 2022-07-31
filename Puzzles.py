@@ -16,6 +16,9 @@ class Puzzles:
     def change_puzzles(self, urls: list[str]):
         self.urls = urls
 
+    def change_release(self, new_release):
+        self.release_datetime = new_release
+
     def change_channel_id(self, new_id: int):
         self.channel_id = new_id
 
