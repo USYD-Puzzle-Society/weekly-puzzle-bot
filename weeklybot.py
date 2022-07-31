@@ -345,7 +345,7 @@ async def setpuzzles(ctx):
 async def showpuzzles(ctx):
     await ctx.send(
         f"The below is what will be released at {format_datetime(puzzles.release_datetime)} in <#{puzzles.channel_id}>. " +
-        "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if" + 
+        "Do `.setpuzztime` if you want to change the release time or `.setpuzzchannel` if " + 
         "you want to change the channel the puzzles are released in.\n" + 
         "Remember to do `.startpuzz`"
     )
