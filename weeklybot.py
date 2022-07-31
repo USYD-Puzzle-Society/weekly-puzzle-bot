@@ -29,7 +29,7 @@ heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
 pansive_emoji = ":pansive:"
-pansive_id = 1003261028303372338
+pansive_id = 1003260802557546537
 
 help_setup = [
     ".readme\n\n",
@@ -107,7 +107,7 @@ help_other_desc = [
 
 @bot.command()
 async def pansive(ctx):
-    await ctx.send("<:pansive:1003260802557546537>")
+    await ctx.send(f"<{pansive_emoji}{pansive_id}>")
 
 @bot.command()
 @commands.has_role(exec_id)
