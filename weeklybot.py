@@ -1,4 +1,3 @@
-from stat import IO_REPARSE_TAG_APPEXECLINK
 import discord
 import asyncio
 import datetime
