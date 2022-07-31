@@ -110,8 +110,8 @@ async def help(ctx):
         embed_msg.add_field(name="Stop", value="".join(help_stop), inline=False),
         embed_msg.add_field(name="Description", value="".join(help_stop_desc), inline=True)
 
-    embed_msg.add_field(name="", value="".join(help_other), inline=False)
-    embed_msg.add_field(name="", value="".join(help_other_desc), inline=True)
+    embed_msg.add_field(name="Other", value="".join(help_other), inline=False)
+    embed_msg.add_field(name="Other", value="".join(help_other_desc), inline=True)
 
     await ctx.send(embed=embed_msg)
 
