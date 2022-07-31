@@ -1,3 +1,4 @@
+from stat import IO_REPARSE_TAG_APPEXECLINK
 import discord
 import asyncio
 import datetime
@@ -17,6 +18,8 @@ puzzles = Puzzles(num_puzzles, datetime.datetime.now())
 sb = SecondBest(datetime.datetime.now())
 ciyk = CIYK(datetime.datetime.now())
 
+exec_id = 877861136240889897
+
 setting_puzzles = {}
 
 week_count = 1
@@ -26,6 +29,92 @@ speech_emoji = ":speech_balloon:"
 heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
+help_setup = [
+    ".setpuzzchannel\n\n",
+    ".setpuzzles\n\n",
+    ".setpuzztime\n\n",
+
+    ".setsb\n\n",
+    ".setsbtime\n\n",
+
+    ".setciyk\n\n",
+    ".setciyktime\n\n"
+
+    ".changeweek"
+]
+
+help_setup_desc = [
+    "Changes the channel which the puzzles are released it. Default is <#892032997220573204>\n\n",
+    "Sets up the images, speed bonus and submission link for the puzzle release. Please do not use any other commands while using this command.\n\n\n",
+    "Changes the release time of the puzzles.\n\n",
+
+    "Sets up the Second Best announcement.\n\n",
+    "Changes the release time of Second Best.\n\n",
+
+    "Sets up the CIYK announcement.\n\n",
+    "Changes the release time of CIYK.\n\n",
+
+    "Changes the week that is displayed for the puzzles, Second Best and CIYK announcments. Use this if the week count for the annoucements are somehow out of sync or wrong."
+]
+
+help_start = [
+    ".startpuzz\n\n",
+    ".startsb\n\n",
+    ".startciyk"
+]
+
+help_start_desc = [
+    "Starts the release for the puzzles. This command must be used in order for the puzzles to be released.\n\n",
+    "Starts the release for Second Best. This command must be used in order for Second Best to be released.\n\n",
+    "Starts the release for CIYK. This command must be used in order for CIYK to be released."
+]
+
+help_stop = [
+    ".stoppuzz\n\n",
+    ".stopsb\n\n",
+    ".stopciyk"
+]
+
+help_stop_desc = [
+    "Stops the puzzles from releasing if you have used .startpuzz\n\n",
+    "Stops Second Best from releasing if you have used .startsb\n\n",
+    "Stops CIYK from releasing if you have used .startciyk"
+]
+
+help_other = [
+    ".bird"
+]
+
+help_other_desc = [
+    "bird"
+]
+
+@bot.command()
+async def help(ctx):
+    user_roles = ctx.author.roles
+
+    is_exec = False
+    for role in user_roles:
+        if role.name == "Executives":
+            is_exec = True
+            break
+    
+    embed_msg = discord.Embed(title="Commands")
+
+    if is_exec:
+        embed_msg.add_field(name="Setup", value="".join(help_setup), inline=True)
+        embed_msg.add_field(name="Description", value="".join(help_setup_desc), inline=True)
+
+        embed_msg.add_field(name="Start", value="".join(help_start), inline=False)
+        embed_msg.add_field(name="Description", value="".join(help_start_desc), inline=True)
+
+        embed_msg.add_field(name="Stop", value="".join(help_stop), inline=False),
+        embed_msg.add_field(name="Description", value="".join(help_stop_desc), inline=True)
+
+    embed_msg.add_field(name="", value="".join(help_other), inline=False)
+    embed_msg.add_field(name="", value="".join(help_other_desc), inline=True)
+
+    await ctx.send(embed=embed_msg)
 
 def get_puzz_text(ctx, puzzles: Puzzles):
     puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
@@ -84,7 +173,7 @@ def check_setting_puzzles(user):
         return False
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def setpuzzchannel(ctx):
     user = ctx.author
     channel_id = puzzles.channel_id
@@ -122,7 +211,7 @@ async def setpuzzchannel(ctx):
         await ctx.send(f"{msg.content} is not a valid channel id.")
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def setpuzzles(ctx):
     user = ctx.author
     is_setting_puzzles = check_setting_puzzles(user)
@@ -196,7 +285,7 @@ async def setpuzzles(ctx):
         await ctx.send(puzzles.urls[i])
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def showpuzzles(ctx):
     await ctx.send(
         f"The below is what will be released at {format_datetime(puzzles.release_datetime)} in <#{puzzles.channel_id}>. " +
@@ -245,7 +334,7 @@ def check_is_time(msg: str):
         return False
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def setpuzztime(ctx):
     user = ctx.author
     
@@ -294,7 +383,7 @@ async def setpuzztime(ctx):
     )
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def setsb(ctx):
     user = ctx.author
     await ctx.send("Please send the image for the Second Best game.")
@@ -327,7 +416,7 @@ async def setsb(ctx):
     await ctx.send(sb_text)
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def setsbtime(ctx):
     user = ctx.author
 
@@ -372,7 +461,7 @@ async def setsbtime(ctx):
     )
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def showsb(ctx):
     if not sb.img_url:
         await ctx.send("The image for Second Best has not been assigned. Please do that first with `.setsb`")
@@ -394,7 +483,7 @@ async def showsb(ctx):
     await ctx.send(sb_text)
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def setciyk(ctx):
     user = ctx.author
     await ctx.send("Please send the image for the CIYK.")
@@ -421,7 +510,7 @@ async def setciyk(ctx):
     await ctx.send(ciyk_text)
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def setciyktime(ctx):
     user = ctx.author
 
@@ -466,7 +555,7 @@ async def setciyktime(ctx):
     )
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def showciyk(ctx):
     ciyk_text = get_ciyk_text(ctx, ciyk)
 
@@ -478,7 +567,7 @@ async def showciyk(ctx):
     await ctx.send(ciyk_text)
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def startpuzz(ctx):
     puzzles.releasing = True
     await ctx.send(
@@ -504,13 +593,13 @@ async def startpuzz(ctx):
     puzzles.change_week(puzzles.week_count + 1)
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def stoppuzz(ctx):
     puzzles.releasing = False
     await ctx.send(f"The puzzles set for {format_datetime(puzzles.release_datetime)} will no longer be released.")
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def startsb(ctx):
     sb.releasing = True
     await ctx.send(
@@ -532,13 +621,13 @@ async def startsb(ctx):
     sb.change_week(sb.week_count + 1)
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def stopsb(ctx):
     sb.releasing = False
     await ctx.send(f"The Second Best game set for {format_datetime(sb.release_datetime)} will no longer be released.")
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def startciyk(ctx):
     ciyk.releasing = True
     await ctx.send(
@@ -560,7 +649,7 @@ async def startciyk(ctx):
     ciyk.change_week(ciyk.week_count + 1)
 
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def stopciyk(ctx):
     ciyk.releasing = False
     await ctx.send(f"The CIYK set for {format_datetime(ciyk.release_datetime)} will no longer be released.")
@@ -568,7 +657,7 @@ async def stopciyk(ctx):
 # changes the week count for the weekly puzzles in case it increments when it's not supposed to
 # also used when a new semester begins
 @bot.command()
-@commands.has_role(877861136240889897)
+@commands.has_role(exec_id)
 async def changeweek(ctx, new_week_str):
     # check if the new week is a number
     try:
