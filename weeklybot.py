@@ -13,7 +13,6 @@ activity = discord.Game(name="Professor Layton")
 bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None)
 
 num_puzzles = 2
-
 puzzles = Puzzles(num_puzzles, datetime.datetime.now())
 sb = SecondBest(datetime.datetime.now())
 ciyk = CIYK(datetime.datetime.now())
@@ -28,6 +27,8 @@ brain_emoji = ":brain:"
 speech_emoji = ":speech_balloon:"
 heart_emoji = ":heart:"
 cross_emoji = ":x:"
+
+pansive_id = 1003261028303372338
 
 help_setup = [
     ".readme\n\n",
@@ -102,6 +103,10 @@ help_other = [
 help_other_desc = [
     "bird"
 ]
+
+@bot.command()
+async def pansive(ctx):
+    await ctx.send(bot.get_emoji(pansive_id))
 
 @bot.command()
 @commands.has_role(exec_id)
