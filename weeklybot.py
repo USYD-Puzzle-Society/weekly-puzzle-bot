@@ -29,7 +29,7 @@ heart_emoji = ":heart:"
 cross_emoji = ":x:"
 
 pansive_emoji = ":pansive:"
-pansive_id = 1003261028303372338
+pansive_id = "1003261028303372338"
 
 help_setup = [
     ".readme\n\n",
