@@ -98,11 +98,13 @@ help_stop_desc = [
 ]
 
 help_other = [
-    ".bird"
+    ".bird\n\n",
+    ".pansive"
 ]
 
 help_other_desc = [
-    "bird"
+    "bird\n\n",
+    "When you're bread and also sad"
 ]
 
 @bot.command()
