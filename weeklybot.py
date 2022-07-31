@@ -176,7 +176,7 @@ def get_puzz_text(ctx, puzzles: Puzzles):
     puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
     puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {puzzles.week_count}** {jigsaw_emoji}\n\n"
     puzz_line2 = f"**SPEED BONUS:** {puzzles.speed_bonus} MINUTES\n"
-    puzz_line3 = f"*Hints will be unlimited after {puzzles.speed_bonus} minutes is up OR after the top 3 solvers have finished!*\n\n"
+    puzz_line3 = f"*Hints will be unlimited after {puzzles.speed_bonus} minutes is up AND after the top 3 solvers have finished!*\n\n"
     puzz_line4 = f"**Submit your answers here:** {puzzles.submission_link}\n"
     puzz_line5 = "You can submit as many times as you want!\n"
     puzz_line6 = "Your highest score will be kept."
