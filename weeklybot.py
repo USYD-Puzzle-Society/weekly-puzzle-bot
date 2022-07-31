@@ -10,7 +10,7 @@ from CIYK import CIYK
 TOKEN = "OTk0OTQxODk4NTg4NDM4NTI5.GAo6zJ.lB9k_RyfMIkbhhZrXwJzcW9ZfV-PRzmCYEw5Ik"
 
 command_prefix = "."
-bot = commands.Bot(command_prefix=command_prefix)
+bot = commands.Bot(command_prefix=command_prefix, help_command=None)
 
 num_puzzles = 2
 
