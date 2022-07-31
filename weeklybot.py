@@ -103,6 +103,7 @@ help_other_desc = [
 ]
 
 @bot.command()
+@commands.has_role(exec_id)
 async def readme(ctx):
     await ctx.send(
         "When using one of the Setup commands, do not retype the command if you mess up. " +
