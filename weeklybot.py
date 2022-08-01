@@ -107,9 +107,21 @@ help_other_desc = [
     "When you're bread and also sad"
 ]
 
+# Other
 @bot.command()
 async def pansive(ctx):
     await ctx.send(f"<{pansive_emoji}{pansive_id}>")
+
+@bot.command()
+async def bird(ctx):
+    with open("b03.jpeg", "rb") as b:
+        bird = discord.File(b)
+        await ctx.send(file=bird)
+
+@bot.command()
+async def test(ctx):
+    await ctx.send("Original.")
+    
 
 @bot.command()
 @commands.has_role(exec_id)
@@ -181,8 +193,11 @@ async def help(ctx):
         await ctx.send(embed=embed_msg)
 
 
-def get_puzz_text(ctx, puzzles: Puzzles):
-    puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
+def get_puzz_text(ctx, puzzles: Puzzles, mention: bool):
+    if mention:
+        puzz_mention = f"{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
+    else:
+        puzz_mention = f"@/{discord.utils.get(ctx.guild.roles, id=puzzles.role_id).mention}\n\n"
     puzz_line1 = f"{jigsaw_emoji} **WEEKLY PUZZLES: WEEK {puzzles.week_count}** {jigsaw_emoji}\n\n"
     puzz_line2 = f"**SPEED BONUS:** {puzzles.speed_bonus} MINUTES\n"
     puzz_line3 = f"*Hints will be unlimited after {puzzles.speed_bonus} minutes is up AND after the top 3 solvers have finished!*\n\n"
@@ -193,8 +208,11 @@ def get_puzz_text(ctx, puzzles: Puzzles):
     puzz_release_text = puzz_mention + puzz_line1 + puzz_line2 + puzz_line3 + puzz_line4 + puzz_line5 + puzz_line6
     return puzz_release_text
 
-def get_sb_text(ctx, sb: SecondBest):
-    sb_mention = f"{discord.utils.get(ctx.guild.roles, id=sb.role_id).mention}\n\n"
+def get_sb_text(ctx, sb: SecondBest, mention: bool):
+    if mention:
+        sb_mention = f"{discord.utils.get(ctx.guild.roles, id=sb.role_id).mention}\n\n"
+    else:
+        sb_mention = f"@/{discord.utils.get(ctx.guild.roles, id=sb.role_id)}\n\n"
     second_best_line1 = f"{brain_emoji} **SECOND BEST: WEEK {sb.week_count}** {brain_emoji}\n\n"
     second_best_line2 = f"Try your best to guess what the second most popular answer will be!\n\n"
     second_best_line3 = f"**Submit your answer here:** {sb.submission_link}\n\n"
@@ -202,8 +220,11 @@ def get_sb_text(ctx, sb: SecondBest):
     second_best_text = sb_mention + second_best_line1 + second_best_line2 + second_best_line3 + sb.img_url
     return second_best_text
 
-def get_ciyk_text(ctx, ciyk: CIYK):
-    ciyk_mention = f"{discord.utils.get(ctx.guild.roles, id=ciyk.role_id).mention}\n\n"
+def get_ciyk_text(ctx, ciyk: CIYK, mention: bool):
+    if mention:
+        ciyk_mention = f"{discord.utils.get(ctx.guild.roles, id=ciyk.role_id).mention}\n\n"
+    else:
+        ciyk_mention = f"@/{discord.utils.get(ctx.guild.roles, id=ciyk.role_id)}"
     ciyk_line1 = f"{speech_emoji} **COMMENT IF YOU KNOW: WEEK {ciyk.week_count}** {speech_emoji}\n\n"
     ciyk_line2 = f"If you think you know the pattern, comment an answer that follows it in <#{ciyk.discuss_id}>\n"
     ciyk_line3 = f"We'll react with a {heart_emoji} if you're right and a {cross_emoji} if you're wrong!\n\n"
@@ -359,16 +380,10 @@ async def showpuzzles(ctx):
         "Remember to do `.startpuzz`"
     )
 
-    puzz_text = get_puzz_text(ctx, puzzles)
+    puzz_text = get_puzz_text(ctx, puzzles, False)
     await ctx.send(puzz_text)
     for i in range(num_puzzles):
         await ctx.send(puzzles.urls[i])
-
-@bot.command()
-async def bird(ctx):
-    with open("b03.jpeg", "rb") as b:
-        bird = discord.File(b)
-        await ctx.send(file=bird)
 
 def check_is_date(msg: str):
     try:
@@ -538,7 +553,7 @@ async def showsb(ctx):
             "Please do that first with `.setsb`"
         )
 
-    sb_text = get_sb_text(ctx, sb)
+    sb_text = get_sb_text(ctx, sb, False)
 
     await ctx.send(
         f"Below is what will be released at {format_datetime(sb.release_datetime)} in <#{sb.channel_id}>. " + 
@@ -622,7 +637,7 @@ async def setciyktime(ctx):
 @bot.command()
 @commands.has_role(exec_id)
 async def showciyk(ctx):
-    ciyk_text = get_ciyk_text(ctx, ciyk)
+    ciyk_text = get_ciyk_text(ctx, ciyk, False)
 
     await ctx.send(
         f"Below is what will be released at {format_datetime(ciyk.release_datetime)} in <#{ciyk.channel_id}>. " +
@@ -634,6 +649,7 @@ async def showciyk(ctx):
 @bot.command()
 @commands.has_role(exec_id)
 async def startpuzz(ctx):
+    print("Starting puzzles")
     puzzles.releasing = True
     await ctx.send(
         f"Starting... Puzzle release set for {format_datetime(puzzles.release_datetime)}. " +
@@ -644,10 +660,11 @@ async def startpuzz(ctx):
     wait_time = (puzzles.release_datetime - now).total_seconds()
     
     puzzles_channel = bot.get_channel(puzzles.channel_id)
-    puzz_text = get_puzz_text(ctx, puzzles)
+    puzz_text = get_puzz_text(ctx, puzzles, True)
     
+    print("Puzzles: Sleeping")
     await asyncio.sleep(wait_time+1)
-
+    print("Puzzles: Finished sleeping")
     if not puzzles.releasing:
         return
 
@@ -661,12 +678,14 @@ async def startpuzz(ctx):
 @bot.command()
 @commands.has_role(exec_id)
 async def stoppuzz(ctx):
+    print("Stopping puzzles")
     puzzles.releasing = False
     await ctx.send(f"The puzzles set for {format_datetime(puzzles.release_datetime)} will no longer be released.")
 
 @bot.command()
 @commands.has_role(exec_id)
 async def startsb(ctx):
+    print("Starting Second Best")
     sb.releasing = True
     await ctx.send(
         f"Starting... Second Best release set for {format_datetime(sb.release_datetime)}. " + 
@@ -674,14 +693,14 @@ async def startsb(ctx):
     )
 
     wait_time = (sb.release_datetime - datetime.datetime.now()).total_seconds()
-
+    print("Second Best: Sleeping")
     await asyncio.sleep(wait_time+1)
-
+    print("Second Best: Finished sleeping")
     if not sb.releasing:
         return
 
     sb_channel = bot.get_channel(sb.channel_id)
-    sb_text = get_sb_text(ctx, sb)
+    sb_text = get_sb_text(ctx, sb, True)
 
     await sb_channel.send(sb_text)
     sb.change_week(sb.week_count + 1)
@@ -690,12 +709,14 @@ async def startsb(ctx):
 @bot.command()
 @commands.has_role(exec_id)
 async def stopsb(ctx):
+    print("Stopping Second Best")
     sb.releasing = False
     await ctx.send(f"The Second Best game set for {format_datetime(sb.release_datetime)} will no longer be released.")
 
 @bot.command()
 @commands.has_role(exec_id)
 async def startciyk(ctx):
+    print("Starting CIYK")
     ciyk.releasing = True
     await ctx.send(
         f"Starting... CIYK release set for {format_datetime(ciyk.release_datetime)}. " + 
@@ -705,10 +726,10 @@ async def startciyk(ctx):
     wait_time = (ciyk.release_datetime - datetime.datetime.now()).total_seconds()
 
     ciyk_channel = bot.get_channel(ciyk.channel_id)
-    ciyk_text = get_ciyk_text(ctx, ciyk)
-
+    ciyk_text = get_ciyk_text(ctx, ciyk, True)
+    print("CIYK: Sleeping")
     await asyncio.sleep(wait_time+1)
-
+    print("CIYK: Finished sleeping")
     if not ciyk.releasing:
         return
 
@@ -719,6 +740,7 @@ async def startciyk(ctx):
 @bot.command()
 @commands.has_role(exec_id)
 async def stopciyk(ctx):
+    print("Stopping CIYK")
     ciyk.releasing = False
     await ctx.send(f"The CIYK set for {format_datetime(ciyk.release_datetime)} will no longer be released.")
 
