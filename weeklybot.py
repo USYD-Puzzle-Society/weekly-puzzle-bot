@@ -1,6 +1,7 @@
 import discord
 import asyncio
 import datetime
+import pytz
 from discord.ext import commands
 from Puzzles import Puzzles
 from SecondBest import SecondBest
@@ -655,11 +656,8 @@ async def startpuzz(ctx):
         f"Starting... Puzzle release set for {format_datetime(puzzles.release_datetime)}. " +
         "Do `.stoppuzz` if you want to stop the release."
     )
-
-    now = datetime.datetime.now()
-    print(puzzles.release_datetime)
-    print(now)
-    wait_time = (puzzles.release_datetime - now).total_seconds()
+    
+    wait_time = (puzzles.release_datetime - datetime.datetime.now().astimezone(pytz.timezone("Australia/Sydney"))).total_seconds()
     
     puzzles_channel = bot.get_channel(puzzles.channel_id)
     puzz_text = get_puzz_text(ctx, puzzles, True)
