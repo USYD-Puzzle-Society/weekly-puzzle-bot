@@ -656,7 +656,7 @@ async def startpuzz(ctx):
         f"Starting... Puzzle release set for {format_datetime(puzzles.release_datetime)}. " +
         "Do `.stoppuzz` if you want to stop the release."
     )
-    now = datetime.datetime.now().astimezone(pytz.timezone("Australia/Sydney"))
+    now = datetime.datetime.now().astimezone(pytz.timezone("Australia/Canberra"))
     wait_time = (puzzles.release_datetime - now.replace(tzinfo=None)).total_seconds()
     print(puzzles.release_datetime)
     print(now)
