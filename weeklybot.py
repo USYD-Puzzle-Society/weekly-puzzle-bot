@@ -224,7 +224,7 @@ def get_ciyk_text(ctx, ciyk: CIYK, mention: bool):
     if mention:
         ciyk_mention = f"{discord.utils.get(ctx.guild.roles, id=ciyk.role_id).mention}\n\n"
     else:
-        ciyk_mention = f"@/{discord.utils.get(ctx.guild.roles, id=ciyk.role_id)}"
+        ciyk_mention = f"@/{discord.utils.get(ctx.guild.roles, id=ciyk.role_id)}\n\n"
     ciyk_line1 = f"{speech_emoji} **COMMENT IF YOU KNOW: WEEK {ciyk.week_count}** {speech_emoji}\n\n"
     ciyk_line2 = f"If you think you know the pattern, comment an answer that follows it in <#{ciyk.discuss_id}>\n"
     ciyk_line3 = f"We'll react with a {heart_emoji} if you're right and a {cross_emoji} if you're wrong!\n\n"
@@ -365,7 +365,7 @@ async def setpuzzles(ctx):
         "Remember to do `.startpuzz`"
     )
 
-    puzz_text = get_puzz_text(ctx, puzzles)
+    puzz_text = get_puzz_text(ctx, puzzles, False)
     await ctx.send(puzz_text)
     for i in range(num_puzzles):
         await ctx.send(puzzles.urls[i])
@@ -492,7 +492,7 @@ async def setsb(ctx):
         "Remember to do `.startsb`"
     )
 
-    sb_text = get_sb_text(ctx, sb)
+    sb_text = get_sb_text(ctx, sb, False)
     await ctx.send(sb_text)
 
 @bot.command()
@@ -586,7 +586,7 @@ async def setciyk(ctx):
         "Remember to do `.startciyk`"
     )
 
-    ciyk_text = get_ciyk_text(ctx, ciyk)
+    ciyk_text = get_ciyk_text(ctx, ciyk, False)
     await ctx.send(ciyk_text)
 
 @bot.command()
