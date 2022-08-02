@@ -456,7 +456,7 @@ async def setpuzztime(ctx):
             hour, minute = time
             valid_time = True
 
-    puzzles.release_datetime = datetime.datetime(year, month, day, hour, minute)
+    puzzles.release_datetime = datetime.datetime(year, month, day, hour, minute, tzinfo=pytz.timezone("Australia/Sydney"))
 
     await ctx.send(
         f"The new puzzle release time is now {format_datetime(puzzles.release_datetime)} ({puzzle_day}). " + 
@@ -658,7 +658,6 @@ async def startpuzz(ctx):
     )
     
     wait_time = (puzzles.release_datetime - datetime.datetime.now().astimezone(pytz.timezone("Australia/Sydney"))).total_seconds()
-    
     puzzles_channel = bot.get_channel(puzzles.channel_id)
     puzz_text = get_puzz_text(ctx, puzzles, True)
     
