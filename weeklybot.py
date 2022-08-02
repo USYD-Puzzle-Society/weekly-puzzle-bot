@@ -659,6 +659,7 @@ async def startpuzz(ctx):
     now = datetime.datetime.now().astimezone(pytz.timezone("Australia/Sydney"))
     wait_time = (puzzles.release_datetime - now).total_seconds()
     print(puzzles.release_datetime)
+    print(now)
     puzzles_channel = bot.get_channel(puzzles.channel_id)
     puzz_text = get_puzz_text(ctx, puzzles, True)
     
