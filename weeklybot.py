@@ -662,7 +662,7 @@ async def startpuzz(ctx):
     puzzles_channel = bot.get_channel(puzzles.channel_id)
     puzz_text = get_puzz_text(ctx, puzzles, True)
     
-    print("Puzzles: Sleeping")
+    print(f"Puzzles: Sleeping for {wait_time} seconds")
     await asyncio.sleep(wait_time+1)
     print("Puzzles: Finished sleeping")
     if not puzzles.releasing:
