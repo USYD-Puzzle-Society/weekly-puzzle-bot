@@ -17,7 +17,7 @@ puzzles = Puzzles(num_puzzles, datetime.datetime.now())
 sb = SecondBest(datetime.datetime.now())
 ciyk = CIYK(datetime.datetime.now())
 
-exec_id = 877861136240889897
+exec_id = "Executives"
 
 setting_puzzles = {}
 
