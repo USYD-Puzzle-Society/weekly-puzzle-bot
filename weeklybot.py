@@ -657,6 +657,8 @@ async def startpuzz(ctx):
     )
 
     now = datetime.datetime.now()
+    print(puzzles.release_datetime)
+    print(now)
     wait_time = (puzzles.release_datetime - now).total_seconds()
     
     puzzles_channel = bot.get_channel(puzzles.channel_id)
