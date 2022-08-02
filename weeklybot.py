@@ -657,7 +657,7 @@ async def startpuzz(ctx):
         "Do `.stoppuzz` if you want to stop the release."
     )
     now = datetime.datetime.now().astimezone(pytz.timezone("Australia/Sydney"))
-    wait_time = (puzzles.release_datetime - now.replace(tz_info=None)).total_seconds()
+    wait_time = (puzzles.release_datetime - now.replace(tzinfo=None)).total_seconds()
     print(puzzles.release_datetime)
     print(now)
     puzzles_channel = bot.get_channel(puzzles.channel_id)
