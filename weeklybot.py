@@ -664,7 +664,7 @@ async def startpuzz(ctx):
     puzz_text = get_puzz_text(ctx, puzzles, True)
     
     print(f"Puzzles: Sleeping for {wait_time} seconds")
-    await asyncio.sleep(wait_time+9)
+    await asyncio.sleep(wait_time+2)
     print("Puzzles: Finished sleeping")
     if not puzzles.releasing:
         return
@@ -695,7 +695,7 @@ async def startsb(ctx):
     print(sb.release_datetime)
     print(now)
     print("Second Best: Sleeping")
-    await asyncio.sleep(wait_time+9)
+    await asyncio.sleep(wait_time+2)
     print("Second Best: Finished sleeping")
     if not sb.releasing:
         return
@@ -729,7 +729,7 @@ async def startciyk(ctx):
     ciyk_channel = bot.get_channel(ciyk.channel_id)
     ciyk_text = get_ciyk_text(ctx, ciyk, True)
     print("CIYK: Sleeping")
-    await asyncio.sleep(wait_time+9)
+    await asyncio.sleep(wait_time+2)
     print("CIYK: Finished sleeping")
     if not ciyk.releasing:
         return
