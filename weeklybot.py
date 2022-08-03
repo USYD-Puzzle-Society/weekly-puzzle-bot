@@ -133,13 +133,6 @@ async def readme(ctx):
         "using `.setpuzztime` and type the date wrong when it asks for the date, do not retype `.setpuzztime`." +
         "The command is still running so all you have to do is type the date again.\n" +
         "However, this is not true for the `.changeweek [week number]` command.\n\n" +
-        
-        "For the most part, you do not have to worry about changing the week number since it will automatically " +
-        "increment after a puzzle release.\n"
-        "For example, after the week 1 CIYK is released, the week number for CIYK will change to week 2 by itself. " +
-        "This does not affect the week number for the puzzles or Second Best.\n" + 
-        "The release times for the puzzles, Second Best and CIYK are also set to increase by a week automatically " +
-        "after each announcement.\n\n"
 
         "It is important to use the respective Start commands after setting each of the puzzles up. " +
         "If you do not run this command, then the puzzles will not be released. " +
@@ -336,6 +329,19 @@ async def setpuzzles(ctx):
         else:
             await ctx.send(f"Please send all {num_puzzles} puzzle images in a single message.")
 
+    await ctx.send("Please enter the week number.")
+    is_number = False
+    while not is_number:
+        msg = await bot.wait_for("message", check=check)
+
+        try:
+            week_num = int(msg.content)
+            is_number = True
+
+            puzzles.change_week(week_num)
+
+        except ValueError:
+            await ctx.send("Please type a number.")
 
     await ctx.send("Please enter the speed bonus for this set of puzzles.")
     # get the speed bonus
@@ -482,6 +488,19 @@ async def setsb(ctx):
             sb.change_url(msg.attachments[0].url)
             valid_image = True
 
+    await ctx.send("Please enter the week number.")
+    is_number = False
+    while not is_number:
+        msg = await bot.wait_for("message", check=check)
+
+        try:
+            week_num = int(msg.content)
+            is_number = True
+
+            sb.change_week(week_num)
+
+        except ValueError:
+            await ctx.send("Please type a number.")
     
     await ctx.send("Please send the submission link for Second Best.")
 
@@ -582,6 +601,20 @@ async def setciyk(ctx):
             ciyk.change_url(msg.attachments[0].url)
             valid_image = True
     
+    await ctx.send("Please enter the week number.")
+    is_number = False
+    while not is_number:
+        msg = await bot.wait_for("message", check=check)
+
+        try:
+            week_num = int(msg.content)
+            is_number = True
+
+            ciyk.change_week(week_num)
+
+        except ValueError:
+            await ctx.send("Please type a number.")
+
     await ctx.send(
         f"Below is what will be released at {format_datetime(ciyk.release_datetime)} in <#{ciyk.channel_id}>. " +
         "Remember to do `.startciyk`"
