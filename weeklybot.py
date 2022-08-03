@@ -664,7 +664,7 @@ async def startpuzz(ctx):
     puzz_text = get_puzz_text(ctx, puzzles, True)
     
     print(f"Puzzles: Sleeping for {wait_time} seconds")
-    await asyncio.sleep(wait_time+1)
+    await asyncio.sleep(wait_time+9)
     print("Puzzles: Finished sleeping")
     if not puzzles.releasing:
         return
@@ -672,9 +672,6 @@ async def startpuzz(ctx):
     await puzzles_channel.send(puzz_text)
     for i in range(num_puzzles):
         await puzzles_channel.send(puzzles.urls[i])
-    
-    puzzles.change_week(puzzles.week_count + 1)
-    puzzles.change_release(puzzles.release_datetime + datetime.timedelta(days=7))
 
 @bot.command()
 @commands.has_role(exec_id)
@@ -693,9 +690,12 @@ async def startsb(ctx):
         "Do `.stopsb` if you want to stop the release."
     )
 
-    wait_time = (sb.release_datetime - datetime.datetime.now()).total_seconds()
+    now = datetime.datetime.now().astimezone(pytz.timezone("Australia/Sydney"))
+    wait_time = (sb.release_datetime - now.replace(tzinfo=None)).total_seconds()
+    print(sb.release_datetime)
+    print(now)
     print("Second Best: Sleeping")
-    await asyncio.sleep(wait_time+1)
+    await asyncio.sleep(wait_time+9)
     print("Second Best: Finished sleeping")
     if not sb.releasing:
         return
@@ -704,8 +704,6 @@ async def startsb(ctx):
     sb_text = get_sb_text(ctx, sb, True)
 
     await sb_channel.send(sb_text)
-    sb.change_week(sb.week_count + 1)
-    sb.change_release(sb.release_datetime + datetime.timedelta(days=7))
 
 @bot.command()
 @commands.has_role(exec_id)
@@ -724,19 +722,19 @@ async def startciyk(ctx):
         "Do `.stopciyk` if you want to stop the release."
     )
 
-    wait_time = (ciyk.release_datetime - datetime.datetime.now()).total_seconds()
-
+    now = datetime.datetime.now().astimezone(pytz.timezone("Australia/Sydney"))
+    wait_time = (ciyk.release_datetime - now.replace(tzinfo=None)).total_seconds()
+    print(ciyk.release_datetime)
+    print(now)
     ciyk_channel = bot.get_channel(ciyk.channel_id)
     ciyk_text = get_ciyk_text(ctx, ciyk, True)
     print("CIYK: Sleeping")
-    await asyncio.sleep(wait_time+1)
+    await asyncio.sleep(wait_time+9)
     print("CIYK: Finished sleeping")
     if not ciyk.releasing:
         return
 
     await ciyk_channel.send(ciyk_text)
-    ciyk.change_week(ciyk.week_count + 1)
-    ciyk.change_release(ciyk.release_datetime + datetime.timedelta(days=7))
 
 @bot.command()
 @commands.has_role(exec_id)
