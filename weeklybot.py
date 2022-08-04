@@ -32,6 +32,9 @@ cross_emoji = ":x:"
 pansive_emoji = ":pansive:"
 pansive_id = 1003260802557546537
 
+devious_emoji = ":devious:"
+devious_id = 1004560638900699186
+
 help_setup = [
     ".readme\n\n",
     ".setpuzzchannel\n\n\n",
@@ -100,18 +103,24 @@ help_stop_desc = [
 
 help_other = [
     ".bird\n\n",
-    ".pansive"
+    ".pansive\n\n",
+    ".devious"
 ]
 
 help_other_desc = [
     "bird\n\n",
-    "When you're bread and also sad"
+    "When you're bread and also sad\n\n",
+    "When your dad asks if you ate the rest of the hummus and you say no but you really did"
 ]
 
 # Other
 @bot.command()
 async def pansive(ctx):
     await ctx.send(f"<{pansive_emoji}{pansive_id}>")
+
+@bot.command()
+async def devious(ctx):
+    await ctx.send(f"<{devious_emoji}{devious_id}>")
 
 @bot.command()
 async def bird(ctx):
