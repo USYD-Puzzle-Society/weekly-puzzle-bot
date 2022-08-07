@@ -104,13 +104,15 @@ help_stop_desc = [
 help_other = [
     ".bird\n\n",
     ".pansive\n\n",
-    ".devious"
+    ".devious\n\n\n",
+    ".rubidance"
 ]
 
 help_other_desc = [
     "bird\n\n",
     "When you're bread and also sad\n\n",
-    "When your dad asks if you ate the rest of the hummus and you say no but you really did"
+    "When your dad asks if you ate the rest of the hummus and you say no but you really did\n\n",
+    "When you're a cube and you're happy and you know it and you want to dance"
 ]
 
 # Other
@@ -127,6 +129,12 @@ async def bird(ctx):
     with open("b03.jpeg", "rb") as b:
         bird = discord.File(b)
         await ctx.send(file=bird)
+
+@bot.command()
+async def rubidance(ctx):
+    with open("rubidance.gif", "rb") as d:
+        dance = discord.File(d)
+        await ctx.send(file=dance)
 
 @bot.command()
 async def test(ctx):
