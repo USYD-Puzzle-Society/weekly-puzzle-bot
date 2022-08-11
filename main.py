@@ -17,15 +17,18 @@ bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_comman
 for filename in os.listdir():
     if filename.endswith(".py"):
         bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
+        print(f"Loaded {filename}")
 
 # command to load a cog
 @bot.command()
 async def load(ctx, extension):
     bot.load_extension(f"{cogs_dir}.{extension}")
+    await ctx.send(f"Loaded {extension} cog")
 
 # command to unload a cog
 @bot.command()
 async def unload(ctx, extension):
     bot.unload_extension(f"{cogs_dir}.{extension}")
+    await ctx.send(f"Unloaded {extension} cog")
 
 bot.run(TOKEN)
