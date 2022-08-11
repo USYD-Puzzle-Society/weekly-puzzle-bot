@@ -1,2 +1,31 @@
+import os
+import discord
 from discord.ext import commands
 
+TOKEN = ""
+
+cogs_dir = "cogs"
+
+with open(".token", "r") as token_file:
+    TOKEN = token_file.readline().strip()
+
+command_prefix = "."
+activity = discord.Game(name="Professor Layton")
+bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None)
+
+# load all available cogs on startup
+for filename in os.listdir():
+    if filename.endswith(".py"):
+        bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
+
+# command to load a cog
+@bot.command()
+async def load(ctx, extension):
+    bot.load_extension(f"{cogs_dir}.{extension}")
+
+# command to unload a cog
+@bot.command()
+async def unload(ctx, extension):
+    bot.unload_extension(f"{cogs_dir}.{extension}")
+
+bot.run(TOKEN)
