@@ -1,0 +1,3 @@
+# ignore the .token file which has the token required for the bot to run
+# it will be bad if the token is uploaded
+.token
