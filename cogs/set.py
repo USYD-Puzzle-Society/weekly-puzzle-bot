@@ -102,7 +102,7 @@ class Set(commands.Cog):
         except ValueError:
             return False
 
-    def get_puzz_text(self, ctx) -> str:
+    def get_puzz_text(self, ctx: commands.context.Context) -> str:
         role_name = self.info["puzzles"]["role_name"]
         puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
         line1 = f'{self.info["emojis"]["jigsaw"]} **WEEKLY PUZZLES: WEEK {self.info["puzzles"]["week_num"]}** {self.info["emojis"]["jigsaw"]}\n'
@@ -138,7 +138,7 @@ class Set(commands.Cog):
     Like: `.setpuzztime 12/08/2022 11:00`
     """
     @commands.command()
-    async def setpuzztime(self, ctx):
+    async def setpuzztime(self, ctx: commands.context.Context):
         user = ctx.author
 
         def check(m):
@@ -193,7 +193,7 @@ class Set(commands.Cog):
         )
 
     @commands.command()
-    async def setsbtime(self, ctx):
+    async def setsbtime(self, ctx: commands.context.Context):
         user = ctx.author
 
         def check(m):
@@ -246,7 +246,7 @@ class Set(commands.Cog):
         )
 
     @commands.command()
-    async def setciyktime(self, ctx):
+    async def setciyktime(self, ctx: commands.context.Context):
         user = ctx.author
 
         def check(m):
@@ -299,7 +299,7 @@ class Set(commands.Cog):
         )
 
     @commands.command()
-    async def setpuzzles(self, ctx):
+    async def setpuzzles(self, ctx: commands.context.Context):
         puzz_info = self.info["puzzles"]
         # get the user that is using the command
         user = ctx.author
@@ -394,7 +394,7 @@ class Set(commands.Cog):
         await ctx.send(puzz_text)
 
     @commands.command()
-    async def setsb(self, ctx):
+    async def setsb(self, ctx: commands.context.Context):
         sb_info = self.info["sb"]
         user = ctx.author
         
@@ -467,7 +467,7 @@ class Set(commands.Cog):
         )
     
     @commands.command()
-    async def setciyk(self, ctx):
+    async def setciyk(self, ctx: commands.context.Context):
         ciyk_info = self.info["ciyk"]
         user = ctx.author
 
