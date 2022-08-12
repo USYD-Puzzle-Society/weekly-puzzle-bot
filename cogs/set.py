@@ -26,6 +26,7 @@ class Set(commands.Cog):
                 },
                 "puzzles": {
                     "role_name": "weekly puzzles",
+                    "channel_id": 892032997220573204,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
@@ -34,6 +35,7 @@ class Set(commands.Cog):
                 },
                 "sb": {
                     "role_name": "weekly games",
+                    "channel_id": 1001742058601590824,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
@@ -41,6 +43,7 @@ class Set(commands.Cog):
                 },
                 "ciyk": {
                     "role_name": "weekly games",
+                    "channel_id": 1001742058601590824,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
@@ -111,12 +114,17 @@ class Set(commands.Cog):
 
         return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6
 
-    # this method exists as just an easy way to change the puzzles data in one method call in setpuzzles    
-    def change_puzz_data(self, new_data: dict[str]):
-        self.info["puzzles"]["week_num"] = new_data["week_num"]
-        self.info["puzzles"]["img_urls"] = new_data["urls"]
-        self.info["puzzles"]["speed_bonus"] = new_data["speed_bonus"]
-        self.info["puzzles"]["submission_link"] = new_data["submission_link"]
+    # this method exists as just an easy way to change the data in one method call in setpuzzles/setsb/setciyk    
+    def change_data(self, puzz_name: str, new_data: dict[str]):
+        
+        self.info[puzz_name]["week_num"] = new_data["week_num"]
+        self.info[puzz_name]["submission_link"] = new_data["submission_link"]
+
+        if "puzzles" == puzz_name:
+            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
+            self.info[puzz_name]["speed_bonus"] = new_data["speed_bonus"]
+        else:
+            self.info[puzz_name]["img_url"] = new_data["img_url"]
 
         # write the new info to the json file
         with open(self.info_fn, "w") as info:
@@ -292,6 +300,7 @@ class Set(commands.Cog):
 
     @commands.command()
     async def setpuzzles(self, ctx):
+        puzz_info = self.info["puzzles"]
         # get the user that is using the command
         user = ctx.author
 
@@ -306,7 +315,7 @@ class Set(commands.Cog):
         await ctx.send("Please send the images for the puzzles in one message.")
 
         new_data = {
-            "urls": [],
+            "img_urls": [],
             "week_num": -1,
             "speed_bonus": -1,
             "submission_link": ""
@@ -320,7 +329,7 @@ class Set(commands.Cog):
                 await ctx.send("Command stopped. No changes have been made to the puzzle info.")
                 return
             elif len(msg.attachments):
-                new_data["urls"] = msg.attachments
+                new_data["img_urls"] = msg.attachments
                 break
             else:
                 await ctx.send("Please send the images for the puzzles in one message.")
@@ -376,10 +385,149 @@ class Set(commands.Cog):
 
         
         # if this point is reached, then the new data will be saved
-        self.change_puzz_data(new_data)
+        self.change_data("puzzles", new_data)
 
         # show the user the new changes
         puzz_text = self.get_puzz_text(ctx)
-        await ctx.send(f'Done. The following will be released at {self.info["puzzles"]["release_datetime"]}. Remember to do `.startpuzz`')
+        await ctx.send(f'Done. The following will be released at {puzz_info["release_datetime"]} in <#{puzz_info["channel_id"]}>. ' +  
+        'Remember to do `.startpuzz`')
         await ctx.send(puzz_text)
 
+    @commands.command()
+    async def setsb(self, ctx):
+        sb_info = self.info["sb"]
+        user = ctx.author
+        
+        def check(m):
+            return m.author == user
+
+        await ctx.send(
+            "Now setting the info for Second Best." +
+            "Type `.stop` at any time to exit and no changes will be made to the Second Best announcement."
+        )
+
+        new_data = {
+            "img_url": "",
+            "week_num": -1,
+            "submission_link": ""
+        }
+
+        await ctx.send("Please send the image for Second Best.")
+
+        while True:
+            msg = self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the Second Best announcement.")
+                return
+
+            if len(msg.attachments):
+                # assuming that the first attachment is the sb image
+                # if not then rip
+                new_data["img_url"] = msg.attachments[0]
+                break
+            else:
+                await ctx.send("Please send the image for Second Best.")
+        
+
+        await ctx.send("Please enter the week number.")
+
+        is_number = False
+        while not is_number:
+            msg = self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the Second Best announcement.")
+                return
+            
+            try:
+                new_week = int(msg.content)
+                new_data["week_num"] = new_week
+                is_number = True
+            except ValueError:
+                await ctx.send("Please enter a number.")
+        
+
+        await ctx.send("Please send the submission link.")
+
+        msg = self.bot.wait_for("messsage", check=check)
+
+        if ".stop" == msg.content.lower():
+            await ctx.send("Command stopped. No changes will be made to the Second Best announcement.")
+            return
+        else:
+            new_data["submission_link"] = msg.content
+
+        # store the new data
+        self.change_data("sb", new_data)
+
+        await ctx.send(
+            f"Done. The following will be sent at {sb_info['release_datetime']} <#{sb_info['channel_id']}>. " +
+            "Remember to do `.startsb`"
+        )
+    
+    @commands.command()
+    async def setciyk(self, ctx):
+        ciyk_info = self.info["ciyk"]
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+
+        await ctx.send("Now setting info for CIYK. Do `.stop` at any time and no changes will be made to the CIYK announcement.")
+        
+        new_data = {
+            "img_url": "",
+            "week_num": -1,
+            "submission_link": ""
+        }
+
+        # get image for ciyk
+        await ctx.send("Please send the image for CIYK.")
+
+        while True:
+            msg = self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the CIYK announcement.")
+                return
+
+            if len(msg.attachments):
+                new_data["img_url"] = msg.attachments[0]
+                break
+            else:
+                await ctx.send("Please send the image for CIYK")
+
+        # get week number
+        await ctx.send("Please enter the week number.")
+        is_number = False
+        while not is_number:
+            msg = self.bot.wait_for("message", check=check)
+            
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the CIYK announcement.")
+                return
+
+            try:
+                new_week = int(msg.content)
+                new_data["week_num"] = new_week
+                is_number = True
+            except ValueError:
+                await ctx.send("Please enter a number.")
+
+        # get submission link
+        await ctx.send("Please send the submission link.")
+
+        msg = self.bot.wait_for("message", check=check)
+        
+        if ".stop" == msg.content.lower():
+            await ctx.send("Command stopped. No changes will be made to the CIYK announcement.")
+            return
+        else:
+            new_data["submission_link"] = msg.content
+
+        # store new data
+        await ctx.send(
+            f"Done. The following will be released at {ciyk_info['release_datetime']} in <#{ciyk_info['channel_id']}>" +
+            "Remember to do `.startciyk`"
+        )
