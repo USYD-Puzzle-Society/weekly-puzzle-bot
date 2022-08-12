@@ -1,6 +1,7 @@
 import json
 import os
 import datetime
+from xml.etree.ElementTree import TreeBuilder
 import discord
 from discord.ext import commands
 
@@ -146,7 +147,7 @@ class Set(commands.Cog):
         while True:
             msg = await self.bot.wait_for("message", check=check)
 
-            if ".stop" == msg.content:
+            if ".stop" == msg.content.lower():
                 await ctx.send("Command stopped. No changes have been made to the release time of the puzzles.")
                 return
             
@@ -165,7 +166,7 @@ class Set(commands.Cog):
         while True:
             msg = await self.bot.wait_for("message", check=check)
 
-            if ".stop" == msg.content:
+            if ".stop" == msg.content.lower():
                 await ctx.send("Command stopped. No changes have been amde to the release time of the puzzles.")
                 return
             
@@ -177,10 +178,116 @@ class Set(commands.Cog):
                 break
         
         new_release = datetime.datetime(year, month, day, hour, minute)
-
+        self.info["puzzles"]["release_datetime"] = new_release.strftime(self.datetime_format)
         await ctx.send(
-            f"The new release time for the puzzles is {new_release.strftime(self.datetime_format)} ({weekday_name})." +
+            f"The new release time for the puzzles is {new_release.strftime(self.datetime_format)} ({weekday_name}). " +
             "Remember to do `.startpuzz`"
+        )
+
+    @commands.command()
+    async def setsbtime(self, ctx):
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+
+        await ctx.send(f'The current release time for Second Best is {self.info["sb"]["release_datetime"]}.')
+        await ctx.send(
+            "Please enter the new release date for Second Best in the format DD/MM/YYYY. " +
+            "Do `.stop` at any time to exit and no changes will be made to the release time of Second Best."
+        )
+
+        while True:
+            msg = self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made to the release time of Second Best.")
+                return
+            
+            date = self.check_is_date(msg.content)
+            if not date:
+                await ctx.send("Please enter the date in the format DD/MM/YYYY")
+            else:
+                day, month, year = date
+                break
+
+        release_date = datetime.date(day, month, year)
+        weekday_name = self.day_names[release_date.weekday()]
+        await ctx.send(f'The new release date is {release_date.strftime("%d/%m/%Y")} ({weekday_name})')
+        await ctx.send(f"Please enter the new release time for Second Best in the format HH:MM (24 hour time)")
+
+        while True:
+            msg = self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been amde to the release of Second Best.")
+                return
+
+            time = self.check_is_time(msg.content)
+            if not time:
+                await ctx.send("Please enter time in the format HH:MM")
+            else:
+                hour, minute = time
+                break
+
+        new_release = datetime.datetime(year, month, day, hour, minute)
+        self.info["sb"]["release_datetime"] = new_release.strftime(self.datetime_format)
+        await ctx.send(
+            f"The new release time for Second Best is {new_release.strftime(self.datetime_format)} ({weekday_name}). " +
+            "Remember to do `.startsb`"
+        )
+
+    @commands.command()
+    async def setciyktime(self, ctx):
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+
+        await ctx.send(f'The current release time for CIYK is {self.info["ciyk"]["release_datetime"]}.')
+        await ctx.send(
+            "Please enter the new release date for CIYK in the format DD/MM/YYYY. " +
+            "Do `.stop` at any time to exit and no changes will be made to the release time of CIYK."
+        )
+
+        while True:
+            msg = self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made to the release time of CIYK.")
+                return
+            
+            date = self.check_is_date(msg.content)
+            if not date:
+                await ctx.send("Please enter the date in the format DD/MM/YYYY")
+            else:
+                day, month, year = date
+                break
+
+        release_date = datetime.date(day, month, year)
+        weekday_name = self.day_names[release_date.weekday()]
+        await ctx.send(f'The new release date is {release_date.strftime("%d/%m/%Y")} ({weekday_name})')
+        await ctx.send(f"Please enter the new release time for CIYK in the format HH:MM (24 hour time)")
+
+        while True:
+            msg = self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been amde to the release of CIYK.")
+                return
+
+            time = self.check_is_time(msg.content)
+            if not time:
+                await ctx.send("Please enter time in the format HH:MM")
+            else:
+                hour, minute = time
+                break
+
+        new_release = datetime.datetime(year, month, day, hour, minute)
+        self.info["ciyk"]["release_datetime"] = new_release.strftime(self.datetime_format)
+        await ctx.send(
+            f"The new release time for CIYK is {new_release.strftime(self.datetime_format)} ({weekday_name}). " +
+            "Remember to do `.startciyk`"
         )
 
     @commands.command()
@@ -276,4 +383,3 @@ class Set(commands.Cog):
         await ctx.send(f'Done. The following will be released at {self.info["puzzles"]["release_datetime"]}. Remember to do `.startpuzz`')
         await ctx.send(puzz_text)
 
-    
