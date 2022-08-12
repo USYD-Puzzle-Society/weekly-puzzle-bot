@@ -51,8 +51,15 @@ class Set(commands.Cog):
         self.sb_datetime = self.str_to_datetime(self.info["sb"]["release_datetime"])
         self.ciyk_datetime = self.str_to_datetime(self.info["ciyk"]["release_datetime"])
 
-    def datetime_to_str(self, date: datetime.datetime) -> str:
-        return date.strftime(self.datetime_format)
+        self.day_names = {
+            0: "Monday",
+            1: "Tuesday",
+            2: "Wednesday",
+            3: "Thursday",
+            4: "Friday",
+            5: "Saturday",
+            6: "Sunday"
+        }
 
     # expects the %d/%m/%Y %H:%M format
     def str_to_datetime(self, string: str) -> datetime.datetime:
@@ -63,7 +70,35 @@ class Set(commands.Cog):
 
         return datetime.datetime(year, month, day, hour, minute)
 
-    def get_puzz_text(self, ctx):
+    def check_is_date(self, msg: str) -> tuple[int, int, int]|bool:
+        try:
+            strday, strmonth, stryear = msg.content.split("/")
+
+            # check if it is a valid date
+            date = datetime.date(int(stryear), int(strmonth), int(strday))
+
+            day, month, year = int(strday), int(strmonth), int(stryear)
+
+            return day, month, year
+        
+        except ValueError:
+            return False
+
+    def check_is_time(self, msg: str) -> tuple[int, int]|bool:
+        try:
+            strhour, strminute = msg.content.split(":")
+
+            # check if valid time
+            time = datetime.time(int(strhour), int(strminute))
+
+            hour, minute = int(strhour), int(strminute)
+
+            return hour, minute
+
+        except ValueError:
+            return False
+
+    def get_puzz_text(self, ctx) -> str:
         role_name = self.info["puzzles"]["role_name"]
         puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
         line1 = f'{self.info["emojis"]["jigsaw"]} **WEEKLY PUZZLES: WEEK {self.info["puzzles"]["week_num"]}** {self.info["emojis"]["jigsaw"]}\n'
@@ -95,7 +130,58 @@ class Set(commands.Cog):
     """
     @commands.command()
     async def setpuzztime(self, ctx):
-        pass
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+
+        # show current release time for puzzles
+        await ctx.send(f'The current release time for the puzzles is {self.info["puzzles"]["release_datetime"]}.')
+        await ctx.send(
+            "Please enter the new release date for the puzzles in the format DD/MM/YYYY. " +
+            "Do `.stop` at any time to exit and no changes will be made to the release time of the puzzles."
+        )
+
+        # exit when valid date is given or .stop is typed
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content:
+                await ctx.send("Command stopped. No changes have been made to the release time of the puzzles.")
+                return
+            
+            date = self.check_is_date(msg.content)
+            if not date:
+                await ctx.send("Please enter date in the format DD/MM/YYYY")
+            else:
+                day, month, year = date
+                break
+        
+        release_date = datetime.date(year, month, day)
+        weekday_name = self.day_names[release_date.weekday()]
+        await ctx.send(f"The new release date is now {release_date.strftime('%d/%m/%Y')} ({weekday_name})")
+        await ctx.send(f"Please enter the new release time for the puzzles in the format HH:MM (24 hour time).")
+
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content:
+                await ctx.send("Command stopped. No changes have been amde to the release time of the puzzles.")
+                return
+            
+            time = self.check_is_time(msg.content)
+            if not time:
+                await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
+            else:
+                hour, minute = time
+                break
+        
+        new_release = datetime.datetime(year, month, day, hour, minute)
+
+        await ctx.send(
+            f"The new release time for the puzzles is {new_release.strftime(self.datetime_format)} ({weekday_name})." +
+            "Remember to do `.startpuzz`"
+        )
 
     @commands.command()
     async def setpuzzles(self, ctx):
