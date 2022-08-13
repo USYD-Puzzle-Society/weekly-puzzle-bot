@@ -4,7 +4,7 @@ import datetime
 import discord
 from discord.ext import commands
 
-class Set(commands.Cog):
+class Setup(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
