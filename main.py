@@ -31,6 +31,7 @@ async def unload(ctx, extension):
     bot.unload_extension(f"{cogs_dir}.{extension}")
     await ctx.send(f"Unloaded {extension} cog")
 
+# command to reload a cog
 @bot.command()
 async def reload(ctx, extension):
     bot.reload_extension(f"{cogs_dir}.{extension}")
