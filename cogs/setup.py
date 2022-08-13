@@ -43,6 +43,7 @@ class Setup(commands.Cog):
                 "ciyk": {
                     "role_name": "weekly games",
                     "channel_id": 1001742058601590824,
+                    "discuss_id": 1001742642427744326,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
@@ -73,6 +74,7 @@ class Setup(commands.Cog):
 
         return datetime.datetime(year, month, day, hour, minute)
 
+    # check for valid date
     def check_is_date(self, msg: str) -> tuple[int, int, int]|bool:
         try:
             strday, strmonth, stryear = msg.content.split("/")
@@ -87,6 +89,7 @@ class Setup(commands.Cog):
         except ValueError:
             return False
 
+    # check for valid time
     def check_is_time(self, msg: str) -> tuple[int, int]|bool:
         try:
             strhour, strminute = msg.content.split(":")
@@ -101,6 +104,7 @@ class Setup(commands.Cog):
         except ValueError:
             return False
 
+
     def get_puzz_text(self, ctx: commands.context.Context) -> str:
         role_name = self.info["puzzles"]["role_name"]
         puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
@@ -113,9 +117,30 @@ class Setup(commands.Cog):
 
         return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6
 
+    def get_sb_text(self, ctx: commands.context.Context) -> str:
+        emojis = self.info["emojis"]
+        sb_info = self.info["sb"]
+        role_name = sb_info["role_name"]
+        sb_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
+        line1 = f'{emojis["brain"]} **SECOND BEST: WEEK {sb_info["week_num"]}** {emojis["brain"]}\n\n'
+        line2 = f"Try your best to guess what the second most popular answer will be!\n\n"
+        line3 = f'**Submit your answers here:** {sb_info["submission_link"]}\n\n'
+
+        return sb_tag + line1 + line2 + line3 + sb_info["img_url"]
+    
+    def get_ciyk_text(self, ctx: commands.context.Context) -> str:
+        emojis = self.info["emojis"]
+        ciyk_info = self.info["ciyk"]
+        role_name = ciyk_info["role_name"]
+        ciyk_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+        line1 = f'{emojis["speech"]} **COMMENT IF YOU KNOW: WEEK {ciyk_info["week_num"]}** {emojis["speech"]}\n'
+        line2 = f'If you think you know the pattern, comment an answer that follows it in <#{ciyk_info["discuss_id"]}>\n'
+        line3 = f'We\'ll react with a {emojis["heart"]} if you\'re right and a {emojis["cross"]} if you\'re wrong!\n\n'
+
+        return ciyk_tag + line1 + line2 + line3 + ciyk_info["img_url"]
+
     # this method exists as just an easy way to change the data in one method call in setpuzzles/setsb/setciyk    
     def change_data(self, puzz_name: str, new_data: dict[str]):
-        
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
@@ -460,10 +485,12 @@ class Setup(commands.Cog):
         # store the new data
         self.change_data("sb", new_data)
 
+        sb_text = self.get_sb_text(ctx)
         await ctx.send(
             f"Done. The following will be sent at {sb_info['release_datetime']} <#{sb_info['channel_id']}>. " +
             "Remember to do `.startsb`"
         )
+        await ctx.send(sb_text)
     
     @commands.command()
     async def setciyk(self, ctx: commands.context.Context):
@@ -526,7 +553,11 @@ class Setup(commands.Cog):
             new_data["submission_link"] = msg.content
 
         # store new data
+        self.change_data("ciyk", new_data)
+
+        ciyk_text = self.get_ciyk_text(ctx)
         await ctx.send(
             f"Done. The following will be released at {ciyk_info['release_datetime']} in <#{ciyk_info['channel_id']}>" +
             "Remember to do `.startciyk`"
         )
+        await ctx.send(ciyk_text)
