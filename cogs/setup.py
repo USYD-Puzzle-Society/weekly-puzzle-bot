@@ -106,12 +106,14 @@ class Setup(commands.Cog):
 
 
     def get_puzz_text(self, ctx: commands.context.Context) -> str:
-        role_name = self.info["puzzles"]["role_name"]
+        emojis = self.info["emojis"]
+        puzz_info = self.info["puzzles"]
+        role_name = puzz_info["role_name"]
         puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
-        line1 = f'{self.info["emojis"]["jigsaw"]} **WEEKLY PUZZLES: WEEK {self.info["puzzles"]["week_num"]}** {self.info["emojis"]["jigsaw"]}\n'
-        line2 = f'**SPEED BONUS:** {self.info["puzzles"]["speed_bonus"]} MINUTES\n'
-        line3 = f'*Hints will be unlimited after {self.info["puzzles"]["speed_bonus"]} minutes is up AND after the top 3 solvers have finished!*\n\n'
-        line4 = f'**Submit your answers here:** {self.info["puzzles"]["submission_link"]}\n'
+        line1 = f'{emojis["jigsaw"]} **WEEKLY PUZZLES: WEEK {puzz_info["week_num"]}** {emojis["jigsaw"]}\n'
+        line2 = f'**SPEED BONUS:** {puzz_info["speed_bonus"]} MINUTES\n'
+        line3 = f'*Hints will be unlimited after {puzz_info["speed_bonus"]} minutes is up AND after the top 3 solvers have finished!*\n\n'
+        line4 = f'**Submit your answers here:** {puzz_info["submission_link"]}\n'
         line5 = "You can submit as many times as you want!\n"
         line6 = "Your highest score will be kept."
 
@@ -413,9 +415,12 @@ class Setup(commands.Cog):
 
         # show the user the new changes
         puzz_text = self.get_puzz_text(ctx)
+        puzz_images = puzz_info["img_urls"]
         await ctx.send(f'Done. The following will be released at {puzz_info["release_datetime"]} in <#{puzz_info["channel_id"]}>. ' +  
         'Remember to do `.startpuzz`')
         await ctx.send(puzz_text)
+        for i in range(len(puzz_images)):
+            await ctx.send(puzz_images[i])
 
     @commands.command()
     async def setsb(self, ctx: commands.context.Context):
