@@ -12,6 +12,7 @@ class Show(commands.Cog):
         self.info_obj = info
     
     @commands.command()
+    @commands.has_role("Executives")
     async def showpuzzles(self, ctx: commands.context.Context):
         puzz_info = self.info_obj.info["puzzles"]
         puzz_text = self.info_obj.get_puzz_text(ctx, False)
@@ -24,6 +25,7 @@ class Show(commands.Cog):
             await ctx.send(puzz_info["img_urls"][i])
 
     @commands.command()
+    @commands.has_role("Executives")
     async def showsb(self, ctx: commands.context.Context):
         sb_info = self.info_obj.info["sb"]
         sb_text = self.info_obj.get_sb_text(ctx, False)
@@ -34,6 +36,7 @@ class Show(commands.Cog):
         await ctx.send(sb_text)
 
     @commands.command()
+    @commands.has_role("Executives")
     async def showciyk(self, ctx: commands.context.Context):
         ciyk_info = self.info_obj.info["ciyk"]
         ciyk_text = self.info_obj.get_ciyk_text(ctx, False)

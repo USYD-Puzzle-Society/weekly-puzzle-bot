@@ -9,7 +9,7 @@ class Setup(commands.Cog):
 
     def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
-
+        self.exec_id = "Executives"
         self.info_obj= info
 
     """
@@ -18,6 +18,7 @@ class Setup(commands.Cog):
     Like: `.setpuzztime 12/08/2022 11:00`
     """
     @commands.command()
+    @commands.has_role("Executives")
     async def setpuzztime(self, ctx: commands.context.Context):
         user = ctx.author
 
@@ -73,6 +74,7 @@ class Setup(commands.Cog):
         )
 
     @commands.command()
+    @commands.has_role("Executives")
     async def setsbtime(self, ctx: commands.context.Context):
         user = ctx.author
 
@@ -126,6 +128,7 @@ class Setup(commands.Cog):
         )
 
     @commands.command()
+    @commands.has_role("Executives")
     async def setciyktime(self, ctx: commands.context.Context):
         user = ctx.author
 
@@ -178,7 +181,9 @@ class Setup(commands.Cog):
             "Remember to do `.startciyk`"
         )
 
+
     @commands.command()
+    @commands.has_role("Executives")
     async def setpuzzles(self, ctx: commands.context.Context):
         puzz_info = self.info_obj.info["puzzles"]
         # get the user that is using the command
@@ -277,6 +282,7 @@ class Setup(commands.Cog):
             await ctx.send(puzz_images[i])
 
     @commands.command()
+    @commands.has_role("Executives")
     async def setsb(self, ctx: commands.context.Context):
         sb_info = self.info_obj.info["sb"]
         user = ctx.author
@@ -353,6 +359,7 @@ class Setup(commands.Cog):
         await ctx.send(sb_text)
     
     @commands.command()
+    @commands.has_role("Executives")
     async def setciyk(self, ctx: commands.context.Context):
         ciyk_info = self.info_obj.info["ciyk"]
         user = ctx.author
