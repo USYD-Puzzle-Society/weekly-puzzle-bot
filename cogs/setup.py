@@ -12,99 +12,6 @@ class Setup(commands.Cog):
 
         self.info_obj= info
 
-    # # expects the %d/%m/%Y %H:%M format
-    # def str_to_datetime(self, string: str) -> datetime.datetime:
-    #     date, time = string.split()
-
-    #     day, month, year = date.split("/")
-    #     hour, minute = time.split(":")
-
-    #     return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute))
-
-    # # check for valid date
-    # def check_is_date(self, msg: str) -> tuple[int, int, int]|bool:
-    #     try:
-    #         strday, strmonth, stryear = msg.content.split("/")
-
-    #         # check if it is a valid date
-    #         date = datetime.date(int(stryear), int(strmonth), int(strday))
-
-    #         day, month, year = int(strday), int(strmonth), int(stryear)
-
-    #         return day, month, year
-        
-    #     except ValueError:
-    #         return False
-
-    # # check for valid time
-    # def check_is_time(self, msg: str) -> tuple[int, int]|bool:
-    #     try:
-    #         strhour, strminute = msg.content.split(":")
-
-    #         # check if valid time
-    #         time = datetime.time(int(strhour), int(strminute))
-
-    #         hour, minute = int(strhour), int(strminute)
-
-    #         return hour, minute
-
-    #     except ValueError:
-    #         return False
-
-
-    # def get_puzz_text(self, ctx: commands.context.Context) -> str:
-    #     emojis = self.info_obj.info["emojis"]
-    #     puzz_info = self.info_obj.info["puzzles"]
-    #     role_name = puzz_info["role_name"]
-    #     puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
-    #     line1 = f'{emojis["jigsaw"]} **WEEKLY PUZZLES: WEEK {puzz_info["week_num"]}** {emojis["jigsaw"]}\n'
-    #     line2 = f'**SPEED BONUS:** {puzz_info["speed_bonus"]} MINUTES\n'
-    #     line3 = f'*Hints will be unlimited after {puzz_info["speed_bonus"]} minutes is up AND after the top 3 solvers have finished!*\n\n'
-    #     line4 = f'**Submit your answers here:** {puzz_info["submission_link"]}\n'
-    #     line5 = "You can submit as many times as you want!\n"
-    #     line6 = "Your highest score will be kept."
-
-    #     return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6
-
-    # def get_sb_text(self, ctx: commands.context.Context) -> str:
-    #     emojis = self.info_obj.info["emojis"]
-    #     sb_info = self.info_obj.info["sb"]
-    #     role_name = sb_info["role_name"]
-    #     sb_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
-    #     line1 = f'{emojis["brain"]} **SECOND BEST: WEEK {sb_info["week_num"]}** {emojis["brain"]}\n\n'
-    #     line2 = f"Try your best to guess what the second most popular answer will be!\n\n"
-    #     line3 = f'**Submit your answers here:** {sb_info["submission_link"]}\n\n'
-
-    #     return sb_tag + line1 + line2 + line3 + sb_info["img_url"]
-    
-    # def get_ciyk_text(self, ctx: commands.context.Context) -> str:
-    #     emojis = self.info_obj.info["emojis"]
-    #     ciyk_info = self.info_obj.info["ciyk"]
-    #     role_name = ciyk_info["role_name"]
-    #     ciyk_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
-    #     line1 = f'{emojis["speech"]} **COMMENT IF YOU KNOW: WEEK {ciyk_info["week_num"]}** {emojis["speech"]}\n'
-    #     line2 = f'If you think you know the pattern, comment an answer that follows it in <#{ciyk_info["discuss_id"]}>\n'
-    #     line3 = f'We\'ll react with a {emojis["heart"]} if you\'re right and a {emojis["cross"]} if you\'re wrong!\n\n'
-
-    #     return ciyk_tag + line1 + line2 + line3 + ciyk_info["img_url"]
-
-    # # this method exists as just an easy way to change the data in one method call in setpuzzles/setsb/setciyk    
-    # def change_data(self, puzz_name: str, new_data: dict[str]):
-    #     self.info_obj.info[puzz_name]["week_num"] = new_data["week_num"]
-    #     self.info_obj.info[puzz_name]["submission_link"] = new_data["submission_link"]
-
-    #     if "puzzles" == puzz_name:
-    #         self.info_obj.info[puzz_name]["img_urls"] = new_data["img_urls"]
-    #         self.info_obj.info[puzz_name]["speed_bonus"] = new_data["speed_bonus"]
-    #     else:
-    #         self.info_obj.info[puzz_name]["img_url"] = new_data["img_url"]
-
-    #     # write the new info to the json file so that it is not lost if the bot shuts down
-    #     with open(self.info_obj.info_fn, "w") as info:
-    #         new_json = json.dumps(self.info_obj.info, indent=4)
-
-    #         info.write(new_json)
-
     """
     Thinking of making it so that this command allows the user to
     put the release date and time in the command call.
@@ -426,8 +333,8 @@ class Setup(commands.Cog):
 
         await ctx.send("Please send the submission link.")
 
-        msg = await self.bot.wait_for("messsage", check=check)
-
+        msg = await self.bot.wait_for("message", check=check)
+        
         if ".stop" == msg.content.lower():
             await ctx.send("Command stopped. No changes will be made to the Second Best announcement.")
             return
@@ -438,6 +345,7 @@ class Setup(commands.Cog):
         self.info_obj.change_data("sb", new_data)
 
         sb_text = self.info_obj.get_sb_text(ctx)
+
         await ctx.send(
             f"Done. The following will be sent at {sb_info['release_datetime']} <#{sb_info['channel_id']}>. " +
             "Remember to do `.startsb`"
