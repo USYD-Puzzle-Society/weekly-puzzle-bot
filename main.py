@@ -14,7 +14,7 @@ activity = discord.Game(name="Professor Layton")
 bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None)
 
 # load all available cogs on startup
-for filename in os.listdir():
+for filename in os.listdir("cogs/"):
     if filename.endswith(".py"):
         bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
         print(f"Loaded {filename}")
