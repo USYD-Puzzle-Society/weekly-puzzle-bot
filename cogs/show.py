@@ -14,7 +14,7 @@ class Show(commands.Cog):
     @commands.command()
     async def showpuzzles(self, ctx: commands.context.Context):
         puzz_info = self.info_obj.info["puzzles"]
-        puzz_text = self.info_obj.get_puzz_text(ctx)
+        puzz_text = self.info_obj.get_puzz_text(ctx, False)
         puzz_time = puzz_info["release_datetime"]
         puzz_channel = puzz_info["channel_id"]
 
@@ -26,7 +26,7 @@ class Show(commands.Cog):
     @commands.command()
     async def showsb(self, ctx: commands.context.Context):
         sb_info = self.info_obj.info["sb"]
-        sb_text = self.info_obj.get_sb_text(ctx)
+        sb_text = self.info_obj.get_sb_text(ctx, False)
         sb_time = sb_info["release_datetime"]
         sb_channel = sb_info["channel_id"]
 
@@ -36,7 +36,7 @@ class Show(commands.Cog):
     @commands.command()
     async def showciyk(self, ctx: commands.context.Context):
         ciyk_info = self.info_obj.info["ciyk"]
-        ciyk_text = self.info_obj.get_ciyk_text(ctx)
+        ciyk_text = self.info_obj.get_ciyk_text(ctx, False)
         ciyk_time = ciyk_info["release_datetime"]
         ciyk_channel = ciyk_info["channel_id"]
 

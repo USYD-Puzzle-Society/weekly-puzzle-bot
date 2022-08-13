@@ -268,7 +268,7 @@ class Setup(commands.Cog):
         self.info_obj.change_data("puzzles", new_data)
 
         # show the user the new changes
-        puzz_text = self.info_obj.get_puzz_text(ctx)
+        puzz_text = self.info_obj.get_puzz_text(ctx, False)
         puzz_images = puzz_info["img_urls"]
         await ctx.send(f'Done. The following will be released at {puzz_info["release_datetime"]} in <#{puzz_info["channel_id"]}>. ' +  
         'Remember to do `.startpuzz`')
@@ -344,7 +344,7 @@ class Setup(commands.Cog):
         # store the new data
         self.info_obj.change_data("sb", new_data)
 
-        sb_text = self.info_obj.get_sb_text(ctx)
+        sb_text = self.info_obj.get_sb_text(ctx, False)
 
         await ctx.send(
             f"Done. The following will be sent at {sb_info['release_datetime']} <#{sb_info['channel_id']}>. " +
@@ -415,7 +415,7 @@ class Setup(commands.Cog):
         # store new data
         self.info_obj.change_data("ciyk", new_data)
 
-        ciyk_text = self.info_obj.get_ciyk_text(ctx)
+        ciyk_text = self.info_obj.get_ciyk_text(ctx, False)
         await ctx.send(
             f"Done. The following will be released at {ciyk_info['release_datetime']} in <#{ciyk_info['channel_id']}>" +
             "Remember to do `.startciyk`"
