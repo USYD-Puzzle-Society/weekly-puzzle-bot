@@ -1,7 +1,6 @@
 import json
 import os
 import datetime
-from xml.etree.ElementTree import TreeBuilder
 import discord
 from discord.ext import commands
 
@@ -126,7 +125,7 @@ class Set(commands.Cog):
         else:
             self.info[puzz_name]["img_url"] = new_data["img_url"]
 
-        # write the new info to the json file
+        # write the new info to the json file so that it is not lost if the bot shuts down
         with open(self.info_fn, "w") as info:
             new_json = json.dumps(self.info, indent=4)
 
