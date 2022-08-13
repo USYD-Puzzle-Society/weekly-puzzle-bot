@@ -10,7 +10,8 @@ class Info():
         self.datetime_format = "%d/%m/%Y %H:%M"
 
         if os.path.exists(self.info_fn):
-            self.info = json.loads(self.info_fn)
+            with open(self.info_fn, "r") as fn:
+                self.info = json.load(fn)
         else:
             self.info = {
                 "emojis": {
@@ -71,11 +72,17 @@ class Info():
 
         return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute))
 
+    # each get_text function needs to read from the json file since the info could have been updated
+    # this could potential pose problems if a read and write occur at the same time
+    # however, this shouldn't be a big issue as the commands that use these functions will only be accessible by a few people
     def get_puzz_text(self, ctx: commands.context.Context) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
         emojis = self.info["emojis"]
         puzz_info = self.info["puzzles"]
         role_name = puzz_info["role_name"]
-        puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
+        puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
         line1 = f'{emojis["jigsaw"]} **WEEKLY PUZZLES: WEEK {puzz_info["week_num"]}** {emojis["jigsaw"]}\n'
         line2 = f'**SPEED BONUS:** {puzz_info["speed_bonus"]} MINUTES\n'
         line3 = f'*Hints will be unlimited after {puzz_info["speed_bonus"]} minutes is up AND after the top 3 solvers have finished!*\n\n'
@@ -86,10 +93,13 @@ class Info():
         return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6
 
     def get_sb_text(self, ctx: commands.context.Context) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
         emojis = self.info["emojis"]
         sb_info = self.info["sb"]
         role_name = sb_info["role_name"]
-        sb_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n"
+        sb_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
         line1 = f'{emojis["brain"]} **SECOND BEST: WEEK {sb_info["week_num"]}** {emojis["brain"]}\n\n'
         line2 = f"Try your best to guess what the second most popular answer will be!\n\n"
         line3 = f'**Submit your answers here:** {sb_info["submission_link"]}\n\n'
@@ -97,6 +107,9 @@ class Info():
         return sb_tag + line1 + line2 + line3 + sb_info["img_url"]
     
     def get_ciyk_text(self, ctx: commands.context.Context) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
         emojis = self.info["emojis"]
         ciyk_info = self.info["ciyk"]
         role_name = ciyk_info["role_name"]
