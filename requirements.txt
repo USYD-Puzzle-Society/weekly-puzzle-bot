@@ -1,3 +1,1 @@
 discord
-pytz
-boto3
