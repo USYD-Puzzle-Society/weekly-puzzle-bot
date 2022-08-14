@@ -70,7 +70,7 @@ class Setup(commands.Cog):
         self.info_obj.change_time("puzz", new_release)
         await ctx.send(
             f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
-            "Remember to do `.startpuzz`"
+            "Remember to do `.start puzz`"
         )
 
     @commands.command()
@@ -124,7 +124,7 @@ class Setup(commands.Cog):
         self.info_obj.change_time("sb", new_release)
         await ctx.send(
             f"The new release time for Second Best is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
-            "Remember to do `.startsb`"
+            "Remember to do `.start sb`"
         )
 
     @commands.command()
@@ -178,7 +178,7 @@ class Setup(commands.Cog):
         self.info_obj.change_time("ciyk", new_release)
         await ctx.send(
             f"The new release time for CIYK is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
-            "Remember to do `.startciyk`"
+            "Remember to do `.start ciyk`"
         )
 
 
@@ -276,7 +276,7 @@ class Setup(commands.Cog):
         puzz_text = self.info_obj.get_puzz_text(ctx, False)
         puzz_images = puzz_info["img_urls"]
         await ctx.send(f'Done. The following will be released at {puzz_info["release_datetime"]} in <#{puzz_info["channel_id"]}>. ' +  
-        'Remember to do `.startpuzz`')
+        'Remember to do `.start puzz`')
         await ctx.send(puzz_text)
         for i in range(len(puzz_images)):
             await ctx.send(puzz_images[i])
@@ -354,7 +354,7 @@ class Setup(commands.Cog):
 
         await ctx.send(
             f"Done. The following will be sent at {sb_info['release_datetime']} <#{sb_info['channel_id']}>. " +
-            "Remember to do `.startsb`"
+            "Remember to do `.start sb`"
         )
         await ctx.send(sb_text)
     
@@ -425,7 +425,7 @@ class Setup(commands.Cog):
         ciyk_text = self.info_obj.get_ciyk_text(ctx, False)
         await ctx.send(
             f"Done. The following will be released at {ciyk_info['release_datetime']} in <#{ciyk_info['channel_id']}>" +
-            "Remember to do `.startciyk`"
+            "Remember to do `.start ciyk`"
         )
         await ctx.send(ciyk_text)
 
