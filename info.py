@@ -23,7 +23,7 @@ class Info():
                 },
                 "puzz": {
                     "role_name": "weekly puzzles",
-                    "channel_id": 994948949536407612,
+                    "channel_id": 892032997220573204,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
@@ -33,7 +33,7 @@ class Info():
                 },
                 "sb": {
                     "role_name": "weekly games",
-                    "channel_id": 994948949536407612,
+                    "channel_id": 1001742058601590824,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
@@ -42,8 +42,8 @@ class Info():
                 },
                 "ciyk": {
                     "role_name": "weekly games",
-                    "channel_id": 994948949536407612,
-                    "discuss_id": 1002487377958281276,
+                    "channel_id": 1001742058601590824,
+                    "discuss_id": 1001742642427744326,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
