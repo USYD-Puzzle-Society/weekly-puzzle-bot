@@ -21,35 +21,38 @@ class Info():
                     "heart": ":heart:",
                     "cross": ":x:"
                 },
-                "puzzles": {
+                "puzz": {
                     "role_name": "weekly puzzles",
-                    "channel_id": 892032997220573204,
+                    "channel_id": 994948949536407612,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
                     "speed_bonus": -1,
-                    "submission_link": ""
+                    "submission_link": "",
+                    "releasing": False
                 },
                 "sb": {
                     "role_name": "weekly games",
-                    "channel_id": 1001742058601590824,
+                    "channel_id": 994948949536407612,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
-                    "submission_link": ""
+                    "submission_link": "",
+                    "releasing": False
                 },
                 "ciyk": {
                     "role_name": "weekly games",
-                    "channel_id": 1001742058601590824,
-                    "discuss_id": 1001742642427744326,
+                    "channel_id": 994948949536407612,
+                    "discuss_id": 1002487377958281276,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
-                    "submission_link": ""
+                    "submission_link": "",
+                    "releasing": False
                 }
             }
         
-        self.puzz_datetime = self.str_to_datetime(self.info["puzzles"]["release_datetime"])
+        self.puzz_datetime = self.str_to_datetime(self.info["puzz"]["release_datetime"])
         self.sb_datetime = self.str_to_datetime(self.info["sb"]["release_datetime"])
         self.ciyk_datetime = self.str_to_datetime(self.info["ciyk"]["release_datetime"])
 
@@ -72,6 +75,34 @@ class Info():
 
         return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute))
 
+    def check_is_date(self, msg: str) -> tuple[int, int, int]|bool:
+        try:
+            strday, strmonth, stryear = msg.split("/")
+
+            # check if it is a valid date
+            date = datetime.date(int(stryear), int(strmonth), int(strday))
+
+            day, month, year = int(strday), int(strmonth), int(stryear)
+
+            return day, month, year
+        
+        except ValueError:
+            return False
+
+    def check_is_time(self, msg: str) -> tuple[int, int]|bool:
+        try:
+            strhour, strminute = msg.split(":")
+
+            # check if valid time
+            time = datetime.time(int(strhour), int(strminute))
+
+            hour, minute = int(strhour), int(strminute)
+
+            return hour, minute
+
+        except ValueError:
+            return False
+
     # each get_text function needs to read from the json file since the info could have been updated
     # this could potential pose problems if a read and write occur at the same time
     # however, this shouldn't be a big issue as the commands that use these functions will only be accessible by a few people
@@ -82,7 +113,7 @@ class Info():
             self.info = json.load(fn)
 
         emojis = self.info["emojis"]
-        puzz_info = self.info["puzzles"]
+        puzz_info = self.info["puzz"]
         role_name = puzz_info["role_name"]
 
         if mention:
@@ -137,18 +168,44 @@ class Info():
 
         return ciyk_tag + line1 + line2 + line3 + ciyk_info["img_url"]
 
+    def get_text(self, ctx: commands.context.Context, puzz_name: str, mention: bool):
+        get_text = {
+            "puzz": self.get_puzz_text,
+            "sb": self.get_sb_text,
+            "ciyk": self.get_ciyk_text
+        }
+
+        return get_text[puzz_name](ctx, mention)
+
     # this method exists as just an easy way to change the data in one method call in setpuzzles/setsb/setciyk    
     def change_data(self, puzz_name: str, new_data: dict[str]):
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
-        if "puzzles" == puzz_name:
+        if "puzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
             self.info[puzz_name]["speed_bonus"] = new_data["speed_bonus"]
         else:
             self.info[puzz_name]["img_url"] = new_data["img_url"]
 
         # write the new info to the json file so that it is not lost if the bot shuts down
+        with open(self.info_fn, "w") as info:
+            new_json = json.dumps(self.info, indent=4)
+
+            info.write(new_json)
+    
+    def change_time(self, puzz_name: str, new_time: datetime.datetime):
+        self.info[puzz_name]["release_datetime"] = new_time.strftime(self.datetime_format)
+        
+        with open(self.info_fn, "w") as info:
+            new_json = json.dumps(self.info, indent=4)
+
+            info.write(new_json)
+
+    # changes the state of whether a puzzle is releasing
+    def change_release(self, puzz_name: str, is_releasing: bool):
+        self.info[puzz_name]["releasing"] = is_releasing
+
         with open(self.info_fn, "w") as info:
             new_json = json.dumps(self.info, indent=4)
 

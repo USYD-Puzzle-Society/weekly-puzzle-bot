@@ -13,8 +13,8 @@ class Show(commands.Cog):
     
     @commands.command()
     @commands.has_role("Executives")
-    async def showpuzzles(self, ctx: commands.context.Context):
-        puzz_info = self.info_obj.info["puzzles"]
+    async def showpuzz(self, ctx: commands.context.Context):
+        puzz_info = self.info_obj.info["puzz"]
         puzz_text = self.info_obj.get_puzz_text(ctx, False)
         puzz_time = puzz_info["release_datetime"]
         puzz_channel = puzz_info["channel_id"]

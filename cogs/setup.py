@@ -26,7 +26,7 @@ class Setup(commands.Cog):
             return m.author == user
 
         # show current release time for puzzles
-        await ctx.send(f'The current release time for the puzzles is {self.info_obj.info["puzzles"]["release_datetime"]}.')
+        await ctx.send(f'The current release time for the puzzles is {self.info_obj.info["puzz"]["release_datetime"]}.')
         await ctx.send(
             "Please enter the new release date for the puzzles in the format DD/MM/YYYY. " +
             "Do `.stop` at any time to exit and no changes will be made to the release time of the puzzles."
@@ -67,7 +67,7 @@ class Setup(commands.Cog):
                 break
         
         new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.info["puzzles"]["release_datetime"] = new_release.strftime(self.info_obj.datetime_format)
+        self.info_obj.change_time("puzz", new_release)
         await ctx.send(
             f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
             "Remember to do `.startpuzz`"
@@ -101,7 +101,7 @@ class Setup(commands.Cog):
                 day, month, year = date
                 break
 
-        release_date = datetime.date(day, month, year)
+        release_date = datetime.date(year, month, day)
         weekday_name = self.info_obj.day_names[release_date.weekday()]
         await ctx.send(f'The new release date is {release_date.strftime("%d/%m/%Y")} ({weekday_name})')
         await ctx.send(f"Please enter the new release time for Second Best in the format HH:MM (24 hour time)")
@@ -121,7 +121,7 @@ class Setup(commands.Cog):
                 break
 
         new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.info["sb"]["release_datetime"] = new_release.strftime(self.info_obj.datetime_format)
+        self.info_obj.change_time("sb", new_release)
         await ctx.send(
             f"The new release time for Second Best is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
             "Remember to do `.startsb`"
@@ -155,7 +155,7 @@ class Setup(commands.Cog):
                 day, month, year = date
                 break
 
-        release_date = datetime.date(day, month, year)
+        release_date = datetime.date(year, month, day)
         weekday_name = self.info_obj.day_names[release_date.weekday()]
         await ctx.send(f'The new release date is {release_date.strftime("%d/%m/%Y")} ({weekday_name})')
         await ctx.send(f"Please enter the new release time for CIYK in the format HH:MM (24 hour time)")
@@ -175,7 +175,7 @@ class Setup(commands.Cog):
                 break
 
         new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.info["ciyk"]["release_datetime"] = new_release.strftime(self.info_obj.datetime_format)
+        self.info_obj.change_time("ciyk", new_release)
         await ctx.send(
             f"The new release time for CIYK is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
             "Remember to do `.startciyk`"
@@ -185,7 +185,7 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def setpuzzles(self, ctx: commands.context.Context):
-        puzz_info = self.info_obj.info["puzzles"]
+        puzz_info = self.info_obj.info["puzz"]
         # get the user that is using the command
         user = ctx.author
 
@@ -270,7 +270,7 @@ class Setup(commands.Cog):
 
         
         # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("puzzles", new_data)
+        self.info_obj.change_data("puzz", new_data)
 
         # show the user the new changes
         puzz_text = self.info_obj.get_puzz_text(ctx, False)
