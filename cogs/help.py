@@ -21,26 +21,20 @@ class Help(commands.Cog):
         ]
 
         self.help_setup = [
-            ".readme\n\n",
-            ".setpuzzchannel\n\n\n",
             ".setpuzzles\n\n\n\n",
             ".setpuzztime\n\n",
             ".setsb\n\n",
             ".setsbtime\n\n",
             ".setciyk\n\n",
             ".setciyktime\n\n"
-            ".changeweek [week number]"
         ]
         self.help_setup_desc = [
-            "Useful information to read.\n\n"
-            "Changes the channel which the puzzles are released it. Default is <#892032997220573204>\n\n",
             "Sets up the images, speed bonus and submission link for the puzzle release. Please do not use any other commands while using this command.\n\n",
             "Changes the release time of the puzzles.\n\n",
             "Sets up the Second Best announcement.\n\n",
             "Changes the release time of Second Best.\n\n",
             "Sets up the CIYK announcement.\n\n",
             "Changes the release time of CIYK.\n\n",
-            "Changes the week that is displayed for the puzzles, Second Best and CIYK announcments. Use this if the week count for the annoucements are somehow out of sync or wrong."
         ]
         
         self.help_show = [
