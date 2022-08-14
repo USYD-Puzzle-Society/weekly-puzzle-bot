@@ -31,6 +31,10 @@ class Start(commands.Cog):
 
         # get the puzzle info
         text = self.info_obj.get_text(ctx, puzz_name, True)
+        
+        if "puzz" == puzz_name:
+            urls = self.info_obj.info[puzz_name]["img_urls"]
+
         str_release = self.info_obj.info[puzz_name]["release_datetime"]
         release_datetime = self.info_obj.str_to_datetime(str_release)
         channel_id = self.info_obj.info[puzz_name]["channel_id"]
@@ -52,17 +56,34 @@ class Start(commands.Cog):
         else:
             currently_releasing = {}
         
-        currently_releasing[release_id] = {
-            "text": text,
-            "datetime": str_release,
-            "channel": channel_id 
-        }
+        if "puzz" == puzz_name:
+            currently_releasing[release_id] = {
+                "text": text,
+                "urls": urls,
+                "datetime": str_release,
+                "channel": channel_id
+            }
+        else:
+            currently_releasing[release_id] = {
+                "text": text,
+                "datetime": str_release,
+                "channel": channel_id
+            }
 
         # add the release to the json file
         with open(self.start_json, "w") as sj:
             new_json = json.dumps(currently_releasing, indent=4)
 
             sj.write(new_json)
+
+        await ctx.send(
+            f"Starting! The following will be released at {str_release} in <#{channel_id}>. " +
+            f"The ID for this release is {release_id}. Do `.stop {release_id}` to stop this release."
+        )
+        await ctx.send(text)
+        if "puzz" == puzz_name:
+            for i in range(len(urls)):
+                await ctx.send(urls[i])
 
         # sleep until release time
         await asyncio.sleep(wait_time+1)
@@ -75,6 +96,9 @@ class Start(commands.Cog):
             return
         else:
             await channel.send(text)
+            if "puzz" == puzz_name:
+                for i in range(len(urls)):
+                    await channel.send(urls[i])
 
             # remove from the json file
             with open(self.start_json, "r") as sj:
