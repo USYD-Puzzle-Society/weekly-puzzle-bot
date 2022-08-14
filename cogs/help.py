@@ -172,3 +172,6 @@ class Help(commands.Cog):
                     await ctx.send(embed=embed_msg)
                 except KeyError:
                     await ctx.send(f"{argument} is not a valid command category.")
+
+def setup(bot: commands.Bot):
+    bot.add_cog(Help(bot))
