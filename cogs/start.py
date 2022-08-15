@@ -31,6 +31,7 @@ class Start(commands.Cog):
 
         # get the puzzle info
         text = self.info_obj.get_text(ctx, puzz_name, True)
+        no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
         
         if "puzz" == puzz_name:
             urls = self.info_obj.info[puzz_name]["img_urls"]
@@ -80,7 +81,7 @@ class Start(commands.Cog):
             f"Starting! The following will be released at {str_release} in <#{channel_id}>. " +
             f"The ID for this release is {release_id}. Do `.stop {release_id}` to stop this release."
         )
-        await ctx.send(text)
+        await ctx.send(no_mention_text)
         if "puzz" == puzz_name:
             for i in range(len(urls)):
                 await ctx.send(urls[i])
