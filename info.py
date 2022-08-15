@@ -121,7 +121,7 @@ class Info():
         else:
             puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
-        line1 = f'{emojis["jigsaw"]} **WEEKLY PUZZLES: WEEK {puzz_info["week_num"]}** {emojis["jigsaw"]}\n'
+        line1 = f'{emojis["jigsaw"]} **WEEKLY PUZZLES: WEEK {puzz_info["week_num"]}** {emojis["jigsaw"]}\n\n'
         line2 = f'**SPEED BONUS:** {puzz_info["speed_bonus"]} MINUTES\n'
         line3 = f'*Hints will be unlimited after {puzz_info["speed_bonus"]} minutes is up AND after the top 3 solvers have finished!*\n\n'
         line4 = f'**Submit your answers here:** {puzz_info["submission_link"]}\n'
