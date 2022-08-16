@@ -29,5 +29,19 @@ class Reactions(commands.Cog):
         
         await ctx.send(file=rubidance)
 
+    @commands.command()
+    async def pint(self, ctx: commands.context.Context):
+        with open("reactions/pint.png", "rb") as pint_img:
+            pint = discord.File(pint_img)
+
+        await ctx.send(file=pint)
+
+    @commands.command()
+    async def pill(self, ctx: commands.context.Context):
+        with open("reactions/pills.jpg", "rb") as pills_img:
+            pills = discord.File(pills_img)
+
+        await ctx.send(file=pills)
+
 def setup(bot: commands.Bot):
     bot.add_cog(Reactions(bot))
