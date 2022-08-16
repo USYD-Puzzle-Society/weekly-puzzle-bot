@@ -70,13 +70,17 @@ class Help(commands.Cog):
             ".bird\n\n",
             ".pansive\n\n",
             ".devious\n\n\n",
-            ".rubidance"
+            ".rubidance\n\n\n",
+            ".pint\n\n",
+            ".pills"
         ]
         self.help_reactions_desc = [
             "bird\n\n",
             "when you're bread and also sad\n\n",
             "when your dad asks if you ate the rest of the hummus and you say no but you really did\n\n",
-            "when you're happy and you know it and you're a cube and you want to show it"
+            "when you're happy and you know it and you're a cube and you want to show it\n\n",
+            "when someone says they don't want to solve puzzles at a bar\n\n",
+            "take the pills :gun:"
         ]
 
     def get_commands_embed(self) -> discord.Embed:
