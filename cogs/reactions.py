@@ -72,7 +72,7 @@ class Reactions(commands.Cog):
         with open(f"{self.reactions_dir}/guns_at_{new_img_name}.png", "rb") as gun_img:
             gun = discord.File(gun_img)
         
-        await ctx.send(gun)
+        await ctx.send(file=gun)
 
         # delete new image
         os.remove(f"{self.reactions_dir}/guns_at_{new_img_name}.png")
