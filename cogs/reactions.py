@@ -1,6 +1,7 @@
 import os
 import discord
 from PIL import Image
+from PIL import ImageFont
 from PIL import ImageDraw
 from discord.ext import commands
 
@@ -64,7 +65,8 @@ class Reactions(commands.Cog):
 
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
-        I1.text((240, 367), " ".join(arguments))
+        font = ImageFont.truetype("sans-serif.ttf", 32)
+        I1.text((240, 367), " ".join(arguments), font=font)
 
         # save new image with text
         img.save(f"{self.reactions_dir}/guns_at_{new_img_name}.png")
