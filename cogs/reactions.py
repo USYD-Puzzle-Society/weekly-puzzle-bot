@@ -53,7 +53,10 @@ class Reactions(commands.Cog):
     async def gunpoint(self, ctx: commands.context.Context, *args):
         # if no arguments are given then just send the image template
         if not args:
-            await ctx.send(f"{self.reactions_dir}/guns_at_rat.png")
+            with open(f"{self.reactions_dir}/guns_at_rat.png", "rb") as template:
+                image = discord.File(template)
+            
+            await ctx.send(file=image)
             return
         
         img_filename = f"{self.reactions_dir}/guns_at_{'_'.join(args)}.png"
