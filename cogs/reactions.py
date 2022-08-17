@@ -54,7 +54,7 @@ class Reactions(commands.Cog):
         # do nothing if no arguments are given
         # at least one element should be in the list, ".gunpoint"
         
-        if 1 == len(args):
+        if 0 == len(args):
             return
         
         img_filename = f"{self.reactions_dir}/guns_at_{'_'.join(args)}.png"
