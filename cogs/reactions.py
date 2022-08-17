@@ -67,15 +67,13 @@ class Reactions(commands.Cog):
 
         start_box = (240, 270) # the starting coordinates of the "box" which the text will be bound by
         end_box = (600, 320)
-        mid_y = (start_box[1] - end_box[1])/2
+        dist_to_mid_y = (end_box[1] - start_box[1])/2
         box_length = end_box[0] - start_box[0]
 
-        dist_to_rat_head = 20 # the x coordinate difference to the rat head (rougly) from the start x of the box
-        print("Here")
+        dist_to_rat_head = 25 # the x coordinate difference to the rat head (rougly) from the start x of the box
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
         font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
-        print("Here")
         text_size = I1.textlength(text=text, font=font) # size of string in pixel
         # check if the string size is larger than the box
         if text_size > box_length:
@@ -89,14 +87,13 @@ class Reactions(commands.Cog):
 
             # the smaller the font, the further down the text will start
             start_y = start_box[1]
-            start_y = round(start_y + (mid_y * amt_decrease/default_font_size))
+            start_y = round(start_y + (dist_to_mid_y * amt_decrease/default_font_size))
             start_box = (start_box[0], start_y)
         else:
             # the smaller the number of characters, the closer to the rat head the text will start
             start_x = start_box[0]
             start_x = round(start_box[0] + (dist_to_rat_head * 1/len(text)))
             start_box = (start_x, start_box[1])
-        print("Here")
         I1.text(start_box, text, font=font, stroke_width=2)
 
         # save new image with text
