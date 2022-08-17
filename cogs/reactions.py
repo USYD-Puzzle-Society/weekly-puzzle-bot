@@ -51,10 +51,9 @@ class Reactions(commands.Cog):
     # command takes in text as arguments and 
     @commands.command()
     async def gunpoint(self, ctx: commands.context.Context, *args):
-        # do nothing if no arguments are given
-        # at least one element should be in the list, ".gunpoint"
-        
-        if 0 == len(args):
+        # if no arguments are given then just send the image template
+        if not args:
+            await ctx.send(f"{self.reactions_dir}/guns_at_rat.png")
             return
         
         img_filename = f"{self.reactions_dir}/guns_at_{'_'.join(args)}.png"
