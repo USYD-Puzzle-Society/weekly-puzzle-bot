@@ -66,7 +66,7 @@ class Reactions(commands.Cog):
         text = " ".join(args)
 
         start_box = (240, 270) # the starting coordinates of the "box" which the text will be bound by
-        end_box = (600, 320)
+        end_box = (600, 370)
         dist_to_mid_y = (end_box[1] - start_box[1])/2
         box_length = end_box[0] - start_box[0]
 
