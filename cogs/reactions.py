@@ -63,7 +63,7 @@ class Reactions(commands.Cog):
 
         # default font size is 128 but decreases based on how many characters there are
         font_size = 128
-        font_decr_val = -2 # how much the font size will be decreased for each character over the limit
+        font_decr_val = -5 # how much the font size will be decreased for each character over the limit
         char_lim = 5 # the amount of characters that will be taken before the font size decreases 
         text = " ".join(args)
         text_len = len(text)
