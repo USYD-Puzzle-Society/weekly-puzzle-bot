@@ -17,6 +17,7 @@ class Setup(commands.Cog):
     put the release date and time in the command call.
     Like: `.setpuzztime 12/08/2022 11:00`
     """
+    # commands to set the release time for the puzzles/sb/ciyk
     @commands.command()
     @commands.has_role("Executives")
     async def setpuzztime(self, ctx: commands.context.Context):
@@ -181,7 +182,8 @@ class Setup(commands.Cog):
             "Remember to do `.start ciyk`"
         )
 
-
+    
+    # commands to set the announcement info for puzzles/sb/ciyk
     @commands.command()
     @commands.has_role("Executives")
     async def setpuzzles(self, ctx: commands.context.Context):
