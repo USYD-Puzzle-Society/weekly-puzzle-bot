@@ -70,7 +70,7 @@ class Reactions(commands.Cog):
 
         amt_exceed = text_len - char_lim
         if 0 < amt_exceed:
-            font_size = font_size * font_decr_val * amt_exceed
+            font_size = font_size + (font_decr_val * amt_exceed)
 
         # make sure that font size has not decreased past zero
         if 0 > font_size:
