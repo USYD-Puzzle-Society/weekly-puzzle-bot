@@ -68,7 +68,7 @@ class Reactions(commands.Cog):
         start_box = (240, 270) # the starting coordinates of the "box" which the text will be bound by
         end_box = (600, 320)
         mid_y = (start_box[1] - end_box[1])/2
-        box_length = start_box[0] - end_box[0]
+        box_length = end_box[0] - start_box[0]
 
         dist_to_rat_head = 20 # the x coordinate difference to the rat head (rougly) from the start x of the box
         print("Here")
@@ -88,10 +88,14 @@ class Reactions(commands.Cog):
                 text_size = I1.textlength(text=text, font=font)
 
             # the smaller the font, the further down the text will start
-            start_box[1] = round(start_box[1] + (mid_y * amt_decrease/default_font_size))
+            start_y = start_box[1]
+            start_y = round(start_y + (mid_y * amt_decrease/default_font_size))
+            start_box = (start_box[0], start_y)
         else:
             # the smaller the number of characters, the closer to the rat head the text will start
-            start_box[0] = round(start_box[0] + (dist_to_rat_head * 1/len(text)))
+            start_x = start_box[0]
+            start_x = round(start_box[0] + (dist_to_rat_head * 1/len(text)))
+            start_box = (start_x, start_box[1])
         print("Here")
         I1.text(start_box, text, font=font, stroke_width=2)
 
