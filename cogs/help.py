@@ -71,7 +71,7 @@ class Help(commands.Cog):
             ".pansive\n\n",
             ".devious\n\n\n",
             ".rubidance\n\n\n",
-            ".pint\n\n",
+            ".pint\n\n\n",
             ".pills\n\n",
             ".gunpoint [optional text]"
         ]
