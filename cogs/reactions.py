@@ -50,34 +50,30 @@ class Reactions(commands.Cog):
 
     # command takes in text as arguments and 
     @commands.command()
-    async def gunpoint(self, ctx: commands.context.Context):
+    async def gunpoint(self, ctx: commands.context.Context, *args):
         # do nothing if no arguments are given
         # at least one element should be in the list, ".gunpoint"
-        arguments = ctx.message.content.split()
-
-        if 1 == len(arguments):
+        
+        if 1 == len(args):
             return
         
-        # otherwise, get a list of only the arguments for the command
-        arguments = arguments[1:]
-        
-        new_img_name = "_".join(arguments)
+        img_filename = f"{self.reactions_dir}/guns_at_{'_'.join(args)}.png"
 
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
         font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=128)
-        I1.text((240, 367), " ".join(arguments), font=font)
+        I1.text((240, 300), " ".join(args), font=font)
 
         # save new image with text
-        img.save(f"{self.reactions_dir}/guns_at_{new_img_name}.png")
+        img.save(img_filename)
 
-        with open(f"{self.reactions_dir}/guns_at_{new_img_name}.png", "rb") as gun_img:
+        with open(img_filename, "rb") as gun_img:
             gun = discord.File(gun_img)
         
         await ctx.send(file=gun)
 
         # delete new image
-        os.remove(f"{self.reactions_dir}/guns_at_{new_img_name}.png")
+        os.remove(img_filename)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Reactions(bot))
