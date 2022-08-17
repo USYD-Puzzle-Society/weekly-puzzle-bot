@@ -64,7 +64,7 @@ class Reactions(commands.Cog):
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
         font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=128)
-        I1.text((240, 300), " ".join(args), font=font)
+        I1.text((240, 300), " ".join(args), font=font, stroke_width=5)
 
         # save new image with text
         img.save(img_filename)
