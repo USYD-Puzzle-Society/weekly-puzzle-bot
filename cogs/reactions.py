@@ -60,7 +60,7 @@ class Reactions(commands.Cog):
             return
         
         img_filename = f"{self.reactions_dir}/guns_at_{'_'.join(args)}.png"
-
+        print("Here")
         # default font size is 128 but decreases based on how many characters there are
         default_font_size = 128
         text = " ".join(args)
@@ -71,11 +71,11 @@ class Reactions(commands.Cog):
         box_length = start_box[0] - end_box[0]
 
         dist_to_rat_head = 20 # the x coordinate difference to the rat head (rougly) from the start x of the box
-
+        print("Here")
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
         font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
-
+        print("Here")
         text_size = I1.textlength(text=text, font=font) # size of string in pixel
         # check if the string size is larger than the box
         if text_size > box_length:
@@ -92,7 +92,7 @@ class Reactions(commands.Cog):
         else:
             # the smaller the number of characters, the closer to the rat head the text will start
             start_box[0] = round(start_box[0] + (dist_to_rat_head * 1/len(text)))
-
+        print("Here")
         I1.text(start_box, text, font=font, stroke_width=2)
 
         # save new image with text
