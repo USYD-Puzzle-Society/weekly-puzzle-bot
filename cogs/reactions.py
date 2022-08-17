@@ -61,10 +61,21 @@ class Reactions(commands.Cog):
         
         img_filename = f"{self.reactions_dir}/guns_at_{'_'.join(args)}.png"
 
+        # default font size is 128 but decreases based on how many characters there are
+        font_size = 128
+        font_decr_val = -5 # how much the font size will be decreased for each character over the limit
+        char_lim = 5 # the amount of characters that will be taken before the font size decreases 
+        text = " ".join(args)
+        text_len = len(text)
+
+        amt_exceed = text_len - char_lim
+        if 0 < amt_exceed:
+            font_size = font_size * font_decr_val * amt_exceed
+
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
-        font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=128)
-        I1.text((240, 290), " ".join(args), font=font, stroke_width=2)
+        font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=font_size)
+        I1.text((240, 270), " ".join(args), font=font, stroke_width=2)
 
         # save new image with text
         img.save(img_filename)
