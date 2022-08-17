@@ -72,10 +72,14 @@ class Reactions(commands.Cog):
         if 0 < amt_exceed:
             font_size = font_size * font_decr_val * amt_exceed
 
+        # make sure that font size has not decreased past zero
+        if 0 > font_size:
+            font_size = 3
+
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
         font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=font_size)
-        I1.text((240, 270), " ".join(args), font=font, stroke_width=2)
+        I1.text((240, 270), text, font=font, stroke_width=2)
 
         # save new image with text
         img.save(img_filename)
