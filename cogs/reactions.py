@@ -42,7 +42,7 @@ class Reactions(commands.Cog):
         await ctx.send(file=pint)
 
     @commands.command()
-    async def pill(self, ctx: commands.context.Context):
+    async def pills(self, ctx: commands.context.Context):
         with open(f"{self.reactions_dir}/pills.jpg", "rb") as pills_img:
             pills = discord.File(pills_img)
 
