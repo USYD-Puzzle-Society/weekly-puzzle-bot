@@ -74,7 +74,8 @@ class Help(commands.Cog):
             ".pint\n\n\n",
             ".pills\n\n",
             ".gunpoint [optional text]\n\n",
-            ".pfp [optional tag]"
+            ".pfp [optional tag]\n\n\n",
+            ".colour [colour]"
         ]
         self.help_reactions_desc = [
             "bird\n\n",
@@ -84,7 +85,8 @@ class Help(commands.Cog):
             "when someone says they don't want to solve puzzles at a bar\n\n",
             "take the pills :gun:\n\n"
             "when someone is too dangerous to let live\n\n",
-            "sends an image of the tagged person's pfp or your own pfp if no one is tagged"
+            "sends an image of the tagged person's pfp or your own pfp if no one is tagged\n\n",
+            "displays the colour specified. can be hexadecimal or words"
         ]
 
     def get_commands_embed(self) -> discord.Embed:
