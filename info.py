@@ -162,7 +162,7 @@ class Info():
         else:
             ciyk_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
-        line1 = f'{emojis["speech"]} **COMMENT IF YOU KNOW: WEEK {ciyk_info["week_num"]}** {emojis["speech"]}\n'
+        line1 = f'{emojis["speech"]} **COMMENT IF YOU KNOW: WEEK {ciyk_info["week_num"]}** {emojis["speech"]}\n\n'
         line2 = f'If you think you know the pattern, comment an answer that follows it in <#{ciyk_info["discuss_id"]}>\n'
         line3 = f'We\'ll react with a {emojis["heart"]} if you\'re right and a {emojis["cross"]} if you\'re wrong!\n\n'
 
