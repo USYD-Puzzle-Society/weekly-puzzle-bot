@@ -17,6 +17,20 @@ class Reactions(commands.Cog):
             bird = discord.File(b)
 
         await ctx.send(file=bird)
+
+    @commands.command()
+    async def stare(self, ctx: commands.context.Context):
+        with open(f"{self.reactions_dir}/stare.gif", "rb") as stare_gif:
+            stare = discord.File(stare_gif)
+        
+        await ctx.send(file=stare)
+
+    @commands.command()
+    async def laugh(self, ctx: commands.context.Context):
+        with open(f"{self.reactions_dir}/laugh.gif", "rb") as laugh_gif:
+            laugh = discord.File(laugh_gif)
+
+        await ctx.send(file=laugh)
         
     @commands.command()
     async def pansive(self, ctx: commands.context.Context):
