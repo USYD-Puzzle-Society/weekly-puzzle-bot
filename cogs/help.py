@@ -75,6 +75,7 @@ class Help(commands.Cog):
             ".rubidance\n\n\n",
             ".pint\n\n\n",
             ".pills\n\n",
+            ".sus\n\n",
             ".gunpoint [optional text]\n\n",
             ".pfp [optional tag]\n\n\n",
             ".colour [colour]"
@@ -87,7 +88,8 @@ class Help(commands.Cog):
             "when your dad asks if you ate the rest of the hummus and you say no but you really did\n\n",
             "when you're happy and you know it and you're a cube and you want to show it\n\n",
             "when someone says they don't want to solve puzzles at a bar\n\n",
-            "take the pills :gun:\n\n"
+            "take the pills :gun:\n\n",
+            "sus\n\n"
             "when someone is too dangerous to let live\n\n",
             "sends an image of the tagged person's pfp or your own pfp if no one is tagged\n\n",
             "displays the colour specified. can be hexadecimal or words"

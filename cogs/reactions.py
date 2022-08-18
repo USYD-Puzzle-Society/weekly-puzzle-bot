@@ -63,8 +63,16 @@ class Reactions(commands.Cog):
 
         await ctx.send(file=pills)
 
+    @commands.command()
+    async def sus(self, ctx: commands.context.Context):
+        await ctx.send("https://tenor.com/view/among-us-kill-all-impostor-gif-18706928")
+
     # command takes in text as arguments and superimposes on top of the
     # guns pointing at rat image
+    """
+    Hoping to add text wrapping someday so that even longer strings can be
+    placed on the image while still be legible
+    """
     @commands.command()
     async def gunpoint(self, ctx: commands.context.Context, *args):
         # if no arguments are given then just send the image template
