@@ -133,5 +133,24 @@ class Reactions(commands.Cog):
             # if there are multiple mentions, only the pfp of the first is sent
             await ctx.send(mentions[0].avatar_url)
 
+    # sends an image of the colour specified
+    @commands.command()
+    async def colour(ctx, *colour):
+        lower_colour = [word.lower() for word in colour]
+        
+        colour = "".join(lower_colour)
+        img = Image.new("P", (100, 100), None)
+        im = ImageDraw.Draw(img)
+        im.rectangle((0, 0, 100, 100), colour)
+
+        img.save(f"{colour}.png")
+
+        with open("colour.png", "rb") as colour_pic:
+            pic = discord.File(colour_pic)
+
+        await ctx.send(file=pic)
+
+        os.remove(f"{colour}.png")
+
 def setup(bot: commands.Bot):
     bot.add_cog(Reactions(bot))
