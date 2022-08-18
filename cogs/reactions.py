@@ -145,7 +145,7 @@ class Reactions(commands.Cog):
 
         img.save(f"{colour}.png")
 
-        with open("colour.png", "rb") as colour_pic:
+        with open(f"{colour}.png", "rb") as colour_pic:
             pic = discord.File(colour_pic)
 
         await ctx.send(file=pic)
