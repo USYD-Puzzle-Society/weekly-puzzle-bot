@@ -1,5 +1,6 @@
 import os
 import discord
+import datetime
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
@@ -59,8 +60,13 @@ class Reactions(commands.Cog):
             await ctx.send(file=image)
             return
         
-        img_filename = f"{self.reactions_dir}/guns_at_{'_'.join(args)}.png"
-        print("Here")
+        now = datetime.datetime.now()
+        # use the current minute, second and microsecond as a way of generating random numbers for the filename
+        # this just ensures that if two people use the command at similar times, the bot won't try
+        # to create two files with the same name
+        fn_id = str(now.minute) + str(now.second) + str(now.microsecond)
+        img_filename = f"{self.reactions_dir}/{fn_id}.png"
+
         # default font size is 128 but decreases based on how many characters there are
         default_font_size = 128
         text = " ".join(args)
@@ -94,11 +100,13 @@ class Reactions(commands.Cog):
             start_x = start_box[0]
             start_x = round(start_box[0] + (dist_to_rat_head * 1/len(text)))
             start_box = (start_x, start_box[1])
+        
         I1.text(start_box, text, font=font, stroke_width=2)
 
         # save new image with text
         img.save(img_filename)
 
+        # open and send new image
         with open(img_filename, "rb") as gun_img:
             gun = discord.File(gun_img)
         
