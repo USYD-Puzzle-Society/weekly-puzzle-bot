@@ -135,7 +135,7 @@ class Reactions(commands.Cog):
 
     # sends an image of the colour specified
     @commands.command()
-    async def colour(ctx, *colour):
+    async def colour(self, ctx, *colour):
         lower_colour = [word.lower() for word in colour]
         
         colour = "".join(lower_colour)
