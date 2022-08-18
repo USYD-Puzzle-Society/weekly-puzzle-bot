@@ -68,6 +68,8 @@ class Help(commands.Cog):
 
         self.help_reactions = [
             ".bird\n\n",
+            ".stare\n\n",
+            ".laugh\n\n",
             ".pansive\n\n",
             ".devious\n\n\n",
             ".rubidance\n\n\n",
@@ -79,6 +81,8 @@ class Help(commands.Cog):
         ]
         self.help_reactions_desc = [
             "bird\n\n",
+            "when class is almost over but some kid reminds the teacher about homework\n\n",
+            "when you lol irl\n\n",
             "when you're bread and also sad\n\n",
             "when your dad asks if you ate the rest of the hummus and you say no but you really did\n\n",
             "when you're happy and you know it and you're a cube and you want to show it\n\n",
