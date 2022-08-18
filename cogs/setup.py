@@ -410,17 +410,6 @@ class Setup(commands.Cog):
             except ValueError:
                 await ctx.send("Please enter a number.")
 
-        # get submission link
-        await ctx.send("Please send the submission link.")
-
-        msg = await self.bot.wait_for("message", check=check)
-        
-        if ".stop" == msg.content.lower():
-            await ctx.send("Command stopped. No changes will be made to the CIYK announcement.")
-            return
-        else:
-            new_data["submission_link"] = msg.content
-
         # store new data
         self.info_obj.change_data("ciyk", new_data)
 
