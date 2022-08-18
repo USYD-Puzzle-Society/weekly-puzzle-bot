@@ -49,7 +49,8 @@ class Reactions(commands.Cog):
 
         await ctx.send(file=pills)
 
-    # command takes in text as arguments and 
+    # command takes in text as arguments and superimposes on top of the
+    # guns pointing at rat image
     @commands.command()
     async def gunpoint(self, ctx: commands.context.Context, *args):
         # if no arguments are given then just send the image template
@@ -114,6 +115,23 @@ class Reactions(commands.Cog):
 
         # delete new image
         os.remove(img_filename)
+
+    # sends an image of the profile picture of the tagged member
+    # if no one is tagged, the pfp of the person that used the comand is sent
+    @commands.command()
+    async def pfp(self, ctx: commands.context.Context):
+        # check the mentions
+        # if no mentions then send the pfp of the command user
+        mentions = ctx.message.mentions
+
+        if not mentions:
+            user = ctx.author
+            await ctx.send(user.avatar_url)
+
+            return
+        else:
+            # if there are multiple mentions, only the pfp of the first is sent
+            await ctx.send(mentions[0].avatar_url)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Reactions(bot))
