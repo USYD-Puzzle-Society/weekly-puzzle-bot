@@ -22,8 +22,8 @@ class Reactions(commands.Cog):
     async def stare(self, ctx: commands.context.Context):
         await ctx.send("https://tenor.com/view/bird-birds-mynah-capcut-zoom-gif-23327639")
 
-    @commands.command()
-    async def laugh(self, ctx: commands.context.Context):
+    @commands.command(aliases=["a"*i for i in range(10)])
+    async def a(self, ctx: commands.context.Context):
         with open(f"{self.reactions_dir}/laugh.gif", "rb") as laugh_gif:
             laugh = discord.File(laugh_gif)
 

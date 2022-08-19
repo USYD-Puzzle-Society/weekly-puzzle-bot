@@ -69,7 +69,7 @@ class Help(commands.Cog):
         self.help_reactions = [
             ".bird\n\n",
             ".stare\n\n\n",
-            ".laugh\n\n",
+            ".a[aaaaaaaaa]\n\n",
             ".pansive\n\n",
             ".devious\n\n\n",
             ".rubidance\n\n\n",
