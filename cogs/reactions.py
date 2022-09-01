@@ -30,6 +30,10 @@ class Reactions(commands.Cog):
         await ctx.send(file=laugh)
         
     @commands.command()
+    async def tear(self, ctx: commands.context.Context):
+        await ctx.send("https://tenor.com/view/birb-sad-crying-bird-upset-gif-22556773")
+
+    @commands.command()
     async def pansive(self, ctx: commands.context.Context):
         pansive_text = "<:pansive:1003260802557546537>"
         await ctx.send(pansive_text)

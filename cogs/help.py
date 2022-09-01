@@ -70,6 +70,7 @@ class Help(commands.Cog):
             ".bird\n\n",
             ".stare\n\n\n",
             ".aa[aaaaaaaa]\n\n",
+            ".tear\n\n"
             ".pansive\n\n",
             ".devious\n\n\n",
             ".rubidance\n\n\n",
@@ -84,6 +85,7 @@ class Help(commands.Cog):
             "bird\n\n",
             "when class is almost over but some kid reminds the teacher about homework\n\n",
             "when you lol irl\n\n",
+            "when fifi deletes your pills\n\n"
             "when you're bread and also sad\n\n",
             "when your dad asks if you ate the rest of the hummus and you say no but you really did\n\n",
             "when you're happy and you know it and you're a cube and you want to show it\n\n",
