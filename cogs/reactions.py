@@ -140,13 +140,13 @@ class Reactions(commands.Cog):
         os.remove(img_filename)
 
     # sends an image of the profile picture of the tagged member
-    # if no one is tagged, the pfp of the person that used the comand is sent
+    # if no one is tagged, the pfp of the person that used the command is sent
     @commands.command()
     async def pfp(self, ctx: commands.context.Context):
         # check the mentions
         # if no mentions then send the pfp of the command user
         mentions = ctx.message.mentions
-
+        
         if not mentions:
             user = ctx.author
             await ctx.send(user.avatar_url)
