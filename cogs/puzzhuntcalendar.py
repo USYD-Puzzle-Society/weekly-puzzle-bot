@@ -65,3 +65,6 @@ class PHC(commands.Cog):
         embed_msg = self.create_embed()
 
         await ctx.send(embed=embed_msg)
+
+def setup(bot: commands.Bot):
+    bot.add_cog(PHC(bot))
