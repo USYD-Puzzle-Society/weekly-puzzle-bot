@@ -47,20 +47,24 @@ class PHC(commands.Cog):
         
         return events_dict
 
-    def create_embed(self):
+    def create_embed(self) -> discord.Embed:
         events_dict = self.get_events_dict()
 
         embed_msg = discord.Embed(title="Puzzle Hunt Calendar", color=discord.Color.random())
 
         for i in range(len(events_dict)):
-            event = events_dict[i]
+            event = events_dict
 
-            embed_msg.add_field(name=event["date"], value=f"[{event['title']}]({event['link']})", inline=True)
-            embed_msg.add_field(name="Description", value=event["description"], inline=True)
-        
+            embed_msg.add_field(name=f"{i+1}. {event['date']}", value=f"[{event['title']}]({event['link']})", inline=False)
+
         return embed_msg
     
-    @commands.command(alias=["puzzhuntcalendar", "phc", "PHC", "puzzhuntcal", "puzzlehuntcal"])
+    """
+    If no arguments are given to the command, then only display the dates and event names in an embed
+
+    If an argument is given, it should be the number of the
+    """
+    @commands.command(aliases=["puzzhuntcalendar", "phc", "PHC", "puzzhuntcal", "puzzlehuntcal"])
     async def puzzlehuntcalendar(self, ctx: commands.context.Context):
         embed_msg = self.create_embed()
 
