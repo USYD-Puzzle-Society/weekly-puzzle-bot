@@ -53,7 +53,7 @@ class PHC(commands.Cog):
         embed_msg = discord.Embed(title="Puzzle Hunt Calendar", color=discord.Color.random())
 
         for i in range(len(events_dict)):
-            event = events_dict
+            event = events_dict[i]
 
             embed_msg.add_field(name=f"{i+1}. {event['date']}", value=f"[{event['title']}]({event['link']})", inline=False)
 
