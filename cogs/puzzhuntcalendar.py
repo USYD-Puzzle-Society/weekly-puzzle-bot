@@ -47,32 +47,6 @@ class PHC(commands.Cog):
         
         return events_dict
 
-    # def create_embed(self):
-    #     events_dict = self.get_events_dict()
-
-    #     embed_msg = discord.Embed(title="Puzzle Hunt Calendar", color=discord.Color.random())
-
-    #     for i in range(len(events_dict)):
-    #         event = events_dict[i]
-
-    #         embed_msg.add_field(name=event["date"], value=f"[{event['title']}]({event['link']})", inline=True)
-    #         embed_msg.add_field(name="Description", value=event["description"], inline=True)
-        
-    #     return embed_msg
-
-    # def create_message(self):
-    #     events_dict = self.get_events_dict()
-
-    #     text = ""
-
-    #     for i in range(len(events_dict)):
-    #         event = events_dict[i]
-    #         text += f"**{event['date']}**\n"
-    #         text += f"*{event['title']}*\n"
-    #         text += event["description"]
-        
-    #     return text
-
     def create_embed(self) -> discord.Embed:
         events_dict = self.get_events_dict()
 
@@ -81,7 +55,7 @@ class PHC(commands.Cog):
         for i in range(len(events_dict)):
             event = events_dict
 
-            embed_msg.add_field(name=f"{i+1}. {event['date']}", value=f"[{event['title']}]({event['link']})")
+            embed_msg.add_field(name=f"{i+1}. {event['date']}", value=f"[{event['title']}]({event['link']})", inline=False)
 
         return embed_msg
     
