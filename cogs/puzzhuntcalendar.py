@@ -47,9 +47,7 @@ class PHC(commands.Cog):
         
         return events_dict
 
-    def create_embed(self) -> discord.Embed:
-        events_dict = self.get_events_dict()
-
+    def create_events_embed(self, events_dict: dict[str, str]) -> discord.Embed:
         embed_msg = discord.Embed(title="Puzzle Hunt Calendar", color=discord.Color.random())
 
         for i in range(len(events_dict)):
@@ -58,17 +56,42 @@ class PHC(commands.Cog):
             embed_msg.add_field(name=f"{i+1}. {event['date']}", value=f"[{event['title']}]({event['link']})", inline=False)
 
         return embed_msg
+
+    # event_num assumes python indexing
+    def create_desc_embed(self, events_dict: dict[str, str], event_num: int) -> discord.Embed:
+        event = events_dict[event_num]
+        
+        embed_msg = discord.Embed(title=event["date"], color=discord.Color.random())
+        embed_msg.add_field(name=event["title"], value=event["description"])
+
+        return embed_msg
     
     """
     If no arguments are given to the command, then only display the dates and event names in an embed
 
-    If an argument is given, it should be the number of the
+    If an argument is given, it should be the number of the event and doing so will provide more info
+    about the event
     """
     @commands.command(aliases=["puzzhuntcalendar", "phc", "PHC", "puzzhuntcal", "puzzlehuntcal"])
-    async def puzzlehuntcalendar(self, ctx: commands.context.Context):
-        embed_msg = self.create_embed()
+    async def puzzlehuntcalendar(self, ctx: commands.context.Context):        
+        events_dict = self.get_events_dict()
 
-        await ctx.send(embed=embed_msg)
+        # check if any arguments were given
+        msg = ctx.message.content.split()
+        if len(msg) == 2:
+            try:
+                event_num = int(msg[1])
+
+                if event_num < 0 or event_num > len(events_dict):
+                    return
+                
+                embed_msg = self.create_desc_embed(events_dict, event_num-1)
+                await ctx.send(embed=embed_msg)
+            except ValueError:
+                return
+        else:
+            embed_msg = self.create_events_embed(events_dict)
+            await ctx.send(embed=embed_msg)
 
 def setup(bot: commands.Bot):
     bot.add_cog(PHC(bot))
