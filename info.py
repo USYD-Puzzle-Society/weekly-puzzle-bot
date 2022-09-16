@@ -29,6 +29,7 @@ class Info():
                     "img_urls": [],
                     "speed_bonus": -1,
                     "submission_link": "",
+                    "interactive_link": "",
                     "releasing": False
                 },
                 "sb": {
