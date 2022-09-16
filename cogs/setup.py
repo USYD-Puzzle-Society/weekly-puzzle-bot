@@ -205,7 +205,8 @@ class Setup(commands.Cog):
             "img_urls": [],
             "week_num": -1,
             "speed_bonus": -1,
-            "submission_link": ""
+            "submission_link": "",
+            "interactive_link": ""
         }
 
         # enter loop that only breaks when user stops command or sends the puzzle images
@@ -269,6 +270,29 @@ class Setup(commands.Cog):
             return
         else:
             new_data["submission_link"] = msg.content
+
+
+        # add interactive link if there is one
+        await ctx.send("Is there an interactive link? y/n")
+
+        confirmation = False
+        while not confirmation:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made to the puzzle info.")
+                return
+            elif "y" == msg.content.lower():
+                confirmation = "y"
+            elif "n" == msg.content.lower():
+                confirmation = "n"
+
+        if "y" == confirmation:
+            await ctx.send("Please send the interactive link for the puzzle.")
+
+            link = await self.bot.wait_for("message", check=check)
+
+            new_data["interactive_link"] = link.content
 
         
         # if this point is reached, then the new data will be saved

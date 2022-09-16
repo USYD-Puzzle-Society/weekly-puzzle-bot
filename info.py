@@ -129,7 +129,12 @@ class Info():
         line5 = "You can submit as many times as you want!\n"
         line6 = "Your highest score will be kept."
 
-        return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6
+        line7 = ""
+        interactive_link = self.info["interactive_link"]
+        if interactive_link:
+            line7 = f"\n\nInteractive version: {interactive_link}"
+
+        return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6 + line7
 
     def get_sb_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
@@ -186,6 +191,7 @@ class Info():
         if "puzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
             self.info[puzz_name]["speed_bonus"] = new_data["speed_bonus"]
+            self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
         else:
             self.info[puzz_name]["img_url"] = new_data["img_url"]
 
