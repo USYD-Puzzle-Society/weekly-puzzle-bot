@@ -130,7 +130,7 @@ class Info():
         line6 = "Your highest score will be kept."
 
         line7 = ""
-        interactive_link = self.info["interactive_link"]
+        interactive_link = puzz_info["interactive_link"]
         if interactive_link:
             line7 = f"\n\nInteractive version: {interactive_link}"
 
