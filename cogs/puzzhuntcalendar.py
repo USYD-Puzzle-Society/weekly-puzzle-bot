@@ -36,7 +36,7 @@ class PHC(commands.Cog):
             description = event.find("div", class_="description")
 
             link = description.find("a").text
-            only_desc = description.text.replace(f"{link}\n\n", "")
+            only_desc = description.text.replace(f"{link}", "")
 
             if location:
                 only_desc += f"\n\nLocation: {location}"
@@ -74,8 +74,6 @@ class PHC(commands.Cog):
         link = event["link"]
         desc = event["description"]
         full_desc = f"{link}\n\n{desc}"
-
-        punctuation = [".", "!"]
 
         # cut off the message into two parts if the description is longer than 2000 characters
         if len(full_desc) <= max_msg_len:
