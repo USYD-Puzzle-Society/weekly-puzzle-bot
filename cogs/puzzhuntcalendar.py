@@ -24,7 +24,8 @@ class PHC(commands.Cog):
             }
         }
 
-        0 is a counter and increases for each new event
+        0 is a counter and increases for each new event.
+        E.g first event is stored as value for key 0 and second event is stored as value for key 1
         """
         events_dict = {}
         for i, event in enumerate(events):
@@ -48,7 +49,7 @@ class PHC(commands.Cog):
         return events_dict
 
     def create_events_embed(self, events_dict: dict[str, str]) -> discord.Embed:
-        embed_msg = discord.Embed(title="Puzzle Hunt Calendar", color=discord.Color.random())
+        embed_msg = discord.Embed(title="Puzzle Hunt Calendar", color=discord.Color.random(), description=self.calendar_url)
 
         for i in range(len(events_dict)):
             event = events_dict[i]
@@ -58,13 +59,35 @@ class PHC(commands.Cog):
         return embed_msg
 
     # event_num assumes python indexing
-    def create_desc_embed(self, events_dict: dict[str, str], event_num: int) -> discord.Embed:
+    def create_desc_embed(self, events_dict: dict[str, str], event_num: int) -> list[str]:
         event = events_dict[event_num]
         
         embed_msg = discord.Embed(title=event["date"], color=discord.Color.random())
         embed_msg.add_field(name=event["title"], value=event["description"])
 
         return embed_msg
+    
+    def get_desc_str(self, events_dict: dict[str, str], event_num: int) -> discord.Embed:
+        max_msg_len = 2000
+        
+        event = events_dict[event_num]
+        link = event["link"]
+        desc = event["description"]
+        full_desc = f"{link}\n\n{desc}"
+
+        punctuation = [".", "!"]
+
+        # cut off the message into two parts if the description is longer than 2000 characters
+        if len(full_desc) <= max_msg_len:
+            return [full_desc]
+
+        msg_desc = []
+        while len(full_desc > max_msg_len):
+            msg_desc.append(full_desc[:max_msg_len])
+            full_desc = full_desc[max_msg_len:]
+        
+        msg_desc.append(full_desc)
+        return msg_desc
     
     """
     If no arguments are given to the command, then only display the dates and event names in an embed
@@ -82,11 +105,12 @@ class PHC(commands.Cog):
             try:
                 event_num = int(msg[1])
 
-                if event_num < 0 or event_num > len(events_dict):
+                if event_num < 1 or event_num > len(events_dict):
                     return
                 
-                embed_msg = self.create_desc_embed(events_dict, event_num-1)
-                await ctx.send(embed=embed_msg)
+                msg_desc = self.get_desc_str(events_dict, event_num)
+                for i in range(len(msg_desc)):
+                    await ctx.send(msg_desc[i])
             except ValueError:
                 return
         else:
