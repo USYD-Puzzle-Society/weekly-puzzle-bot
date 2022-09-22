@@ -108,7 +108,7 @@ class PHC(commands.Cog):
                 if event_num < 1 or event_num > len(events_dict):
                     return
                 
-                msg_desc = self.get_desc_str(events_dict, event_num)
+                msg_desc = self.get_desc_str(events_dict, event_num-1)
                 for i in range(len(msg_desc)):
                     await ctx.send(msg_desc[i])
             except ValueError:
