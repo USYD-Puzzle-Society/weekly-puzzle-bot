@@ -79,7 +79,8 @@ class Help(commands.Cog):
             ".sus\n\n",
             ".gunpoint [optional text]\n\n",
             ".pfp [optional tag]\n\n\n",
-            ".colour [colour]"
+            ".colour [colour]\n\n",
+            "phc [number]"
         ]
         self.help_reactions_desc = [
             "bird\n\n",
@@ -94,7 +95,8 @@ class Help(commands.Cog):
             "sus\n\n"
             "when someone is too dangerous to let live\n\n",
             "sends an image of the tagged person's pfp or your own pfp if no one is tagged\n\n",
-            "displays the colour specified. can be hexadecimal or words"
+            "displays the colour specified. can be hexadecimal or words\n\n",
+            "Use command without a number to list all events from Puzzle Hunt Calendar. Use command with number to view description for specific event."
         ]
 
     def get_commands_embed(self) -> discord.Embed:
