@@ -80,7 +80,7 @@ class Help(commands.Cog):
             ".gunpoint [optional text]\n\n",
             ".pfp [optional tag]\n\n\n",
             ".colour [colour]\n\n\n",
-            "phc [number]"
+            ".phc [number]"
         ]
         self.help_reactions_desc = [
             "bird\n\n",
