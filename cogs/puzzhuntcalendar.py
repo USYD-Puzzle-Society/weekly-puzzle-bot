@@ -111,7 +111,7 @@ class PHC(commands.Cog):
                 
                 msg_desc = self.get_desc_str(events_dict, event_num-1)
                 for i in range(len(msg_desc)):
-                    await ctx.send(msg_desc[i])
+                    await ctx.send(content=msg_desc[i], embed=None)
             except ValueError:
                 return
         else:
