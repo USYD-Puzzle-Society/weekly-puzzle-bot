@@ -19,6 +19,13 @@ class Reactions(commands.Cog):
         await ctx.send(file=bird)
 
     @commands.command()
+    async def dog(self, ctx: commands.context.Context):
+        with open(f"{self.reactions_dir}/bird.jpg", "rb") as d:
+            dog = discord.File(d)
+
+        await ctx.send(file=dog)
+
+    @commands.command()
     async def stare(self, ctx: commands.context.Context):
         await ctx.send("https://tenor.com/view/bird-birds-mynah-capcut-zoom-gif-23327639")
 

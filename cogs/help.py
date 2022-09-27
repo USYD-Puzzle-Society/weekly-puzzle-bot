@@ -68,6 +68,7 @@ class Help(commands.Cog):
 
         self.help_reactions = [
             ".bird\n\n",
+            ".dog\n\n",
             ".stare\n\n\n",
             ".aa[aaaaaaaa]\n\n",
             ".tear\n\n"
@@ -84,6 +85,7 @@ class Help(commands.Cog):
         ]
         self.help_reactions_desc = [
             "bird\n\n",
+            "dog\n\n",
             "when class is almost over but some kid reminds the teacher about homework\n\n",
             "when you lol irl\n\n",
             "when fifi deletes your pills\n\n"
