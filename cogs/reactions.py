@@ -20,7 +20,7 @@ class Reactions(commands.Cog):
 
     @commands.command()
     async def dog(self, ctx: commands.context.Context):
-        with open(f"{self.reactions_dir}/bird.jpg", "rb") as d:
+        with open(f"{self.reactions_dir}/dog.jpg", "rb") as d:
             dog = discord.File(d)
 
         await ctx.send(file=dog)
