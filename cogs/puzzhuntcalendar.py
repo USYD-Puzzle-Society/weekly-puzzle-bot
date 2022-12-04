@@ -42,8 +42,10 @@ class PHC(commands.Cog):
                 else:
                     only_desc = description.text.replace(f"{link}\n\n", "")
             except TypeError:
+                link = ""
                 only_desc = ""
             except KeyError:
+                link = ""
                 only_desc = ""
 
             if location:
@@ -82,6 +84,10 @@ class PHC(commands.Cog):
         link = event["link"]
         desc = event["description"]
         full_desc = f"{link}\n\n{desc}"
+
+        # if the description is empty, return a string informing the user of that
+        if not full_desc:
+            return "There is no additional information for this event."
 
         # cut off the message into two parts if the description is longer than 2000 characters
         if len(full_desc) <= max_msg_len:
