@@ -36,12 +36,12 @@ class PHC(commands.Cog):
             description = event.find("div", class_="description")
 
             try:
-                link = description.find("a").text
+                link = description.find("a")["href"]
                 if (description.text.find(f"{link}\n\n") == -1):
                     only_desc = description.text.replace(f"{link}", "")
                 else:
                     only_desc = description.text.replace(f"{link}\n\n", "")
-            except AttributeError:
+            except KeyError:
                 only_desc = ""
 
             if location:
