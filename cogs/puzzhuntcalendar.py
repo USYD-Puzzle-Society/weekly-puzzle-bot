@@ -41,6 +41,8 @@ class PHC(commands.Cog):
                     only_desc = description.text.replace(f"{link}", "")
                 else:
                     only_desc = description.text.replace(f"{link}\n\n", "")
+            except TypeError:
+                only_desc = ""
             except KeyError:
                 only_desc = ""
 
