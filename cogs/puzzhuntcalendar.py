@@ -35,11 +35,14 @@ class PHC(commands.Cog):
             location = event.find("span", class_="location").text
             description = event.find("div", class_="description")
 
-            link = description.find("a").text
-            if (description.text.find(f"{link}\n\n") == -1):
-                only_desc = description.text.replace(f"{link}", "")
-            else:
-                only_desc = description.text.replace(f"{link}\n\n", "")
+            try:
+                link = description.find("a").text
+                if (description.text.find(f"{link}\n\n") == -1):
+                    only_desc = description.text.replace(f"{link}", "")
+                else:
+                    only_desc = description.text.replace(f"{link}\n\n", "")
+            except AttributeError:
+                only_desc = ""
 
             if location:
                 only_desc += f"\n\nLocation: {location}"
