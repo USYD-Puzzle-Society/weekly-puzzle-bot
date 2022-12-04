@@ -86,7 +86,7 @@ class PHC(commands.Cog):
         full_desc = f"{link}\n\n{desc}"
 
         # if the description is empty, return a string informing the user of that
-        if not full_desc:
+        if full_desc == "\n\n":
             return "There is no additional information for this event."
 
         # cut off the message into two parts if the description is longer than 2000 characters
