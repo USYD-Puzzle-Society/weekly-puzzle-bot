@@ -87,7 +87,7 @@ class PHC(commands.Cog):
 
         # if the description is empty, return a string informing the user of that
         if full_desc == "\n\n":
-            return "There is no additional information for this event."
+            return ["There is no additional information for this event."]
 
         # cut off the message into two parts if the description is longer than 2000 characters
         if len(full_desc) <= max_msg_len:
