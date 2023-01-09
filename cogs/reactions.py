@@ -193,7 +193,7 @@ class Reactions(commands.Cog):
             # resize image
             pfp = pfp.resize((100, 100))
 
-            img.paste(pfp, (400, 240))
+            img.paste(pfp, (420, 250))
 
             os.remove(pfp_filename)
 
