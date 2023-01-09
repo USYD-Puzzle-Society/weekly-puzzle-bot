@@ -202,7 +202,6 @@ class Reactions(commands.Cog):
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
             img_arr = np.dstack((img_arr, lum_img_arr))
-            circle_pfp_fn = f"{self.reactions_dir}/circle_pfp.png"
             circle_pfp = Image.fromarray(img_arr)# DELETE THIS FILE AT THE END
 
             user_status = user.raw_status # get user status as a string (online, dnd, idle, offline)
@@ -214,7 +213,6 @@ class Reactions(commands.Cog):
             img.paste(circle_pfp, (420, 250), circle_pfp)
 
             os.remove(pfp_filename)
-            os.remove(circle_pfp_fn)
 
         else:
             font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
