@@ -205,7 +205,7 @@ class Reactions(commands.Cog):
             start_y = round(start_y + (dist_to_bonked_head * 1/len(text)))
             start_box = (start_x, start_y)
         
-        I1.text(start_box, text, font=font, stroke_width=2, fill=(255, 255, 255))
+        I1.text(start_box, text, font=font, stroke_width=2, fill="black")
 
         # save new image with text
         img.save(img_filename)
