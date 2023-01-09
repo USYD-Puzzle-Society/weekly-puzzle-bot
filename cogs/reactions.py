@@ -170,10 +170,10 @@ class Reactions(commands.Cog):
         img_filename = f"{self.reactions_dir}/{fn_id}.jpg"
 
         # default font size is 128 but decreases based on how many characters there are
-        default_font_size = 128
+        default_font_size = 100
         text = " ".join(args)
 
-        start_box = (300, 240) # the starting coordinates of the "box" which the text will be bound by
+        start_box = (330, 240) # the starting coordinates of the "box" which the text will be bound by
         end_box = (630, 280)
         dist_to_mid_y = (end_box[1] - start_box[1])/2
         box_length = end_box[0] - start_box[0]
