@@ -173,7 +173,7 @@ class Reactions(commands.Cog):
         default_font_size = 100
         text = " ".join(args)
 
-        start_box = (400, 240) # the starting coordinates of the "box" which the text will be bound by
+        start_box = (420, 240) # the starting coordinates of the "box" which the text will be bound by
         end_box = (630, 280)
         dist_to_mid_y = (end_box[1] - start_box[1])/2
         box_length = end_box[0] - start_box[0]
