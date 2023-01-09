@@ -13,7 +13,8 @@ with open(".token", "r") as token_file:
 
 command_prefix = "."
 activity = discord.Game(name="Professor Layton")
-bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None)
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None, intents=intents)
 
 # load all available cogs on startup
 for filename in os.listdir("cogs/"):
