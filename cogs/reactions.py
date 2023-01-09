@@ -174,7 +174,7 @@ class Reactions(commands.Cog):
         text = " ".join(args)
 
         start_box = (420, 240) # the starting coordinates of the "box" which the text will be bound by
-        end_box = (630, 280)
+        end_box = (630, 320)
         dist_to_mid_y = (end_box[1] - start_box[1])/2
         box_length = end_box[0] - start_box[0]
 
@@ -199,11 +199,8 @@ class Reactions(commands.Cog):
             start_box = (start_box[0], start_y)
         else:
             # the smaller the number of characters, the closer to the rat head the text will start
-            start_x = start_box[0]
             start_x = round(start_box[0] + (dist_to_bonked_head * 1/len(text)))
-            start_y = start_box[1]
-            start_y = round(start_y + (dist_to_bonked_head * 1/len(text)))
-            start_box = (start_x, start_y)
+            start_box = (start_x, start_box[1])
         
         I1.text(start_box, text, font=font, stroke_width=2, fill="black")
 
