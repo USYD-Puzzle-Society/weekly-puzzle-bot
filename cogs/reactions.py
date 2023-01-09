@@ -215,7 +215,7 @@ class Reactions(commands.Cog):
             pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}.png"
             pfp_template = Image.open(pfp_template_fn)
 
-            circle_pfp.paste(pfp_template)
+            # circle_pfp.paste(pfp_template)
 
             img.paste(circle_pfp, (420, 250))
 
