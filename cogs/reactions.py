@@ -197,11 +197,11 @@ class Reactions(commands.Cog):
             # crop image into a circle
             lum_img = Image.new("L", pfp.size, 0)
             draw = ImageDraw.Draw(lum_img)
-            draw.pieslice([(0, 0), pfp.size], 0, 360, fill=255)
+            draw.pieslice([0, 0, pfp.size[0], pfp.size[1]], 0, 360, fill=255)
 
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
-            final_img_arr = np.dstack((img_arr,lum_img_arr))
+            final_img_arr = np.dstack((img_arr, lum_img_arr))
             circle_pfp_fn = f"{self.reactions_dir}/circle_pfp.png"
             Image.fromarray(final_img_arr).save(circle_pfp_fn, "PNG") # DELETE THIS FILE AT THE END
 
