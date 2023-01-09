@@ -201,9 +201,11 @@ class Reactions(commands.Cog):
             # the smaller the number of characters, the closer to the rat head the text will start
             start_x = start_box[0]
             start_x = round(start_box[0] + (dist_to_bonked_head * 1/len(text)))
-            start_box = (start_x, start_box[1])
+            start_y = start_box[1]
+            start_y = round(start_y + (dist_to_bonked_head * 1/len(text)))
+            start_box = (start_x, start_y)
         
-        I1.text(start_box, text, font=font, stroke_width=2)
+        I1.text(start_box, text, font=font, stroke_width=2, fill=(255, 255, 255))
 
         # save new image with text
         img.save(img_filename)
