@@ -80,6 +80,7 @@ class Help(commands.Cog):
             ".pills\n\n",
             ".sus\n\n",
             ".gunpoint [optional text]\n\n",
+            ".bonk [optional tag/text]\n\n",
             ".pfp [optional tag]\n\n\n",
             ".colour [colour]\n\n\n",
             ".phc [number]"
@@ -98,6 +99,7 @@ class Help(commands.Cog):
             "take the pills :gun:\n\n",
             "sus\n\n"
             "when someone is too dangerous to let live\n\n",
+            "Deals severe Almighty damage to one foe.\n\n",
             "sends an image of the tagged person's pfp or your own pfp if no one is tagged\n\n",
             "displays the colour specified. can be hexadecimal or words\n\n",
             "Use command without a number to list all events from Puzzle Hunt Calendar. Use command with number to view description for specific event."
