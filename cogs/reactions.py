@@ -190,6 +190,9 @@ class Reactions(commands.Cog):
             await user.avatar_url.save(pfp_filename)
             pfp = Image.open(pfp_filename, "r")
 
+            # resize image
+            pfp.resize((100, 100))
+
             img.paste(pfp, (400, 240))
 
             os.remove(pfp_filename)
