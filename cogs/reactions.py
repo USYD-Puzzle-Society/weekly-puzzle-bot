@@ -212,7 +212,7 @@ class Reactions(commands.Cog):
             circle_pfp = Image.open(circle_pfp_fn)
 
             user_status = user.raw_status # get user status as a string (online, dnd, idle, offline)
-            pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}"
+            pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}.png"
             pfp_template = Image.open(pfp_template_fn)
 
             circle_pfp.paste(pfp_template)
