@@ -218,7 +218,7 @@ class Reactions(commands.Cog):
             img.paste(circle_pfp, (420, 250))
 
             os.remove(pfp_filename)
-            os.remove(circle_pfp_fn)
+            # os.remove(circle_pfp_fn)
 
         else:
             font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
