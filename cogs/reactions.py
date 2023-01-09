@@ -181,37 +181,51 @@ class Reactions(commands.Cog):
         dist_to_bonked_head = 20 # the x coordinate difference to the head being bonked (rougly) from the start x of the box
         img = Image.open(f"{self.reactions_dir}/bonk.jpg")
         I1 = ImageDraw.Draw(img)
-        font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
-        text_size = I1.textlength(text=text, font=font) # size of string in pixel
-        # check if the string size is larger than the box
-        if text_size > box_length:
-            # decrease font size until the string fits
-            amt_decrease = 0
-            while text_size > box_length:
-                amt_decrease += 1
-                new_font_size = default_font_size - amt_decrease
-                font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=new_font_size)
-                text_size = I1.textlength(text=text, font=font)
 
-            # the smaller the font, the further down the text will start
-            start_y = start_box[1]
-            start_y = round(start_y + (dist_to_mid_y * amt_decrease/default_font_size))
-            start_box = (start_box[0], start_y)
+        # if the user has tagged someone with this command, put their pfp on the bonk image
+        # only the first tagged user will be used
+        if ctx.message.mentions:
+            user = ctx.message.mentions[0]
+            pfp_filename = f"{self.reactions_dir}/pfp.png"
+            await user.avatar_url.save(pfp_filename)
+            pfp = Image.open(pfp_filename, "r")
+
+            img.paste(pfp, (400, 240))
+
+            os.remove(pfp_filename)
+
         else:
-            # the smaller the number of characters, the closer to the rat head the text will start
-            start_x = round(start_box[0] + (dist_to_bonked_head * 1/len(text)))
-            start_box = (start_x, start_box[1])
-        
-        I1.text(start_box, text, font=font, stroke_width=2, fill="black")
+            font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
+            text_size = I1.textlength(text=text, font=font) # size of string in pixel
+            # check if the string size is larger than the box
+            if text_size > box_length:
+                # decrease font size until the string fits
+                amt_decrease = 0
+                while text_size > box_length:
+                    amt_decrease += 1
+                    new_font_size = default_font_size - amt_decrease
+                    font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=new_font_size)
+                    text_size = I1.textlength(text=text, font=font)
+
+                # the smaller the font, the further down the text will start
+                start_y = start_box[1]
+                start_y = round(start_y + (dist_to_mid_y * amt_decrease/default_font_size))
+                start_box = (start_box[0], start_y)
+            else:
+                # the smaller the number of characters, the closer to the rat head the text will start
+                start_x = round(start_box[0] + (dist_to_bonked_head * 1/len(text)))
+                start_box = (start_x, start_box[1])
+            
+            I1.text(start_box, text, font=font, stroke_width=2, fill="black")
 
         # save new image with text
         img.save(img_filename)
 
         # open and send new image
-        with open(img_filename, "rb") as gun_img:
-            gun = discord.File(gun_img)
+        with open(img_filename, "rb") as bonk_img:
+            bonk = discord.File(bonk_img)
         
-        await ctx.send(file=gun)
+        await ctx.send(file=bonk)
 
         # delete new image
         os.remove(img_filename)
