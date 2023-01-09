@@ -188,7 +188,7 @@ class Reactions(commands.Cog):
             user = ctx.message.mentions[0]
             pfp_filename = f"{self.reactions_dir}/pfp.png"
             await user.avatar_url.save(pfp_filename)
-            pfp = Image.open(pfp_filename, "r")
+            pfp = Image.open(pfp_filename)
 
             # resize image
             pfp.resize((100, 100))
