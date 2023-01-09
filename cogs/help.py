@@ -79,7 +79,7 @@ class Help(commands.Cog):
             ".pint\n\n\n",
             ".pills\n\n",
             ".sus\n\n",
-            ".gunpoint [optional text]\n\n",
+            ".gunpoint [optional tag/text]\n\n",
             ".bonk [optional tag/text]\n\n",
             ".pfp [optional tag]\n\n\n",
             ".colour [colour]\n\n\n",
