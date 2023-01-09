@@ -191,7 +191,7 @@ class Reactions(commands.Cog):
             pfp = Image.open(pfp_filename)
 
             # resize image
-            pfp.resize((100, 100))
+            pfp = pfp.resize((100, 100))
 
             img.paste(pfp, (400, 240))
 
