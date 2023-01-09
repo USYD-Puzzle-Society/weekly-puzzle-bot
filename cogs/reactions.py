@@ -148,7 +148,7 @@ class Reactions(commands.Cog):
 
             circle_pfp.paste(pfp_template, (0, 0), pfp_template)
 
-            img.paste(circle_pfp, (240, 270), circle_pfp)
+            img.paste(circle_pfp, (250, 300), circle_pfp)
 
             os.remove(pfp_filename)
 
