@@ -203,11 +203,7 @@ class Reactions(commands.Cog):
             lum_img_arr = np.array(lum_img)
             img_arr = np.dstack((img_arr, lum_img_arr))
             circle_pfp_fn = f"{self.reactions_dir}/circle_pfp.png"
-            Image.fromarray(img_arr).save(circle_pfp_fn) # DELETE THIS FILE AT THE END
-
-
-            # create composite image with pfp template and circle pfp
-            circle_pfp = Image.open(circle_pfp_fn)
+            circle_pfp = Image.fromarray(img_arr)# DELETE THIS FILE AT THE END
 
             user_status = user.raw_status # get user status as a string (online, dnd, idle, offline)
             pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}.png"
@@ -215,10 +211,10 @@ class Reactions(commands.Cog):
 
             circle_pfp.paste(pfp_template, (0, 0), pfp_template)
 
-            img.paste(circle_pfp, (420, 250))
+            img.paste(circle_pfp, (420, 250), circle_pfp)
 
             os.remove(pfp_filename)
-            # os.remove(circle_pfp_fn)
+            os.remove(circle_pfp_fn)
 
         else:
             font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
