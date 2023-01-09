@@ -189,17 +189,15 @@ class Reactions(commands.Cog):
             user = ctx.message.mentions[0]
             pfp_filename = f"{self.reactions_dir}/pfp.png"
             await user.avatar_url.save(pfp_filename)
-            pfp = Image.open(pfp_filename)
+            pfp = Image.open(pfp_filename).convert("RGB")
 
             # resize image
             pfp = pfp.resize((100, 100))
 
             # crop image into a circle
-            height, width = pfp.size
-            lum_img = Image.new("L", [height, width], 0)
-
+            lum_img = Image.new("L", pfp.size, 0)
             draw = ImageDraw.Draw(lum_img)
-            draw.pieslice([0, 0, (height, width)], 0, 360, fill=255, outline="white")
+            draw.pieslice([0, 0, pfp.size], 0, 360, fill=255, outline="white")
 
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
