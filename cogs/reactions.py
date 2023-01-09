@@ -199,7 +199,7 @@ class Reactions(commands.Cog):
             lum_img = Image.new("L", [height, width], 0)
 
             draw = ImageDraw.Draw(lum_img)
-            draw.pieslice([(0, 0), (height, width)], 0, 360, fill=255, outline="white")
+            draw.pieslice([0, 0, (height, width)], 0, 360, fill=255, outline="white")
 
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
@@ -215,7 +215,7 @@ class Reactions(commands.Cog):
             pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}.png"
             pfp_template = Image.open(pfp_template_fn)
 
-            # circle_pfp.paste(pfp_template)
+            circle_pfp.paste(pfp_template, (0, 0), pfp_template)
 
             img.paste(circle_pfp, (420, 250))
 
