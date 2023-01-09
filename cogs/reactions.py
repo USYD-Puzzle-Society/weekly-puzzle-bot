@@ -203,7 +203,7 @@ class Reactions(commands.Cog):
             lum_img_arr = np.array(lum_img)
             final_img_arr = np.dstack((img_arr, lum_img_arr))
             circle_pfp_fn = f"{self.reactions_dir}/circle_pfp.png"
-            Image.fromarray(final_img_arr).save(circle_pfp_fn, "PNG") # DELETE THIS FILE AT THE END
+            Image.fromarray(final_img_arr).save(circle_pfp_fn) # DELETE THIS FILE AT THE END
 
 
             # create composite image with pfp template and circle pfp
