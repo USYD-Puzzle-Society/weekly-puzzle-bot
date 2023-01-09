@@ -1,6 +1,7 @@
 import os
 import discord
 import datetime
+import numpy as np
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
@@ -193,9 +194,33 @@ class Reactions(commands.Cog):
             # resize image
             pfp = pfp.resize((100, 100))
 
-            img.paste(pfp, (420, 250))
+            # crop image into a circle
+            height, width = pfp.size
+            lum_img = Image.new("L", [height, width], 0)
+
+            draw = ImageDraw.Draw(lum_img)
+            draw.pieslice([(0, 0), (height, width)], 0, 360, fill=255, outline="white")
+
+            img_arr =np.array(img)
+            lum_img_arr =np.array(lum_img)
+            final_img_arr = np.dstack((img_arr,lum_img_arr))
+            circle_pfp_fn = f"{self.reactions_dir}/circle_pfp.png"
+            Image.fromarray(final_img_arr).save(circle_pfp_fn) # DELETE THIS FILE AT THE END
+
+
+            # create composite image with pfp template and circle pfp
+            circle_pfp = Image.open(circle_pfp_fn)
+
+            user_status = user.raw_status # get user status as a string (online, dnd, idle, offline)
+            pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}"
+            pfp_template = Image.open(pfp_template_fn)
+
+            circle_pfp.paste(pfp_template)
+
+            img.paste(circle_pfp, (420, 250))
 
             os.remove(pfp_filename)
+            os.remove(circle_pfp_fn)
 
         else:
             font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
