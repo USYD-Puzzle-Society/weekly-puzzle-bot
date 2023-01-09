@@ -201,9 +201,9 @@ class Reactions(commands.Cog):
 
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
-            final_img_arr = np.dstack((img_arr, lum_img_arr))
+            img_arr = np.dstack((img_arr, lum_img_arr))
             circle_pfp_fn = f"{self.reactions_dir}/circle_pfp.png"
-            Image.fromarray(final_img_arr).save(circle_pfp_fn) # DELETE THIS FILE AT THE END
+            Image.fromarray(img_arr).save(circle_pfp_fn) # DELETE THIS FILE AT THE END
 
 
             # create composite image with pfp template and circle pfp
@@ -218,7 +218,7 @@ class Reactions(commands.Cog):
             img.paste(circle_pfp, (420, 250))
 
             os.remove(pfp_filename)
-            os.remove(circle_pfp_fn)
+            # os.remove(circle_pfp_fn)
 
         else:
             font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
