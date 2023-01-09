@@ -157,7 +157,7 @@ class Reactions(commands.Cog):
     @commands.command()
     async def bonk(self, ctx: commands.context.Context, *args):
         if not args:
-            with open(f"{self.reactions_dir}/bonk.jpg", "rb") as template:
+            with open(f"{self.reactions_dir}/bonk.png", "rb") as template:
                 image = discord.File(template)
 
             await ctx.send(file=image)
@@ -168,7 +168,7 @@ class Reactions(commands.Cog):
         # this just ensures that if two people use the command at similar times, the bot won't try
         # to create two files with the same name
         fn_id = str(now.minute) + str(now.second) + str(now.microsecond)
-        img_filename = f"{self.reactions_dir}/{fn_id}.jpg"
+        img_filename = f"{self.reactions_dir}/{fn_id}.png"
 
         # default font size is 128 but decreases based on how many characters there are
         default_font_size = 100
@@ -180,7 +180,7 @@ class Reactions(commands.Cog):
         box_length = end_box[0] - start_box[0]
 
         dist_to_bonked_head = 20 # the x coordinate difference to the head being bonked (rougly) from the start x of the box
-        img = Image.open(f"{self.reactions_dir}/bonk.jpg")
+        img = Image.open(f"{self.reactions_dir}/bonk.png")
         I1 = ImageDraw.Draw(img)
 
         # if the user has tagged someone with this command, put their pfp on the bonk image
