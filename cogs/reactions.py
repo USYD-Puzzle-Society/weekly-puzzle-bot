@@ -197,7 +197,7 @@ class Reactions(commands.Cog):
             # crop image into a circle
             lum_img = Image.new("L", pfp.size, 0)
             draw = ImageDraw.Draw(lum_img)
-            draw.pieslice([0, 0, pfp.size], 0, 360, fill=255, outline="white")
+            draw.pieslice([0, 0, pfp.size], 0, 360, fill=255)
 
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
@@ -210,7 +210,6 @@ class Reactions(commands.Cog):
             circle_pfp = Image.open(circle_pfp_fn)
 
             user_status = user.raw_status # get user status as a string (online, dnd, idle, offline)
-            await ctx.send(user.status)
             pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}.png"
             pfp_template = Image.open(pfp_template_fn)
 
