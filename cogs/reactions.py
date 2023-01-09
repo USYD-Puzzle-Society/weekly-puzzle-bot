@@ -153,6 +153,70 @@ class Reactions(commands.Cog):
         # delete new image
         os.remove(img_filename)
 
+    @commands.command()
+    async def bonk(self, ctx: commands.context.Context, *args):
+        if not args:
+            with open(f"{self.reactions_dir}/bonk.jpg", "rb") as template:
+                image = discord.File(template)
+
+            await ctx.send(file=image)
+            return
+
+        now = datetime.datetime.now()
+        # use the current minute, second and microsecond as a way of generating random numbers for the filename
+        # this just ensures that if two people use the command at similar times, the bot won't try
+        # to create two files with the same name
+        fn_id = str(now.minute) + str(now.second) + str(now.microsecond)
+        img_filename = f"{self.reactions_dir}/{fn_id}.jpg"
+
+        # default font size is 128 but decreases based on how many characters there are
+        default_font_size = 128
+        text = " ".join(args)
+
+        start_box = (300, 240) # the starting coordinates of the "box" which the text will be bound by
+        end_box = (630, 280)
+        dist_to_mid_y = (end_box[1] - start_box[1])/2
+        box_length = end_box[0] - start_box[0]
+
+        dist_to_bonked_head = 20 # the x coordinate difference to the head being bonked (rougly) from the start x of the box
+        img = Image.open(f"{self.reactions_dir}/bonk.jpg")
+        I1 = ImageDraw.Draw(img)
+        font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
+        text_size = I1.textlength(text=text, font=font) # size of string in pixel
+        # check if the string size is larger than the box
+        if text_size > box_length:
+            # decrease font size until the string fits
+            amt_decrease = 0
+            while text_size > box_length:
+                amt_decrease += 1
+                new_font_size = default_font_size - amt_decrease
+                font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=new_font_size)
+                text_size = I1.textlength(text=text, font=font)
+
+            # the smaller the font, the further down the text will start
+            start_y = start_box[1]
+            start_y = round(start_y + (dist_to_mid_y * amt_decrease/default_font_size))
+            start_box = (start_box[0], start_y)
+        else:
+            # the smaller the number of characters, the closer to the rat head the text will start
+            start_x = start_box[0]
+            start_x = round(start_box[0] + (dist_to_bonked_head * 1/len(text)))
+            start_box = (start_x, start_box[1])
+        
+        I1.text(start_box, text, font=font, stroke_width=2)
+
+        # save new image with text
+        img.save(img_filename)
+
+        # open and send new image
+        with open(img_filename, "rb") as gun_img:
+            gun = discord.File(gun_img)
+        
+        await ctx.send(file=gun)
+
+        # delete new image
+        os.remove(img_filename)
+
     # sends an image of the profile picture of the tagged member
     # if no one is tagged, the pfp of the person that used the command is sent
     @commands.command()
