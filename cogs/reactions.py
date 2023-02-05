@@ -319,5 +319,9 @@ class Reactions(commands.Cog):
 
         os.remove(f"{colour}.png")
 
+    @commands.command()
+    async def scream(self, ctx):
+        await ctx.send("AAAAA")
+
 def setup(bot: commands.Bot):
     bot.add_cog(Reactions(bot))
