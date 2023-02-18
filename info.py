@@ -106,6 +106,30 @@ class Info():
     # this could potential pose problems if a read and write occur at the same time
     # however, this shouldn't be a big issue as the commands that use these functions will only be accessible by a few people
 
+    def get_rebuscryptic_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        puzz_info = self.info["rebuscryptic"]
+        role_name = puzz_info["role_name"]
+
+        if mention:
+            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            puzz_tag,
+            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            "**REBUS + CRYPTIC**\n\n",
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._"
+        ]
+
+        return "".join(lines)
+
     # mention lets the function know whether the role should be tagged
     def get_minipuzz_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
@@ -121,7 +145,7 @@ class Info():
 
         lines = [
             puzz_tag,
-            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
             "**MINI-PUZZLE**\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {puzz_info['submission_link']}\n\n",
@@ -156,7 +180,7 @@ class Info():
 
     def get_text(self, ctx: commands.context.Context, puzz_name: str, mention: bool):
         get_text = {
-            "puzz": self.get_puzz_text,
+            "minipuzz": self.get_minipuzz_text,
             "ciyk": self.get_ciyk_text
         }
 
@@ -167,9 +191,8 @@ class Info():
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
-        if "puzz" == puzz_name:
+        if "minipuzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
-            self.info[puzz_name]["speed_bonus"] = new_data["speed_bonus"]
             self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
         else:
             self.info[puzz_name]["img_url"] = new_data["img_url"]
