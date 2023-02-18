@@ -57,7 +57,7 @@ class Setup(commands.Cog):
             msg = await self.bot.wait_for("message", check=check)
 
             if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been amde to the release time of the puzzles.")
+                await ctx.send("Command stopped. No changes have been made to the release time of the puzzles.")
                 return
             
             time = self.info_obj.check_is_time(msg.content)
