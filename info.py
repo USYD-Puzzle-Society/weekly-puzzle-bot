@@ -180,6 +180,7 @@ class Info():
 
     def get_text(self, ctx: commands.context.Context, puzz_name: str, mention: bool):
         get_text = {
+            "rebuscryptic": self.get_rebuscryptic_text,
             "minipuzz": self.get_minipuzz_text,
             "ciyk": self.get_ciyk_text
         }
