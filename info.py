@@ -21,6 +21,15 @@ class Info():
                     "heart": ":heart:",
                     "cross": ":x:"
                 },
+                "rebuscryptic": {
+                    "role_name": "weekly puzzles",
+                    "channel_id": 892032997220573204,
+                    "release_datetime": "08/08/2022 12:00",
+                    "week_num": -1,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "releasing": False
+                },
                 "minipuzz": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
@@ -43,7 +52,7 @@ class Info():
                 }
             }
         
-        self.puzz_datetime = self.str_to_datetime(self.info["puzz"]["release_datetime"])
+        self.minipuzz_datetime = self.str_to_datetime(self.info["minipuzz"]["release_datetime"])
         self.ciyk_datetime = self.str_to_datetime(self.info["ciyk"]["release_datetime"])
 
         self.day_names = {
@@ -102,7 +111,7 @@ class Info():
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
         
-        puzz_info = self.info["puzz"]
+        puzz_info = self.info["minipuzz"]
         role_name = puzz_info["role_name"]
 
         if mention:
