@@ -26,17 +26,6 @@ class Show(commands.Cog):
 
     @commands.command()
     @commands.has_role("Executives")
-    async def showsb(self, ctx: commands.context.Context):
-        sb_info = self.info_obj.info["sb"]
-        sb_text = self.info_obj.get_sb_text(ctx, False)
-        sb_time = sb_info["release_datetime"]
-        sb_channel = sb_info["channel_id"]
-
-        await ctx.send(f"The following will be released at {sb_time} in <#{sb_channel}>.")
-        await ctx.send(sb_text)
-
-    @commands.command()
-    @commands.has_role("Executives")
     async def showciyk(self, ctx: commands.context.Context):
         ciyk_info = self.info_obj.info["ciyk"]
         ciyk_text = self.info_obj.get_ciyk_text(ctx, False)

@@ -32,15 +32,6 @@ class Info():
                     "interactive_link": "",
                     "releasing": False
                 },
-                "sb": {
-                    "role_name": "weekly games",
-                    "channel_id": 1001742058601590824,
-                    "release_datetime": "08/08/2022 12:00",
-                    "week_num": -1,
-                    "img_url": "",
-                    "submission_link": "",
-                    "releasing": False
-                },
                 "ciyk": {
                     "role_name": "weekly games",
                     "channel_id": 1001742058601590824,
@@ -54,7 +45,6 @@ class Info():
             }
         
         self.puzz_datetime = self.str_to_datetime(self.info["puzz"]["release_datetime"])
-        self.sb_datetime = self.str_to_datetime(self.info["sb"]["release_datetime"])
         self.ciyk_datetime = self.str_to_datetime(self.info["ciyk"]["release_datetime"])
 
         self.day_names = {
@@ -135,25 +125,6 @@ class Info():
             line7 = f"\n\nInteractive version: {interactive_link}"
 
         return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6 + line7
-
-    def get_sb_text(self, ctx: commands.context.Context, mention: bool) -> str:
-        with open(self.info_fn, "r") as fn:
-            self.info = json.load(fn)
-
-        emojis = self.info["emojis"]
-        sb_info = self.info["sb"]
-        role_name = sb_info["role_name"]
-        
-        if mention:
-            sb_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
-        else:
-            sb_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
-
-        line1 = f'{emojis["brain"]} **SECOND BEST: WEEK {sb_info["week_num"]}** {emojis["brain"]}\n\n'
-        line2 = f"Try your best to guess what the second most popular answer will be!\n\n"
-        line3 = f'**Submit your answers here:** {sb_info["submission_link"]}\n\n'
-
-        return sb_tag + line1 + line2 + line3 + sb_info["img_url"]
     
     def get_ciyk_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
@@ -177,13 +148,12 @@ class Info():
     def get_text(self, ctx: commands.context.Context, puzz_name: str, mention: bool):
         get_text = {
             "puzz": self.get_puzz_text,
-            "sb": self.get_sb_text,
             "ciyk": self.get_ciyk_text
         }
 
         return get_text[puzz_name](ctx, mention)
 
-    # this method exists as just an easy way to change the data in one method call in setpuzzles/setsb/setciyk    
+    # this method exists as just an easy way to change the data in one method call in setpuzzles/setciyk    
     def change_data(self, puzz_name: str, new_data: dict[str]):
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
