@@ -130,6 +130,22 @@ class Setup(commands.Cog):
 
     @commands.command()
     @commands.has_role("Executives")
+    async def setcrosswordtime(self, ctx: commands.context.Context):
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+        
+        await ctx.send(f'The current release time for the crossword is {self.info_obj.info["crossword"]["release_datetime"]}.')
+        await ctx.send(
+            "Please enter the new release date for the crossword in the format DD/MM/YYYY. " +
+            "Do `.stop` at any time to exit and no changes will be made to the release time of the crossword."
+        )
+
+
+
+    @commands.command()
+    @commands.has_role("Executives")
     async def setciyktime(self, ctx: commands.context.Context):
         user = ctx.author
 
