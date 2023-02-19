@@ -469,6 +469,132 @@ class Setup(commands.Cog):
     
     @commands.command()
     @commands.has_role("Executives")
+    async def setcrossword(self, ctx: commands.context.Context):
+        crossword_info = self.info_obj.info["crossword"]
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+        
+        await ctx.send("Now setting info for the crossword. Do `stop` at anytime and no changes will be made to the crossword.")
+
+        new_data = {
+            "img_urls": "",
+            "week_num": -1,
+            "submission_link": ""
+        }
+
+        await ctx.send("Please send the images for the crossword.")
+
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the crossword.")
+                return
+
+            if len(msg.attachments):
+                new_data["img_urls"] = [image.url for image in msg.attachments]
+                break
+            else:
+                await ctx.send("Please send the image for the crossword.")
+
+        # get week number
+        await ctx.send("Please enter the week number.")
+        is_number = False
+        while not is_number:
+            msg = await self.bot.wait_for("message", check=check)
+            
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the crossword.")
+                return
+
+            try:
+                new_week = int(msg.content)
+                new_data["week_num"] = new_week
+                is_number = True
+            except ValueError:
+                await ctx.send("Please enter a number.")
+
+        # if this point is reached, then the new data will be saved
+        self.info_obj.change_data("crossword", new_data)
+
+        # show the user the new changes
+        crossword_text = self.info_obj.get_crossword_text(ctx, False)
+        crossword_images = crossword_info["img_urls"]
+        await ctx.send(
+            f"Done. The following will be released at {crossword_info['release_datetime']} in <#{crossword_info['channel_id']}>. " + 
+            "Remember to do `.start crossword`"
+        )
+        await ctx.send(crossword_text)
+        for i in range(len(crossword_images)):
+            await ctx.send(crossword_images[i])
+
+    @commands.command()
+    @commands.has_role("Executives")
+    async def setsudoku(self, ctx: commands.context.Context):
+        sudoku_info = self.info_obj.info["sudoku"]
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+        
+        await ctx.send("Now setting info for the sudoku. Do `stop` at anytime and no changes will be made to the sudoku.")
+
+        new_data = {
+            "img_urls": "",
+            "week_num": -1,
+            "submission_link": ""
+        }
+
+        await ctx.send("Please send the images for the sudoku.")
+
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the sudoku.")
+                return
+
+            if len(msg.attachments):
+                new_data["img_urls"] = [image.url for image in msg.attachments]
+                break
+            else:
+                await ctx.send("Please send the image for the sudoku.")
+
+        # get week number
+        await ctx.send("Please enter the week number.")
+        is_number = False
+        while not is_number:
+            msg = await self.bot.wait_for("message", check=check)
+            
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the sudoku.")
+                return
+
+            try:
+                new_week = int(msg.content)
+                new_data["week_num"] = new_week
+                is_number = True
+            except ValueError:
+                await ctx.send("Please enter a number.")
+
+        # if this point is reached, then the new data will be saved
+        self.info_obj.change_data("sudoku", new_data)
+
+        # show the user the new changes
+        sudoku_text = self.info_obj.get_sudoku_text(ctx, False)
+        sudoku_images = sudoku_info["img_urls"]
+        await ctx.send(
+            f"Done. The following will be released at {sudoku_info['release_datetime']} in <#{sudoku_info['channel_id']}>. " + 
+            "Remember to do `.start sudoku`"
+        )
+        await ctx.send(sudoku_text)
+        for i in range(len(sudoku_images)):
+            await ctx.send(sudoku_images[i])
+
+    @commands.command()
+    @commands.has_role("Executives")
     async def setciyk(self, ctx: commands.context.Context):
         ciyk_info = self.info_obj.info["ciyk"]
         user = ctx.author
