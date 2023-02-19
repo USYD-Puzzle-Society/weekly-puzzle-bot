@@ -122,10 +122,10 @@ class Setup(commands.Cog):
                 break
         
         new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("puzz", new_release)
+        self.info_obj.change_time("minipuzz", new_release)
         await ctx.send(
             f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
-            "Remember to do `.start puzz`"
+            "Remember to do `.start minipuzz`"
         )
 
     @commands.command()
