@@ -40,7 +40,7 @@ class Info():
                     "interactive_link": "",
                     "releasing": False
                 },
-                "crosswords": {
+                "crossword": {
                     "role_name": "crosswords",
                     "channel_id": 1074683905405358171,
                     "release_datetime": "08/08/2022 12:00",
