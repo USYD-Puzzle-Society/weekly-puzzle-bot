@@ -138,7 +138,7 @@ class Info():
 
         lines = [
             puzz_tag,
-            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
             "**REBUS + CRYPTIC**\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {puzz_info['submission_link']}\n\n",
@@ -163,7 +163,7 @@ class Info():
 
         lines = [
             puzz_tag,
-            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
             "**MINI-PUZZLE**\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {puzz_info['submission_link']}\n\n",
