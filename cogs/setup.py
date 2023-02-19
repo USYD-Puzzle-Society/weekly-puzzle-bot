@@ -142,7 +142,45 @@ class Setup(commands.Cog):
             "Do `.stop` at any time to exit and no changes will be made to the release time of the crossword."
         )
 
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
 
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made to the release time of the crossword.")
+                return
+            
+            date = self.info_obj.check_is_date(msg.content)
+            if not date:
+                await ctx.send("Please enter the date in the format DD/MM/YYYY")
+            else: 
+                day, month, year = date
+                break
+
+        release_date = datetime.date(year, month, day)
+        weekday_name = self.info_obj.day_names[release_date.weekday()]
+        await ctx.send(f"The new release date is {release_date.strftime('%d/%m/%Y')} ({weekday_name})")
+        await ctx.send(f"Please enter the new release time for the crossword in the format HH:MM (24 hour time)")
+
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been amde to the release of the crossword.")
+                return
+
+            time = self.info_obj.check_is_time(msg.content)
+            if not time:
+                await ctx.send("Please enter time in the format HH:MM")
+            else:
+                hour, minute = time
+                break
+
+        new_release = datetime.datetime(year, month, day, hour, minute)
+        self.info_obj.change_time("crossword", new_release)
+        await ctx.send(
+            f"The new release time for the crossword is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
+            "Remember to do `.start crossword`"
+        )
 
     @commands.command()
     @commands.has_role("Executives")
