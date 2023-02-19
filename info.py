@@ -238,6 +238,8 @@ class Info():
         get_text = {
             "rebuscryptic": self.get_rebuscryptic_text,
             "minipuzz": self.get_minipuzz_text,
+            "crossword": self.get_crossword_text,
+            "sudoku": self.get_sudoku_text,
             "ciyk": self.get_ciyk_text
         }
 
@@ -251,6 +253,8 @@ class Info():
         if "minipuzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
             self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
+        elif "rebuscryptic" == puzz_name or "sudoku" == puzz_name or "crossword" == puzz_name:
+            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
         else:
             self.info[puzz_name]["img_url"] = new_data["img_url"]
 
