@@ -21,6 +21,8 @@ class Start(commands.Cog):
     @commands.has_role("Executives")
     async def start(self, ctx: commands.context.Context, puzz_name: str):
         puzz_name = puzz_name.lower()
+        if "rc" == puzz_name:
+            puzz_name = "rebuscryptic"
 
         # get the current time
         now = datetime.datetime.now()
