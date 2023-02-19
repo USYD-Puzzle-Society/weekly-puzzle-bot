@@ -294,8 +294,8 @@ class Setup(commands.Cog):
     # commands to set the announcement info for puzzles/ciyk
     @commands.command()
     @commands.has_role("Executives")
-    async def setpuzzles(self, ctx: commands.context.Context):
-        puzz_info = self.info_obj.info["puzz"]
+    async def setminipuzz(self, ctx: commands.context.Context):
+        puzz_info = self.info_obj.info["minipuzz"]
         # get the user that is using the command
         user = ctx.author
 
@@ -303,11 +303,11 @@ class Setup(commands.Cog):
             return m.author == user
         
         await ctx.send(
-            "Now setting the information for the puzzles." +
-            "Type `.stop` at any time and no changes will be made to the current puzzle info."
+            "Now setting the information for the minipuzz." +
+            "Type `.stop` at any time and no changes will be made to the current minipuzz info."
         )
         # first ask for the images for the puzzles 
-        await ctx.send("Please send the images for the puzzles in one message.")
+        await ctx.send("Please send the images for the minipuzz in one message.")
 
         new_data = {
             "img_urls": [],
@@ -322,13 +322,13 @@ class Setup(commands.Cog):
             msg = await self.bot.wait_for("message", check=check)
 
             if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made to the puzzle info.")
+                await ctx.send("Command stopped. No changes have been made to the minipuzz info.")
                 return
             elif len(msg.attachments):
                 new_data["img_urls"] = [image.url for image in msg.attachments]
                 break
             else:
-                await ctx.send("Please send the images for the puzzles in one message.")
+                await ctx.send("Please send the images for the minipuzz in one message.")
         
         
         await ctx.send("Please enter the week number.")
@@ -338,7 +338,7 @@ class Setup(commands.Cog):
             msg = await self.bot.wait_for("message", check=check)
 
             if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made to the puzzle info.")
+                await ctx.send("Command stopped. No changes have been made to the minipuzz info.")
                 return
             
             try:
@@ -348,33 +348,13 @@ class Setup(commands.Cog):
                 is_number = True
             except ValueError:
                 await ctx.send("Please enter a number.")
-        
-
-        await ctx.send("Please enter the speed bonus.")
-
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made to the puzzle info.")
-                return
-            
-            try:
-                speed_bonus = int(msg.content)
-                new_data["speed_bonus"] = speed_bonus
-
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
 
         # no check will be done to see if the link is a real link 
         await ctx.send("Please send the submission link for the puzzles.")
         msg = await self.bot.wait_for("message", check=check)
         
         if ".stop" == msg.content.lower():
-            await ctx.send("Command stopped. No changes have been made to the puzzle info.")
+            await ctx.send("Command stopped. No changes have been made to the minipuzz info.")
             return
         else:
             new_data["submission_link"] = msg.content
@@ -388,7 +368,7 @@ class Setup(commands.Cog):
             msg = await self.bot.wait_for("message", check=check)
 
             if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made to the puzzle info.")
+                await ctx.send("Command stopped. No changes have been made to the minipuzz info.")
                 return
             elif "y" == msg.content.lower():
                 confirmation = "y"
@@ -404,13 +384,13 @@ class Setup(commands.Cog):
 
         
         # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("puzz", new_data)
+        self.info_obj.change_data("minipuzz", new_data)
 
         # show the user the new changes
         puzz_text = self.info_obj.get_puzz_text(ctx, False)
         puzz_images = puzz_info["img_urls"]
         await ctx.send(f'Done. The following will be released at {puzz_info["release_datetime"]} in <#{puzz_info["channel_id"]}>. ' +  
-        'Remember to do `.start puzz`')
+        'Remember to do `.start minipuzz`')
         await ctx.send(puzz_text)
         for i in range(len(puzz_images)):
             await ctx.send(puzz_images[i])
