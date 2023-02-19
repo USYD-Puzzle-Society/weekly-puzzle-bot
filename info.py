@@ -40,6 +40,24 @@ class Info():
                     "interactive_link": "",
                     "releasing": False
                 },
+                "crosswords": {
+                    "role_name": "crosswords",
+                    "channel_id": 1074683905405358171,
+                    "release_datetime": "08/08/2022 12:00",
+                    "week_num": -1,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "releasing": False
+                },
+                "sudoku": {
+                    "role_name": "sudokus",
+                    "channel_id": 1074684130794672138,
+                    "release_datetime": "08/08/2022 12:00",
+                    "week_num": -1,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "releasing": False
+                },
                 "ciyk": {
                     "role_name": "weekly games",
                     "channel_id": 1001742058601590824,
@@ -159,6 +177,44 @@ class Info():
 
         return "".join(lines)
     
+    def get_crossword_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+        
+        crossword_info = self.info["crossword"]
+        role_name = crossword_info["role_name"]
+
+        if mention:
+            crossword_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            crossword_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            crossword_tag,
+            f"**MIDI CROSSWORD: WEEK {crossword_info['week_num']}**"
+        ]
+
+        return "".join(lines)
+    
+    def get_sudoku_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        sudoku_info = self.info["sudoku"]
+        role_name = sudoku_info["role_name"]
+
+        if mention:
+            sudoku_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            sudoku_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            sudoku_tag,
+            f"**VARIANT SUDOKU: WEEK {sudoku_info['week_num']}**"
+        ]
+
+        return "".join(lines)
+
     def get_ciyk_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
