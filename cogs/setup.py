@@ -15,22 +15,22 @@ class Setup(commands.Cog):
     """
     Thinking of making it so that this command allows the user to
     put the release date and time in the command call.
-    Like: `.setpuzztime 12/08/2022 11:00`
+    Like: `.setminipuzztime 12/08/2022 11:00`
     """
     # commands to set the release time for the puzzles/ciyk
     @commands.command()
     @commands.has_role("Executives")
-    async def setpuzztime(self, ctx: commands.context.Context):
+    async def setminipuzztime(self, ctx: commands.context.Context):
         user = ctx.author
 
         def check(m):
             return m.author == user
 
         # show current release time for puzzles
-        await ctx.send(f'The current release time for the puzzles is {self.info_obj.info["puzz"]["release_datetime"]}.')
+        await ctx.send(f'The current release time for the minipuzz is {self.info_obj.info["minipuzz"]["release_datetime"]}.')
         await ctx.send(
-            "Please enter the new release date for the puzzles in the format DD/MM/YYYY. " +
-            "Do `.stop` at any time to exit and no changes will be made to the release time of the puzzles."
+            "Please enter the new release date for the minipuzz in the format DD/MM/YYYY. " +
+            "Do `.stop` at any time to exit and no changes will be made to the release time of the minipuzz."
         )
 
         # exit when valid date is given or .stop is typed
