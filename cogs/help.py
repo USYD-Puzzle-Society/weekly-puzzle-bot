@@ -21,41 +21,55 @@ class Help(commands.Cog):
         ]
 
         self.help_setup = [
-            ".setpuzzles\n\n\n\n",
-            ".setpuzztime\n\n",
-            ".setsb\n\n",
-            ".setsbtime\n\n",
+            ".setrc\n\n",
+            ".setrctime\n\n"
+            ".setminipuzz\n\n",
+            ".setminipuzztime\n\n",
+            ".setcrossword\n\n",
+            ".setcrosswordtime\n\n",
+            ".setsudoku\n\n",
+            ".setsudokutime\n\n"
             ".setciyk\n\n",
             ".setciyktime\n\n"
         ]
         self.help_setup_desc = [
-            "Sets up the images, speed bonus and submission link for the puzzle release. Please do not use any other commands while using this command.\n\n",
-            "Changes the release time of the puzzles.\n\n",
-            "Sets up the Second Best announcement.\n\n",
-            "Changes the release time of Second Best.\n\n",
+            "Sets up rebus and cryptic.\n\n",
+            "Sets up the release time for the rebus and cryptic\n\n",
+            "Sets up the minipuzzle\n\n",
+            "Changes the release time of the minipuzzle.\n\n",
+            "Sets up the crossword\n\n",
+            "Sets up the release time for the crossword\n\n",
+            "Sets up the sudoku\n\n",
+            "Sets up the release time for the sudoku\n\n",
             "Sets up the CIYK announcement.\n\n",
             "Changes the release time of CIYK.\n\n",
         ]
         
         self.help_show = [
-            ".showpuzz\n\n",
-            ".showsb\n\n",
+            "showrc\n\n",
+            ".showminipuzz\n\n",
+            ".showcrossword\n\n",
+            ".showsudoku\n\n",
             ".showciyk"
         ]
         self.help_show_desc = [
+            "Shows time and content of the release for rebus and cryptic\n\n",
             "Shows time and content of the release for the puzzles.\n\n",
-            "Shows time and content of the release for Second Best\n\n",
+            "Shows time and content of the release for crossword\n\n",
+            "Shows time and content of the release for sudoku\n\n",
             "Shows time and content of the release for CIYK"
         ]
         
         self.help_start = [
             ".start puzz\n\n\n",
-            ".start sb\n\n\n",
+            ".start crossword\n\n\n",
+            ".start sudoku\n\n\n",
             ".start ciyk"
         ]
         self.help_start_desc = [
             "Starts the release for the puzzles. This command must be used in order for the puzzles to be released.\n\n",
-            "Starts the release for Second Best. This command must be used in order for Second Best to be released.\n\n",
+            "Starts the release for crossword. This command must be used in order for the crossword to be released.\n\n",
+            "Starts the release for sudoku. This command must be used in order for the sudoku to be released.\n\n",
             "Starts the release for CIYK. This command must be used in order for CIYK to be released."
         ]
         
