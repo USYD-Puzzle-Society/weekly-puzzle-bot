@@ -32,7 +32,7 @@ class Show(commands.Cog):
     @commands.has_role("Executives")
     async def showminipuzz(self, ctx: commands.context.Context):
         puzz_info = self.info_obj.info["minipuzz"]
-        puzz_text = self.info_obj.get_puzz_text(ctx, False)
+        puzz_text = self.info_obj.get_minipuzz_text(ctx, False)
         puzz_time = puzz_info["release_datetime"]
         puzz_channel = puzz_info["channel_id"]
 
@@ -44,7 +44,7 @@ class Show(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def showcrossword(self, ctx: commands.context.Context):
-        crossword_info = self.info_obj.info["rebuscryptic"]
+        crossword_info = self.info_obj.info["crossword"]
         crossword_text = self.info_obj.get_rebuscryptic_text(ctx, False)
         crossword_time = crossword_info["release_datetime"]
         crossword_channel = crossword_info["channel_id"]
@@ -57,7 +57,7 @@ class Show(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def showsudoku(self, ctx: commands.context.Context):
-        sudoku_info = self.info_obj.info["rebuscryptic"]
+        sudoku_info = self.info_obj.info["sudoku"]
         sudoku_text = self.info_obj.get_rebuscryptic_text(ctx, False)
         sudoku_time = sudoku_info["release_datetime"]
         sudoku_channel = sudoku_info["channel_id"]
