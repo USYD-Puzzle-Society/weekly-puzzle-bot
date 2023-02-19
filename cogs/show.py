@@ -13,8 +13,21 @@ class Show(commands.Cog):
     
     @commands.command()
     @commands.has_role("Executives")
-    async def showpuzz(self, ctx: commands.context.Context):
-        puzz_info = self.info_obj.info["puzz"]
+    async def showrc(self, ctx: commands.context.Context):
+        rc_info = self.info_obj.info["rebuscryptic"]
+        rc_text = self.info_obj.get_rebuscryptic_text(ctx, False)
+        rc_time = rc_info["release_datetime"]
+        rc_channel = rc_info["channel_id"]
+
+        await ctx.send(f"The following will be released at {rc_time} in <#{rc_channel}>")
+        await ctx.send(rc_text)
+        for i in range(len(rc_info["img_urls"])):
+            await ctx.send(rc_info["img_urls"][i])
+
+    @commands.command()
+    @commands.has_role("Executives")
+    async def showminipuzz(self, ctx: commands.context.Context):
+        puzz_info = self.info_obj.info["minipuzz"]
         puzz_text = self.info_obj.get_puzz_text(ctx, False)
         puzz_time = puzz_info["release_datetime"]
         puzz_channel = puzz_info["channel_id"]
