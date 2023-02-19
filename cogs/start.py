@@ -21,8 +21,6 @@ class Start(commands.Cog):
     @commands.has_role("Executives")
     async def start(self, ctx: commands.context.Context, puzz_name: str):
         puzz_name = puzz_name.lower()
-        if "rc" == puzz_name:
-            puzz_name = "rebuscryptic"
 
         # get the current time
         now = datetime.datetime.now()
@@ -31,6 +29,9 @@ class Start(commands.Cog):
         # if the user wants to stop this release from happening, then the id is used
         release_id = puzz_name
 
+        if "rc" == puzz_name:
+                    puzz_name = "rebuscryptic"
+                    
         # get the puzzle info
         text = self.info_obj.get_text(ctx, puzz_name, True)
         no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
@@ -84,7 +85,7 @@ class Start(commands.Cog):
             f"The ID for this release is {release_id}. Do `.stop {release_id}` to stop this release."
         )
         await ctx.send(no_mention_text)
-        if "puzz" == puzz_name:
+        if "ciyk" != puzz_name:
             for i in range(len(urls)):
                 await ctx.send(urls[i])
 
@@ -99,7 +100,7 @@ class Start(commands.Cog):
             return
         else:
             await channel.send(text)
-            if "puzz" == puzz_name:
+            if "ciyk" != puzz_name:
                 for i in range(len(urls)):
                     await channel.send(urls[i])
 
