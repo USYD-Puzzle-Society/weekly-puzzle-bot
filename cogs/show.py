@@ -11,10 +11,27 @@ class Show(commands.Cog):
 
         self.info_obj = info
     
+    """
+    Fix to have only one method
+    """
+
     @commands.command()
     @commands.has_role("Executives")
-    async def showpuzz(self, ctx: commands.context.Context):
-        puzz_info = self.info_obj.info["puzz"]
+    async def showrc(self, ctx: commands.context.Context):
+        rc_info = self.info_obj.info["rebuscryptic"]
+        rc_text = self.info_obj.get_rebuscryptic_text(ctx, False)
+        rc_time = rc_info["release_datetime"]
+        rc_channel = rc_info["channel_id"]
+
+        await ctx.send(f"The following will be released at {rc_time} in <#{rc_channel}>")
+        await ctx.send(rc_text)
+        for i in range(len(rc_info["img_urls"])):
+            await ctx.send(rc_info["img_urls"][i])
+
+    @commands.command()
+    @commands.has_role("Executives")
+    async def showminipuzz(self, ctx: commands.context.Context):
+        puzz_info = self.info_obj.info["minipuzz"]
         puzz_text = self.info_obj.get_puzz_text(ctx, False)
         puzz_time = puzz_info["release_datetime"]
         puzz_channel = puzz_info["channel_id"]
@@ -26,14 +43,29 @@ class Show(commands.Cog):
 
     @commands.command()
     @commands.has_role("Executives")
-    async def showsb(self, ctx: commands.context.Context):
-        sb_info = self.info_obj.info["sb"]
-        sb_text = self.info_obj.get_sb_text(ctx, False)
-        sb_time = sb_info["release_datetime"]
-        sb_channel = sb_info["channel_id"]
+    async def showcrossword(self, ctx: commands.context.Context):
+        crossword_info = self.info_obj.info["rebuscryptic"]
+        crossword_text = self.info_obj.get_rebuscryptic_text(ctx, False)
+        crossword_time = crossword_info["release_datetime"]
+        crossword_channel = crossword_info["channel_id"]
 
-        await ctx.send(f"The following will be released at {sb_time} in <#{sb_channel}>.")
-        await ctx.send(sb_text)
+        await ctx.send(f"The following will be released at {crossword_time} in <#{crossword_channel}>")
+        await ctx.send(crossword_text)
+        for i in range(len(crossword_info["img_urls"])):
+            await ctx.send(crossword_info["img_urls"][i])
+
+    @commands.command()
+    @commands.has_role("Executives")
+    async def showsudoku(self, ctx: commands.context.Context):
+        sudoku_info = self.info_obj.info["rebuscryptic"]
+        sudoku_text = self.info_obj.get_rebuscryptic_text(ctx, False)
+        sudoku_time = sudoku_info["release_datetime"]
+        sudoku_channel = sudoku_info["channel_id"]
+
+        await ctx.send(f"The following will be released at {sudoku_time} in <#{sudoku_channel}>")
+        await ctx.send(sudoku_text)
+        for i in range(len(sudoku_info["img_urls"])):
+            await ctx.send(sudoku_info["img_urls"][i])
 
     @commands.command()
     @commands.has_role("Executives")

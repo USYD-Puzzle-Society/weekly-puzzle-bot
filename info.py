@@ -21,23 +21,40 @@ class Info():
                     "heart": ":heart:",
                     "cross": ":x:"
                 },
-                "puzz": {
+                "rebuscryptic": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
-                    "speed_bonus": -1,
+                    "submission_link": "",
+                    "releasing": False
+                },
+                "minipuzz": {
+                    "role_name": "weekly puzzles",
+                    "channel_id": 892032997220573204,
+                    "release_datetime": "08/08/2022 12:00",
+                    "week_num": -1,
+                    "img_urls": [],
                     "submission_link": "",
                     "interactive_link": "",
                     "releasing": False
                 },
-                "sb": {
-                    "role_name": "weekly games",
-                    "channel_id": 1001742058601590824,
+                "crossword": {
+                    "role_name": "crosswords",
+                    "channel_id": 1074683905405358171,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
-                    "img_url": "",
+                    "img_urls": [],
+                    "submission_link": "",
+                    "releasing": False
+                },
+                "sudoku": {
+                    "role_name": "sudokus",
+                    "channel_id": 1074684130794672138,
+                    "release_datetime": "08/08/2022 12:00",
+                    "week_num": -1,
+                    "img_urls": [],
                     "submission_link": "",
                     "releasing": False
                 },
@@ -53,8 +70,7 @@ class Info():
                 }
             }
         
-        self.puzz_datetime = self.str_to_datetime(self.info["puzz"]["release_datetime"])
-        self.sb_datetime = self.str_to_datetime(self.info["sb"]["release_datetime"])
+        self.minipuzz_datetime = self.str_to_datetime(self.info["minipuzz"]["release_datetime"])
         self.ciyk_datetime = self.str_to_datetime(self.info["ciyk"]["release_datetime"])
 
         self.day_names = {
@@ -108,13 +124,11 @@ class Info():
     # this could potential pose problems if a read and write occur at the same time
     # however, this shouldn't be a big issue as the commands that use these functions will only be accessible by a few people
 
-    # mention lets the function know whether the role should be tagged
-    def get_puzz_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_rebuscryptic_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
-        emojis = self.info["emojis"]
-        puzz_info = self.info["puzz"]
+        puzz_info = self.info["rebuscryptic"]
         role_name = puzz_info["role_name"]
 
         if mention:
@@ -122,39 +136,85 @@ class Info():
         else:
             puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
-        line1 = f'{emojis["jigsaw"]} **WEEKLY PUZZLES: WEEK {puzz_info["week_num"]}** {emojis["jigsaw"]}\n\n'
-        line2 = f'**SPEED BONUS:** {puzz_info["speed_bonus"]} MINUTES\n'
-        line3 = f'*Hints will be unlimited after {puzz_info["speed_bonus"]} minutes is up AND after the top 3 solvers have finished!*\n\n'
-        line4 = f'**Submit your answers here:** {puzz_info["submission_link"]}\n'
-        line5 = "You can submit as many times as you want!\n"
-        line6 = "Your highest score will be kept."
+        lines = [
+            puzz_tag,
+            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            "**REBUS + CRYPTIC**\n\n",
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._"
+        ]
 
-        line7 = ""
+        return "".join(lines)
+
+    # mention lets the function know whether the role should be tagged
+    def get_minipuzz_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+        
+        puzz_info = self.info["minipuzz"]
+        role_name = puzz_info["role_name"]
+
+        if mention:
+            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            puzz_tag,
+            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            "**MINI-PUZZLE**\n\n",
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._"
+        ]
+
         interactive_link = puzz_info["interactive_link"]
         if interactive_link:
-            line7 = f"\n\nInteractive version: {interactive_link}"
+            lines.append(f"\n\nInteractive version: {interactive_link}")
 
-        return puzz_tag + line1 + line2 + line3 + line4 + line5 + line6 + line7
+        return "".join(lines)
+    
+    def get_crossword_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+        
+        crossword_info = self.info["crossword"]
+        role_name = crossword_info["role_name"]
 
-    def get_sb_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        if mention:
+            crossword_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            crossword_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            crossword_tag,
+            f"**MIDI CROSSWORD: WEEK {crossword_info['week_num']}**"
+        ]
+
+        return "".join(lines)
+    
+    def get_sudoku_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
-        emojis = self.info["emojis"]
-        sb_info = self.info["sb"]
-        role_name = sb_info["role_name"]
-        
+        sudoku_info = self.info["sudoku"]
+        role_name = sudoku_info["role_name"]
+
         if mention:
-            sb_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            sudoku_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
         else:
-            sb_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            sudoku_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
-        line1 = f'{emojis["brain"]} **SECOND BEST: WEEK {sb_info["week_num"]}** {emojis["brain"]}\n\n'
-        line2 = f"Try your best to guess what the second most popular answer will be!\n\n"
-        line3 = f'**Submit your answers here:** {sb_info["submission_link"]}\n\n'
+        lines = [
+            sudoku_tag,
+            f"**VARIANT SUDOKU: WEEK {sudoku_info['week_num']}**"
+        ]
 
-        return sb_tag + line1 + line2 + line3 + sb_info["img_url"]
-    
+        return "".join(lines)
+
     def get_ciyk_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
@@ -168,7 +228,7 @@ class Info():
         else:
             ciyk_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
-        line1 = f'{emojis["speech"]} **COMMENT IF YOU KNOW: WEEK {ciyk_info["week_num"]}** {emojis["speech"]}\n\n'
+        line1 = f'**COMMENT IF YOU KNOW: WEEK {ciyk_info["week_num"]}**\n\n'
         line2 = f'If you think you know the pattern, comment an answer that follows it in <#{ciyk_info["discuss_id"]}>\n'
         line3 = f'We\'ll react with a {emojis["heart"]} if you\'re right and a {emojis["cross"]} if you\'re wrong!\n\n'
 
@@ -176,22 +236,25 @@ class Info():
 
     def get_text(self, ctx: commands.context.Context, puzz_name: str, mention: bool):
         get_text = {
-            "puzz": self.get_puzz_text,
-            "sb": self.get_sb_text,
+            "rebuscryptic": self.get_rebuscryptic_text,
+            "minipuzz": self.get_minipuzz_text,
+            "crossword": self.get_crossword_text,
+            "sudoku": self.get_sudoku_text,
             "ciyk": self.get_ciyk_text
         }
 
         return get_text[puzz_name](ctx, mention)
 
-    # this method exists as just an easy way to change the data in one method call in setpuzzles/setsb/setciyk    
+    # this method exists as just an easy way to change the data in one method call in setpuzzles/setciyk    
     def change_data(self, puzz_name: str, new_data: dict[str]):
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
-        if "puzz" == puzz_name:
+        if "minipuzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
-            self.info[puzz_name]["speed_bonus"] = new_data["speed_bonus"]
             self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
+        elif "rebuscryptic" == puzz_name or "sudoku" == puzz_name or "crossword" == puzz_name:
+            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
         else:
             self.info[puzz_name]["img_url"] = new_data["img_url"]
 
