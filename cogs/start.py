@@ -35,7 +35,7 @@ class Start(commands.Cog):
         text = self.info_obj.get_text(ctx, puzz_name, True)
         no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
         
-        if "puzz" == puzz_name:
+        if "ciyk" != puzz_name:
             urls = self.info_obj.info[puzz_name]["img_urls"]
 
         str_release = self.info_obj.info[puzz_name]["release_datetime"]
@@ -59,7 +59,7 @@ class Start(commands.Cog):
         else:
             currently_releasing = {}
         
-        if "puzz" == puzz_name:
+        if "ciyk" != puzz_name:
             currently_releasing[release_id] = {
                 "text": text,
                 "urls": urls,
