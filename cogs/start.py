@@ -30,7 +30,7 @@ class Start(commands.Cog):
         release_id = puzz_name
 
         if "rc" == puzz_name:
-                    puzz_name = "rebuscryptic"
+            puzz_name = "rebuscryptic"
                     
         # get the puzzle info
         text = self.info_obj.get_text(ctx, puzz_name, True)
