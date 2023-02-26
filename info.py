@@ -23,7 +23,7 @@ class Info():
                 },
                 "rebuscryptic": {
                     "role_name": "weekly puzzles",
-                    "channel_id": 1003649272950038568,
+                    "channel_id": 892032997220573204,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
@@ -32,7 +32,7 @@ class Info():
                 },
                 "minipuzz": {
                     "role_name": "weekly puzzles",
-                    "channel_id": 1003649272950038568,
+                    "channel_id": 892032997220573204,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
@@ -42,7 +42,7 @@ class Info():
                 },
                 "crossword": {
                     "role_name": "crosswords",
-                    "channel_id": 1003649272950038568,
+                    "channel_id": 1074683905405358171,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
@@ -51,7 +51,7 @@ class Info():
                 },
                 "sudoku": {
                     "role_name": "sudokus",
-                    "channel_id": 1003649272950038568,
+                    "channel_id": 1074684130794672138,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_urls": [],
@@ -60,8 +60,8 @@ class Info():
                 },
                 "ciyk": {
                     "role_name": "weekly games",
-                    "channel_id": 1003649272950038568,
-                    "discuss_id": 1003649272950038568,
+                    "channel_id": 1001742058601590824,
+                    "discuss_id": 1001742642427744326,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
                     "img_url": "",
