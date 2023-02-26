@@ -97,6 +97,7 @@ class Start(commands.Cog):
             currently_releasing = json.load(sj)
 
         if release_id not in currently_releasing:
+            print(release_id)
             return
         else:
             await channel.send(text)
