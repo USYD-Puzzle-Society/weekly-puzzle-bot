@@ -27,7 +27,7 @@ class Start(commands.Cog):
 
         # the release id is used to identify this specific puzzle release
         # if the user wants to stop this release from happening, then the id is used
-        release_id = datetime.datetime.now().second
+        release_id = str(now.microsecond)
 
         if "rc" == puzz_name:
             puzz_name = "rebuscryptic"
