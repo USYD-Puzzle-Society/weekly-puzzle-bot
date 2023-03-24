@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 
-class Tasks(commands.Cog):
+class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tasks = {}
@@ -51,9 +51,9 @@ class Tasks(commands.Cog):
             allowed_user = ("Executive" in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
 
             if allowed_user:
-                return 1
+                return True
             
-            return 0
+            return False
         
         @commands.command()
         async def assign_task(self, ctx: commands.context.Context, *args):
@@ -62,8 +62,8 @@ class Tasks(commands.Cog):
 
             if allowed_user:
                 # If no argument, assign to author
-                return 1
-            return 0
+                return True
+            return False
         
         @commands.command()
         async def remove_task(self, ctx: commands.context.Context, n: int):
@@ -72,7 +72,10 @@ class Tasks(commands.Cog):
 
             if allowed_user:
                 # Check that n is a valid key in self.tasks
-                return 1
+                return True
             # Reminder to log exited task into #archived-tasks w/ owner
             # and date of completion
-            return 0
+            return False
+
+def setup(bot: commands.Bot):
+    bot.add_cog(SubcomTasks(bot))
