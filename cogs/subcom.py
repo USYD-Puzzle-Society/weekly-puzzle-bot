@@ -46,21 +46,17 @@ class SubcomTasks(commands.Cog):
 
         await ctx.send(embed=embed_msg)
         
-    @commands.command()
+    @commands.command(aliases=["addtask"])
     @commands.has_role(exec_role)
-    @commands.has_role(subcom_role)
     async def add_task(self, ctx: commands.context.Context, *args):
-        user_roles = ctx.author.roles
-        allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
-
-        if allowed_user:
-            return True
+        if not args:
+            await ctx.send("Please use the command in the form `.addtask [Title of Task]`")
+            return
         
-        return False
+        title = " ".join(args)
     
     @commands.command()
     @commands.has_role(exec_role)
-    @commands.has_role(subcom_role)
     async def assign_task(self, ctx: commands.context.Context, *args):
         user_roles = ctx.author.roles
         allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
@@ -72,7 +68,6 @@ class SubcomTasks(commands.Cog):
     
     @commands.command()
     @commands.has_role(exec_role)
-    @commands.has_role(subcom_role)
     async def remove_task(self, ctx: commands.context.Context, n: int):
         user_roles = ctx.author.roles
         allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
