@@ -8,22 +8,23 @@ subcom_role = "Subcommittee"
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.tasks = {}
+        self.tasks = []
 
         '''
+        self.tasks is a list of dictionaries
         Ideal format is going to be:
-        {
-            1: {
-                    "Task Name": "Testing 1 2 3",
-                    "Owner": None,
-                    "Due Date": None
-                },
-            2: {
-                    "Task Name": "Testing 4 5 6",
-                    "Owner": "turtle#6635",
-                    "Due Date": None
-                }
-        }
+        [
+            {
+                "Task Name": "Testing 1 2 3",
+                "Owner": None,
+                "Due Date": None
+            },
+            {
+                "Task Name": "Testing 4 5 6",
+                "Owner": "turtle#6635",
+                "Due Date": None
+            }
+        ]
         '''
 
     @commands.command()
@@ -54,6 +55,13 @@ class SubcomTasks(commands.Cog):
             return
         
         title = " ".join(args)
+        new_task = {
+            "Task Name": title,
+            "Owner": ctx.author.mention,
+            "Due Date": None
+        }
+
+        self.tasks.append(new_task)
     
     @commands.command()
     @commands.has_role(exec_role)
