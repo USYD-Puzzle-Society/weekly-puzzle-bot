@@ -24,7 +24,7 @@ class SubcomTasks(commands.Cog):
         }
         '''
 
-    @commands.commmand()
+    @commands.command()
     async def tasks(self, ctx: commands.context.Context):
         user_roles = ctx.author.roles
         allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
