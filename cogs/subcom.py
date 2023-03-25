@@ -44,7 +44,7 @@ class SubcomTasks(commands.Cog):
             embed_msg.add_field(name="Owner", value="".join(temp_owners), inline=True)
             embed_msg.add_field(name="Due Date", value="".join(temp_due_dates), inline=True)
 
-            return embed_msg
+            await ctx.send(embed=embed_msg)
         
     @commands.command()
     async def add_task(self, ctx: commands.context.Context, *args):
