@@ -2,11 +2,13 @@ import discord
 from discord.ext import commands
 import asyncio
 
+exec_role = "Executives"
+subcom_role = "Subcommittee"
+
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tasks = {}
-        self.exec_role = "Executives"
 
         '''
         Ideal format is going to be:
@@ -25,28 +27,28 @@ class SubcomTasks(commands.Cog):
         '''
 
     @commands.command()
+    @commands.has_role(exec_role)
+    @commands.has_role(subcom_role)
     async def tasks(self, ctx: commands.context.Context):
-        user_roles = ctx.author.roles
-        allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
+        embed_msg = discord.Embed(title="Active Tasks", color=discord.Color.greyple())
+        
+        # Pull tasks from storage
+        # self.tasks = idk open memory and get stuff
+        
+        # Extract tasks
+        temp_number = [num for num in self.tasks]
+        temp_names = [self.tasks[x]["Task Name"] for x in temp_number]
+        temp_owners = [self.tasks[x]["Owner"] for x in temp_number]
+        temp_due_dates = [self.tasks[x]["Due Date"] for x in temp_number]
+        embed_msg.add_field(name="Task Name", value="".join(temp_names), inline=True)
+        embed_msg.add_field(name="Owner", value="".join(temp_owners), inline=True)
+        embed_msg.add_field(name="Due Date", value="".join(temp_due_dates), inline=True)
 
-        if allowed_user:
-            embed_msg = discord.Embed(title="Active Tasks", color=discord.Color.greyple())
-            
-            # Pull tasks from storage
-            # self.tasks = idk open memory and get stuff
-            
-            # Extract tasks
-            temp_number = [num for num in self.tasks]
-            temp_names = [self.tasks[x]["Task Name"] for x in temp_number]
-            temp_owners = [self.tasks[x]["Owner"] for x in temp_number]
-            temp_due_dates = [self.tasks[x]["Due Date"] for x in temp_number]
-            embed_msg.add_field(name="Task Name", value="".join(temp_names), inline=True)
-            embed_msg.add_field(name="Owner", value="".join(temp_owners), inline=True)
-            embed_msg.add_field(name="Due Date", value="".join(temp_due_dates), inline=True)
-
-            await ctx.send(embed=embed_msg)
+        await ctx.send(embed=embed_msg)
         
     @commands.command()
+    @commands.has_role(exec_role)
+    @commands.has_role(subcom_role)
     async def add_task(self, ctx: commands.context.Context, *args):
         user_roles = ctx.author.roles
         allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
@@ -57,6 +59,8 @@ class SubcomTasks(commands.Cog):
         return False
     
     @commands.command()
+    @commands.has_role(exec_role)
+    @commands.has_role(subcom_role)
     async def assign_task(self, ctx: commands.context.Context, *args):
         user_roles = ctx.author.roles
         allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
@@ -67,6 +71,8 @@ class SubcomTasks(commands.Cog):
         return False
     
     @commands.command()
+    @commands.has_role(exec_role)
+    @commands.has_role(subcom_role)
     async def remove_task(self, ctx: commands.context.Context, n: int):
         user_roles = ctx.author.roles
         allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
