@@ -28,8 +28,7 @@ class SubcomTasks(commands.Cog):
         '''
 
     @commands.command()
-    @commands.has_role(exec_role)
-    @commands.has_role(subcom_role)
+    @commands.has_any_role(exec_role, subcom_role)
     async def tasks(self, ctx: commands.context.Context):
         embed_msg = discord.Embed(title="Active Tasks", color=discord.Color.greyple())
         
@@ -37,13 +36,12 @@ class SubcomTasks(commands.Cog):
         # self.tasks = idk open memory and get stuff
         
         # Extract tasks
-        temp_number = [num for num in self.tasks]
-        temp_names = [self.tasks[x]["Task Name"] for x in temp_number]
-        temp_owners = [self.tasks[x]["Owner"] for x in temp_number]
-        temp_due_dates = [self.tasks[x]["Due Date"] for x in temp_number]
-        embed_msg.add_field(name="Task Name", value="".join(temp_names), inline=True)
-        embed_msg.add_field(name="Owner", value="".join(temp_owners), inline=True)
-        embed_msg.add_field(name="Due Date", value="".join(temp_due_dates), inline=True)
+        temp_names = [task["Task Name"] for task in self.tasks]
+        temp_owners = [task["Owner"] for task in self.tasks]
+        temp_due_dates = [task["Due Date"] for task in self.tasks]
+        embed_msg.add_field(name="Task Name", value="\n".join(temp_names), inline=True)
+        embed_msg.add_field(name="Owner", value="\n".join(temp_owners), inline=True)
+        embed_msg.add_field(name="Due Date", value="\n".join(temp_due_dates), inline=True)
 
         await ctx.send(embed=embed_msg)
         
@@ -51,14 +49,15 @@ class SubcomTasks(commands.Cog):
     @commands.has_role(exec_role)
     async def add_task(self, ctx: commands.context.Context, *args):
         if not args:
-            await ctx.send("Please use the command in the form `.addtask [Title of Task]`")
+            await ctx.send("Please use the command in the form `.addtask [Title of Task] [Due Date]`")
             return
         
-        title = " ".join(args)
+        title = args[0]
+        date = "None" if len(args) == 1 else args[1]
         new_task = {
             "Task Name": title,
             "Owner": ctx.author.mention,
-            "Due Date": None
+            "Due Date": date
         }
 
         self.tasks.append(new_task)
