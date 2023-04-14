@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_comman
 # load all available cogs on startup
 @bot.command()
 @commands.has_role(exec_id)
-async def startup(ctx: commands.context.Context, extension):
+async def startup(ctx: commands.context.Context):
     for filename in os.listdir("cogs/"):
         if filename.endswith(".py"):
             await bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
