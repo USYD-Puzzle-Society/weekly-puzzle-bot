@@ -52,7 +52,18 @@ class SubcomTasks(commands.Cog):
         pass
     
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]", role):
-        pass
+        if not args:
+            await ctx.send("You must provide a Task ID for deletion!")
+            return
+        to_be_deleted = None
+        for task in self.tasks:
+            if str(task.task_id) == args[0]:
+                to_be_deleted = task
+        if to_be_deleted:
+            self.tasks.remove(to_be_deleted)
+            await ctx.send(f"Task {to_be_deleted.task_id} successfully deleted.")
+        else:
+            await ctx.send(f"Task {args[0]} not found!")
     
     @commands.command()
     @commands.has_any_role(exec_role, subcom_role)
