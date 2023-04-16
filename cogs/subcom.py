@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
+from classes.Task import Task
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -8,10 +9,10 @@ subcom_role = "Subcommittee"
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.tasks = []
+        self.tasks: list[Task] = []
 
         '''
-        self.tasks is a list of dictionaries
+        self.tasks is a list of Tasks
         Ideal format is going to be:
         [
             {
@@ -26,65 +27,56 @@ class SubcomTasks(commands.Cog):
             }
         ]
         '''
+    async def add_task(self, ctx: commands.context.Context, args: "list[str]", role):
+        self.tasks.append(Task(args[0] if args else "None", ctx.author.mention))
 
+    async def view_task(self, ctx: commands.context.Context, args: "list[str]", role):
+        pass
+
+    async def view_all_tasks(self, ctx: commands.context.Context, args: "list[str]", role):
+        '''
+        view_all_task ignore all args given to it
+        '''
+
+        embed = discord.Embed(title="All Active Tasks", color=discord.Color.greyple())
+        values = list(map(list, zip(*[task.to_tuple() for task in self.tasks]))) # cursed
+        if not values:
+            values = ["nothing!", "empty", "much wow"]
+        embed.add_field(name="Tasks", value="\n".join((['. '.join(x) for x in zip([str(x) for x in values[0]], values[1])])).strip("\n"))
+        embed.add_field(name="Owner", value="\n".join(values[2]).strip())
+        embed.add_field(name="Due Date", value="\n".join(values[3]).strip())
+
+        await ctx.send(embed=embed)
+    
+    async def assign_task(self, ctx: commands.context.Context, args: "list[str]", role):
+        pass
+    
+    async def delete_task(self, ctx: commands.context.Context, args: "list[str]", role):
+        pass
+    
     @commands.command()
     @commands.has_any_role(exec_role, subcom_role)
-    async def tasks(self, ctx: commands.context.Context):
-        embed_msg = discord.Embed(title="Active Tasks", color=discord.Color.greyple())
-        
-        # Pull tasks from storage
-        # self.tasks = idk open memory and get stuff
-        
-        # Extract tasks
-        temp_names = [task["Task Name"] for task in self.tasks]
-        temp_owners = [task["Owner"] for task in self.tasks]
-        temp_due_dates = [task["Due Date"] for task in self.tasks]
-        embed_msg.add_field(name="Task Name", value="\n".join(temp_names), inline=True)
-        embed_msg.add_field(name="Owner", value="\n".join(temp_owners), inline=True)
-        embed_msg.add_field(name="Due Date", value="\n".join(temp_due_dates), inline=True)
-
-        await ctx.send(embed=embed_msg)
-        
-    @commands.command(aliases=["addtask"])
-    @commands.has_role(exec_role)
-    async def add_task(self, ctx: commands.context.Context, *args):
-        if not args:
-            await ctx.send("Please use the command in the form `.addtask [Title of Task] [Due Date]`")
+    async def task(self, ctx: commands.context.Context, *args):
+        if len(args) < 2 or args[0] not in ["subcom", "exec"] or args[1] not in ["add", "view", "viewall", "assign", "delete"]:
+            await ctx.send("Please use the command in the form `.task [subcom/exec] [add/view/assign/delete]`")
+            return
+        role = discord.utils.get(ctx.guild.roles, name=exec_role)
+        if args[0] == "exec" and role not in ctx.author.roles():
+            await ctx.send("You must be an executive to perform this action!")
             return
         
-        title = args[0]
-        date = "None" if len(args) == 1 else args[1]
-        new_task = {
-            "Task Name": title,
-            "Owner": ctx.author.mention,
-            "Due Date": date
-        }
+        if args[1] == "add":
+            await self.add_task(ctx, list(args)[2:], args[1])
+        elif args[1] == "view":
+            await self.view_task(ctx, list(args)[2:], args[1])
+        elif args[1] == "viewall":
+            await self.view_all_tasks(ctx, list(args)[2:], args[1])
+        elif args[1] == "assign":
+            pass
+        elif args[1] == "delete":
+            pass
+        else:
+            pass
 
-        self.tasks.append(new_task)
-    
-    @commands.command()
-    @commands.has_role(exec_role)
-    async def assign_task(self, ctx: commands.context.Context, *args):
-        user_roles = ctx.author.roles
-        allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
-
-        if allowed_user:
-            # If no argument, assign to author
-            return True
-        return False
-    
-    @commands.command()
-    @commands.has_role(exec_role)
-    async def remove_task(self, ctx: commands.context.Context, n: int):
-        user_roles = ctx.author.roles
-        allowed_user = (self.exec_role in [role.name for role in user_roles]) #or "Subcommittee" in user_roles)
-
-        if allowed_user:
-            # Check that n is a valid key in self.tasks
-            return True
-        # Reminder to log exited task into #archived-tasks w/ owner
-        # and date of completion
-        return False
-
-def setup(bot: commands.Bot):
-    bot.add_cog(SubcomTasks(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(SubcomTasks(bot))

@@ -1,14 +1,14 @@
-class Task():
-    def __init__(self):
-        self.task_name: str = None
-        self.owner = None
-        self.due_date: str = None
-    
-    def set_task_name(self, task_name: str) -> None:
-        self.task_name = task_name
+global_id: int = 1
 
-    def set_owner(self, owner) -> None:
+class Task():
+    def __init__(self, task_name = "None", owner = "None", due_date = "None"):
+        global global_id
+        self.task_id: int = global_id
+        global_id += 1
+
+        self.task_name: str = task_name
         self.owner = owner
-    
-    def set_due_date(self, due_date: str) -> None:
-        self.due_date = due_date
+        self.due_date: str = due_date
+
+    def to_tuple(self):
+        return (self.task_id, self.task_name, self.owner, self.due_date)
