@@ -28,8 +28,8 @@ class SubcomTasks(commands.Cog):
             }
         ]
         '''
-    async def add_task(self, ctx: commands.context.Context, args: "list[str]"):
-        task = Task(args[0] if args else "None", [ctx.author.mention])
+    async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
+        task = Task(args[0] if args else "None", ctx.author.mention)
         self.tasks.append(task)
         await ctx.send(f"New Task created with Task ID {task.task_id}")
 
@@ -42,47 +42,72 @@ class SubcomTasks(commands.Cog):
             embed = discord.Embed(title=f"Task Details for Task {to_be_viewed.task_id}", color=discord.Color.greyple())
             embed.add_field(name="Task ID", value=to_be_viewed.task_id, inline=False)
             embed.add_field(name="Task Name", value=to_be_viewed.task_name, inline=False)
-            embed.add_field(name="Owner", value=to_be_viewed.owners_to_str(), inline=False)
+            embed.add_field(name="Owner", value=to_be_viewed.owner, inline=False)
+            embed.add_field(name="Contributors", value=to_be_viewed.contributors_to_str(), inline=False)
             embed.add_field(name="Creation Date", value=to_be_viewed.creation_date.isoformat())
             embed.add_field(name="Due Date", value=to_be_viewed.due_date.isoformat(), inline=False)
+            embed.add_field(name="Description", value=to_be_viewed.description, inline=False)
+            embed.add_field(name="Comments", value=to_be_viewed.comments, inline=False)
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"Task {args[0]} not found!")
 
     async def view_all_tasks(self, ctx: commands.context.Context, args: "list[str]"):
         '''
-        view_all_task ignore all args given to it
+        view_all_task ignore all args given to it.
+        can eventually support different sorts of task i.e by ID, by due date, ...
         '''
 
         embed = discord.Embed(title="All Active Tasks", color=discord.Color.greyple())
-        values = list(map(list, zip(*[task.to_tuple() for task in self.tasks]))) # cursed
+        values = list(map(list, zip(*[task.summary_to_tuple() for task in self.tasks]))) # cursed
         if not values:
-            values = [["0"], ["nothing!"], [["empty"]], ["much wow"]]
-        embed.add_field(name="Tasks", value="\n".join((['. '.join(x) for x in zip([str(x) for x in values[0]], values[1])])))
-        embed.add_field(name="Owner", value="\n".join([", ".join(owners) for owners in values[2]]))
-        embed.add_field(name="Due Date", value="\n".join(values[3].isoformat()))
+            embed.add_field(name="Tasks", value="")
+            embed.add_field(name="Owner", value="")
+            embed.add_field(name="Due Date", value="")
+        else:
+            embed.add_field(name="Tasks", value="\n".join((['. '.join(x) for x in zip([str(x) for x in values[0]], values[1])])))
+            embed.add_field(name="Owner", value="\n".join(values[2]))
+            embed.add_field(name="Due Date", value="\n".join([time.isoformat() for time in values[3]] ))
 
         await ctx.send(embed=embed)
     
-    async def assign_task(self, ctx: commands.context.Context, args: "list[str]"):
-        '''
-        if args is empty, assign task to self
-        otherwise, take a list of mentions
-        '''
-        if not args:
-            await ctx.send("You must provide a Task ID for assignment!")
+    async def edit_task(self, ctx: commands.context.Context, args: "list[str]"):
+        if len(args) < 3 or args[0] not in ["name", "owner", "contributors", "desc", "comments", "duedate"]:
+            await ctx.send("Please use the command in the form `.task edit " + 
+                           "[name/owner/contributors/desc/comments/duedate] <task_id> <arguments>`")
             return
-        task = self.find_task(args[0])
+        task = self.find_task(args[1])
         if not task:
-            await ctx.send(f"Task {args[0]} not found!")
+            await ctx.send(f"Task {args[1]} not found!")
             return
-        mentions = args[1:]
-        if not mentions:
-            task.owners = [ctx.author.mention]
-        else:
-            task.owners = args[1:]
-        await ctx.send(f"Task {task.task_id} assigned to {task.owners_to_str()}")
-    
+        
+        operation = args[0]
+        if operation == "name":
+            task.task_name = args[2]
+            await ctx.send(f"Task {task.task_id} renamed to {args[2]}")
+        elif operation == "owner":
+            task.owner = args[2]
+            await ctx.send(f"Task {task.task_id} assigned to {task.owner}.")
+        elif operation == "contributors":
+            task.contributors = args[2:]
+            await ctx.send(f"Task {task.task_id} contributors edited.")
+        elif operation == "desc":
+            task.description = " ".join(args[2:])
+            await ctx.send(f"Task {task.task_id} description edited.")
+        elif operation == "comments":
+            task.comments = " ".join(args[2:])
+            await ctx.send(f"Task {task.task_id} comments edited.")
+        elif operation == "duedate":
+            if len(args[2:]) < 3:
+                await ctx.send(f"Please supply the date in format `<year> <month> <day>`")
+                return
+            try:
+                date = datetime.date(int(args[2]), int(args[3]), int(args[4]))
+                task.due_date = date
+                await ctx.send(f"Task {task.task_id} due date edited to {date.isoformat()}")
+            except:
+                await ctx.send(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`")
+
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for deletion!")
@@ -104,22 +129,21 @@ class SubcomTasks(commands.Cog):
     @commands.command()
     @commands.has_any_role(exec_role, subcom_role)
     async def task(self, ctx: commands.context.Context, *args):
-        if len(args) < 2 or args[0] not in ["add", "view", "viewall", "assign", "delete"]:
-            await ctx.send("Please use the command in the form `.task [add/view/viewall/assign/delete]`")
+        if len(args) < 1 or args[0] not in ["new", "view", "viewall", "edit", "delete"]:
+            await ctx.send("Please use the command in the form `.task [new/view/viewall/edit/delete]`")
             return
         
-        if args[1] == "add":
-            await self.add_task(ctx, list(args)[1:])
-        elif args[1] == "view":
+        operation = args[0]
+        if operation == "new":
+            await self.new_task(ctx, list(args)[1:])
+        elif operation == "view":
             await self.view_task(ctx, list(args)[1:])
-        elif args[1] == "viewall":
+        elif operation == "viewall":
             await self.view_all_tasks(ctx, list(args)[1:])
-        elif args[1] == "assign":
-            await self.assign_task(ctx, list(args)[1:])
-        elif args[1] == "delete":
+        elif operation == "edit":
+            await self.edit_task(ctx, list(args)[1:])
+        elif operation == "delete":
             await self.delete_task(ctx, list(args)[1:])
-        else:
-            pass
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(SubcomTasks(bot))
