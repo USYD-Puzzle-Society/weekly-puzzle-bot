@@ -8,7 +8,7 @@ class PHC(commands.Cog):
         self.bot = bot
         self.calendar_url = "http://puzzlehuntcalendar.com/"
 
-    def get_events_dict(self) -> dict[str, str]:
+    def get_events_dict(self) -> "dict[str, str]":
         page = requests.get(self.calendar_url)
         soup = BeautifulSoup(page.content, "html.parser")
 
@@ -58,7 +58,7 @@ class PHC(commands.Cog):
         
         return events_dict
 
-    def create_events_embed(self, events_dict: dict[str, str]) -> discord.Embed:
+    def create_events_embed(self, events_dict: "dict[str, str]") -> discord.Embed:
         embed_msg = discord.Embed(title="Puzzle Hunt Calendar", color=discord.Color.random(), description=self.calendar_url)
 
         for i in range(len(events_dict)):
@@ -69,7 +69,7 @@ class PHC(commands.Cog):
         return embed_msg
 
     # event_num assumes python indexing
-    def create_desc_embed(self, events_dict: dict[str, str], event_num: int) -> list[str]:
+    def create_desc_embed(self, events_dict: "dict[str, str]", event_num: int) -> "list[str]":
         event = events_dict[event_num]
         
         embed_msg = discord.Embed(title=event["date"], color=discord.Color.random())
@@ -77,7 +77,7 @@ class PHC(commands.Cog):
 
         return embed_msg
     
-    def get_desc_str(self, events_dict: dict[str, str], event_num: int) -> discord.Embed:
+    def get_desc_str(self, events_dict: "dict[str, str]", event_num: int) -> discord.Embed:
         max_msg_len = 2000
         
         event = events_dict[event_num]
@@ -130,5 +130,5 @@ class PHC(commands.Cog):
             embed_msg = self.create_events_embed(events_dict)
             await ctx.send(embed=embed_msg)
 
-def setup(bot: commands.Bot):
-    bot.add_cog(PHC(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(PHC(bot))

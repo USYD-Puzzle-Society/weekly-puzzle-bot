@@ -246,7 +246,7 @@ class Info():
         return get_text[puzz_name](ctx, mention)
 
     # this method exists as just an easy way to change the data in one method call in setpuzzles/setciyk    
-    def change_data(self, puzz_name: str, new_data: dict[str]):
+    def change_data(self, puzz_name: str, new_data: "dict[str, any]"):
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
