@@ -40,6 +40,6 @@ class Stop(commands.Cog):
             print(ke)
             await ctx.send(f"There is no announcement release with the ID {release_id}")
 
-async def setup(bot: commands.Bot):
+def setup(bot: commands.Bot):
     info = Info()
-    await bot.add_cog(Stop(bot, info))
+    bot.add_cog(Stop(bot, info))

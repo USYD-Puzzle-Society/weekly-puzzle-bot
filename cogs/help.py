@@ -207,5 +207,5 @@ class Help(commands.Cog):
                 except KeyError:
                     await ctx.send(f"{argument} is not a valid command category.")
 
-async def setup(bot: commands.Bot):
-    await bot.add_cog(Help(bot))
+def setup(bot: commands.Bot):
+    bot.add_cog(Help(bot))

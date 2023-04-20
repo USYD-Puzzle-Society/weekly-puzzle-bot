@@ -78,6 +78,6 @@ class Show(commands.Cog):
         await ctx.send(f"The following will be set at {ciyk_time} in <#{ciyk_channel}>.")
         await ctx.send(ciyk_text)
 
-async def setup(bot: commands.Bot):
+def setup(bot: commands.Bot):
     info = Info()
-    await bot.add_cog(Show(bot, info))
+    bot.add_cog(Show(bot, info))

@@ -130,5 +130,5 @@ class PHC(commands.Cog):
             embed_msg = self.create_events_embed(events_dict)
             await ctx.send(embed=embed_msg)
 
-async def setup(bot: commands.Bot):
-    await bot.add_cog(PHC(bot))
+def setup(bot: commands.Bot):
+    bot.add_cog(PHC(bot))
