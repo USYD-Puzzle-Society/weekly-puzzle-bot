@@ -24,3 +24,34 @@ class Task():
     
     def contributors_to_str(self):
         return ", ".join(self.contributors)
+    
+    def to_dict(self):
+        res = {
+            "task_id": self.task_id,
+            "task_name": self.task_name,
+            "owner": self.owner,
+            "contributors": self.contributors,
+            "creation_date": self.creation_date.isoformat(),
+            "due_date": self.due_date.isoformat(),
+            "status": self.status,
+            "description": self.description,
+            "comments": self.comments,
+        }
+
+        return res
+    
+def from_dict(data):
+    task = Task()
+    task.task_id = data["task_id"]
+    task.task_name = data["task_name"]
+    task.owner = data["owner"]
+    task.contributors = data["contributors"]
+    task.creation_date = datetime.date.fromisoformat(data["creation_date"])
+    task.due_date = datetime.date.fromisoformat(data["due_date"])
+    task.status = data["status"]
+    task.description = data["description"]
+    task.comments = data["comments"]
+
+    return task
+    
+
