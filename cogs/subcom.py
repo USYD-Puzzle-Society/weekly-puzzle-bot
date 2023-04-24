@@ -91,7 +91,7 @@ class SubcomTasks(commands.Cog):
         elif operation == "contributors":
             task.contributors = args[2:]
             await ctx.send(f"Task {task.task_id} contributors edited.")
-        elif operation == "desc":
+        elif operation == "desc" or operation == "description":
             task.description = " ".join(args[2:])
             await ctx.send(f"Task {task.task_id} description edited.")
         elif operation == "comments":
