@@ -29,7 +29,7 @@ class SubcomTasks(commands.Cog):
         ]
         '''
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
-        task = Task(args[0] if args else "None", ctx.author.mention)
+        task = Task(" ".join(args) if args else "None", ctx.author.mention)
         self.tasks.append(task)
         await ctx.send(f"New Task created with Task ID {task.task_id}")
 
@@ -83,7 +83,7 @@ class SubcomTasks(commands.Cog):
         
         operation = args[0]
         if operation == "name":
-            task.task_name = args[2]
+            task.task_name = " ".join(args)
             await ctx.send(f"Task {task.task_id} renamed to {args[2]}")
         elif operation == "owner":
             task.owner = args[2]
