@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from classes.Task import Task
+from classes.Task import Task, from_dict
 import datetime
 import os
 import json
@@ -17,9 +17,10 @@ class SubcomTasks(commands.Cog):
 
         if os.path.exists(self.tasks_fn):
             with open(self.tasks_fn, "r") as t:
-                self.tasks = json.load(t)
-        else:
-            self.tasks: list[Task] = []
+                temp = json.load(t)
+                for task in temp:
+                    self.tasks.append(from_dict(task))
+        
 
         '''
         self.tasks is a list of Tasks
@@ -40,6 +41,8 @@ class SubcomTasks(commands.Cog):
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
         task = Task(args[0] if args else "None", ctx.author.mention)
         self.tasks.append(task)
+        with open(self.tasks_fn, "w") as t:
+            json.dump([task.to_dict() for task in self.tasks], t)
         await ctx.send(f"New Task created with Task ID {task.task_id}")
 
     async def view_task(self, ctx: commands.context.Context, args: "list[str]"):
@@ -117,6 +120,9 @@ class SubcomTasks(commands.Cog):
             except:
                 await ctx.send(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`")
 
+        with open(self.tasks_fn, "w") as t:
+            json.dump([task.to_dict() for task in self.tasks], t)
+
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for deletion!")
@@ -154,5 +160,5 @@ class SubcomTasks(commands.Cog):
         elif operation == "delete":
             await self.delete_task(ctx, list(args)[1:])
 
-def setup(bot: commands.Bot):
-    bot.add_cog(SubcomTasks(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(SubcomTasks(bot))
