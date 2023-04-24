@@ -133,6 +133,9 @@ class SubcomTasks(commands.Cog):
             await ctx.send(f"Task {to_be_deleted.task_id} successfully deleted.")
         else:
             await ctx.send(f"Task {args[0]} not found!")
+        with open(self.tasks_fn, "w") as t:
+            json.dump([task.to_dict() for task in self.tasks], t)
+        
     
     def find_task(self, task_id: int) -> Task:
         result = None 
