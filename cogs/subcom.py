@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from classes.Task import Task
+from classes.Task import Task, from_dict
 import datetime
 import os
 import json
@@ -9,19 +9,19 @@ import json
 exec_role = "Executives"
 subcom_role = "Subcommittee"
 
-def from_dict(data):
-    task = Task(increment=False)
-    task.task_id = data["task_id"]
-    task.task_name = data["task_name"]
-    task.owner = data["owner"]
-    task.contributors = data["contributors"]
-    task.creation_date = datetime.date.fromisoformat(data["creation_date"])
-    task.due_date = datetime.date.fromisoformat(data["due_date"])
-    task.status = data["status"]
-    task.description = data["description"]
-    task.comments = data["comments"]
+# def from_dict(data):
+#     task = Task(increment=False)
+#     task.task_id = data["task_id"]
+#     task.task_name = data["task_name"]
+#     task.owner = data["owner"]
+#     task.contributors = data["contributors"]
+#     task.creation_date = datetime.date.fromisoformat(data["creation_date"])
+#     task.due_date = datetime.date.fromisoformat(data["due_date"])
+#     task.status = data["status"]
+#     task.description = data["description"]
+#     task.comments = data["comments"]
 
-    return task
+#     return task
 
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
