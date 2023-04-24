@@ -109,8 +109,8 @@ class SubcomTasks(commands.Cog):
         
         operation = args[0]
         if operation == "name":
-            task.task_name = args[2]
-            await ctx.send(f"Task {task.task_id} renamed to {args[2]}")
+            task.task_name = " ".join(args[2:])
+            await ctx.send(f"Task {task.task_id} renamed to {task.task_name}")
         elif operation == "owner":
             task.owner = args[2]
             await ctx.send(f"Task {task.task_id} assigned to {task.owner}.")
