@@ -10,8 +10,7 @@ exec_role = "Executives"
 subcom_role = "Subcommittee"
 
 def from_dict(data):
-    task = Task()
-    task.decrement()
+    task = Task(increment=False)
     task.task_id = data["task_id"]
     task.task_name = data["task_name"]
     task.owner = data["owner"]
