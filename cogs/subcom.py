@@ -3,6 +3,8 @@ from discord.ext import commands
 import asyncio
 from classes.Task import Task
 import datetime
+import os
+import json
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -11,6 +13,13 @@ class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tasks: list[Task] = []
+        self.tasks_fn = "subcom_tasks.json"
+
+        if os.path.exists(self.tasks_fn):
+            with open(self.tasks_fn, "r") as t:
+                self.tasks = json.load(t)
+        else:
+            self.tasks: list[Task] = []
 
         '''
         self.tasks is a list of Tasks
