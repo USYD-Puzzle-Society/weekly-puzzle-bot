@@ -53,7 +53,7 @@ class SubcomTasks(commands.Cog):
         ]
         '''
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
-        task = Task(args[0] if args else "None", ctx.author.mention)
+        task = Task(" ".join(args) if args else "None", ctx.author.mention)
         self.tasks.append(task)
         with open(self.tasks_fn, "w") as t:
             json.dump([task.to_dict() for task in self.tasks], t)
