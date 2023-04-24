@@ -323,5 +323,5 @@ class Reactions(commands.Cog):
     async def scream(self, ctx):
         await ctx.send("AAAAA")
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Reactions(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Reactions(bot))

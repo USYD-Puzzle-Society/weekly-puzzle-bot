@@ -177,5 +177,5 @@ class SubcomTasks(commands.Cog):
         elif operation == "delete":
             await self.delete_task(ctx, list(args)[1:])
 
-def setup(bot: commands.Bot):
-    bot.add_cog(SubcomTasks(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(SubcomTasks(bot))
