@@ -4,7 +4,7 @@ global_id: int = 1
 
 class Task():
     def __init__(self, task_name="None", owner="None", contributors=["None"], due_date=datetime.date.today(), \
-                 status="Unassigned", description="None", comments="None", increment=True):
+                status="Unassigned", description="None", comments="None", increment=True):
         global global_id
         self.task_id: int = global_id
         if increment:
