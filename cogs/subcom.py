@@ -72,9 +72,9 @@ class SubcomTasks(commands.Cog):
         await ctx.send(embed=embed)
     
     async def edit_task(self, ctx: commands.context.Context, args: "list[str]"):
-        if len(args) < 3 or args[0] not in ["name", "owner", "contributors", "desc", "comments", "duedate"]:
+        if len(args) < 3 or args[0] not in ["name", "owner", "contributors", "desc", "description" "comments", "duedate"]:
             await ctx.send("Please use the command in the form `.task edit " + 
-                           "[name/owner/contributors/desc/comments/duedate] <task_id> <arguments>`")
+                           "[name/owner/contributors/desc/description/comments/duedate] <task_id> <arguments>`")
             return
         task = self.find_task(args[1])
         if not task:
