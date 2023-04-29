@@ -3,14 +3,38 @@ from discord.ext import commands
 import asyncio
 from classes.Task import Task
 import datetime
+import os
+import json
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
+
+def from_dict(data):
+    task = Task(increment=False)
+    task.task_id = data["task_id"]
+    task.task_name = data["task_name"]
+    task.owner = data["owner"]
+    task.contributors = data["contributors"]
+    task.creation_date = datetime.date.fromisoformat(data["creation_date"])
+    task.due_date = datetime.date.fromisoformat(data["due_date"])
+    task.status = data["status"]
+    task.description = data["description"]
+    task.comments = data["comments"]
+
+    return task
 
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tasks: list[Task] = []
+        self.tasks_fn = "subcom_tasks.json"
+
+        if os.path.exists(self.tasks_fn):
+            with open(self.tasks_fn, "r") as t:
+                temp = json.load(t)
+                for task in temp:
+                    self.tasks.append(from_dict(task))
+        
 
         '''
         self.tasks is a list of Tasks
@@ -31,6 +55,8 @@ class SubcomTasks(commands.Cog):
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
         task = Task(" ".join(args) if args else "None", ctx.author.mention)
         self.tasks.append(task)
+        with open(self.tasks_fn, "w") as t:
+            json.dump([task.to_dict() for task in self.tasks], t)
         await ctx.send(f"New Task created with Task ID {task.task_id}")
 
     async def view_task(self, ctx: commands.context.Context, args: "list[str]"):
@@ -83,15 +109,15 @@ class SubcomTasks(commands.Cog):
         
         operation = args[0]
         if operation == "name":
-            task.task_name = " ".join(args)
-            await ctx.send(f"Task {task.task_id} renamed to {args[2]}")
+            task.task_name = " ".join(args[2:])
+            await ctx.send(f"Task {task.task_id} renamed to {task.task_name}")
         elif operation == "owner":
             task.owner = args[2]
             await ctx.send(f"Task {task.task_id} assigned to {task.owner}.")
         elif operation == "contributors":
             task.contributors = args[2:]
             await ctx.send(f"Task {task.task_id} contributors edited.")
-        elif operation == "desc":
+        elif operation == "desc" or operation == "description":
             task.description = " ".join(args[2:])
             await ctx.send(f"Task {task.task_id} description edited.")
         elif operation == "comments":
@@ -108,6 +134,9 @@ class SubcomTasks(commands.Cog):
             except:
                 await ctx.send(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`")
 
+        with open(self.tasks_fn, "w") as t:
+            json.dump([task.to_dict() for task in self.tasks], t)
+
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for deletion!")
@@ -118,6 +147,9 @@ class SubcomTasks(commands.Cog):
             await ctx.send(f"Task {to_be_deleted.task_id} successfully deleted.")
         else:
             await ctx.send(f"Task {args[0]} not found!")
+        with open(self.tasks_fn, "w") as t:
+            json.dump([task.to_dict() for task in self.tasks], t)
+        
     
     def find_task(self, task_id: int) -> Task:
         result = None 
@@ -145,5 +177,5 @@ class SubcomTasks(commands.Cog):
         elif operation == "delete":
             await self.delete_task(ctx, list(args)[1:])
 
-def setup(bot: commands.Bot):
-    bot.add_cog(SubcomTasks(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(SubcomTasks(bot))

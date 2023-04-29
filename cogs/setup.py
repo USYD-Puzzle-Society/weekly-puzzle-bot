@@ -653,6 +653,6 @@ class Setup(commands.Cog):
         )
         await ctx.send(ciyk_text)
 
-def setup(bot: commands.Bot):
+async def setup(bot: commands.Bot):
     info = Info()
-    bot.add_cog(Setup(bot, info))
+    await bot.add_cog(Setup(bot, info))

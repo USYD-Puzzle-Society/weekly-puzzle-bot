@@ -116,6 +116,6 @@ class Start(commands.Cog):
             with open(self.start_json, "w") as sj:
                 sj.write(new_json)
 
-def setup(bot: commands.Bot):
+async def setup(bot: commands.Bot):
     info = Info()
-    bot.add_cog(Start(bot, info))
+    await bot.add_cog(Start(bot, info))
