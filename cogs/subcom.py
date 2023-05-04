@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 from classes.Task import Task
+from classes.ArchivedTask import ArchivedTask
 import datetime
 import os
 import json
@@ -77,6 +78,7 @@ class SubcomTasks(commands.Cog):
         if not args:
             await ctx.send("You must provide a Task ID for viewing!")
             return
+        
         to_be_viewed = self.find_task(args[0])
         if to_be_viewed:
             embed = discord.Embed(title=f"Task Details for Task {to_be_viewed.task_id}", color=discord.Color.greyple())
@@ -88,6 +90,8 @@ class SubcomTasks(commands.Cog):
             embed.add_field(name="Due Date", value=to_be_viewed.due_date.isoformat(), inline=False)
             embed.add_field(name="Description", value=to_be_viewed.description, inline=False)
             embed.add_field(name="Comments", value=to_be_viewed.comments, inline=False)
+            if isinstance(to_be_viewed, ArchivedTask):
+                embed.add_field(name="Archive Date", value=to_be_viewed.archived_date.isoformat(), inline=False)
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"Task {args[0]} not found!")
@@ -168,7 +172,7 @@ class SubcomTasks(commands.Cog):
             await ctx.send(f"Task {args[0]} not found!")
             return
         self.tasks.remove(to_be_archived)
-        self.archives.append(to_be_archived)
+        self.archives.append(to_be_archived.archive())
 
         await ctx.send(f"Task {args[0]} successfully archived.")
 
@@ -194,6 +198,9 @@ class SubcomTasks(commands.Cog):
     def find_task(self, task_id: str) -> Task:
         result = None 
         for task in self.tasks:
+            if (str(task.task_id) == task_id):
+                result = task
+        for task in self.archives:
             if (str(task.task_id) == task_id):
                 result = task
         return result

@@ -1,4 +1,5 @@
 import datetime
+from classes.ArchivedTask import ArchivedTask
 
 global_id: int = 1
 
@@ -43,7 +44,22 @@ class Task():
     
     def decrement(self):
         global global_id
-        global_id += -1
+        global_id += -1 
+
+    def archive(self):
+        archived_task = ArchivedTask()
+        archived_task.task_id = self.task_id
+        archived_task.task_name = self.task_name
+        archived_task.owner = self.owner
+        archived_task.contributors = self.contributors
+        archived_task.creation_date = self.creation_date
+        archived_task.due_date = self.due_date
+        archived_task.status = self.status
+        archived_task.description = self.description
+        archived_task.comments = self.comments
+
+        return archived_task
+
     
 # def from_dict(data):
 #     task = Task()
