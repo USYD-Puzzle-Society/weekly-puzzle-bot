@@ -5,6 +5,7 @@ from classes.Task import Task
 import datetime
 import os
 import json
+from json.decoder import JSONDecodeError
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -27,21 +28,27 @@ class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tasks: list[Task] = []
-        self.archives: list[Task]
+        self.archives: list[Task] = []
         self.tasks_fn = "subcom_tasks.json"
         self.archives_fn = "subcom_tasks_archive.json"
 
         if os.path.exists(self.tasks_fn): # note that this is susceptible to a race condition
             with open(self.tasks_fn, "r") as t:
-                temp = json.load(t)
-                for task in temp:
-                    self.tasks.append(from_dict(task))
+                try:
+                    temp = json.load(t)
+                    for task in temp:
+                        self.tasks.append(from_dict(task))
+                except JSONDecodeError:
+                    pass
         
         if os.path.exists(self.archives_fn): 
             with open(self.archives_fn, "r") as t:
-                temp = json.load(t)
-                for task in temp:
-                    self.archives.append(from_dict(task))
+                try:
+                    temp = json.load(t)
+                    for task in temp:
+                        self.archives.append(from_dict(task))
+                except JSONDecodeError:
+                    pass
 
         '''
         # self.tasks is a list of Tasks
@@ -160,11 +167,13 @@ class SubcomTasks(commands.Cog):
         if not to_be_archived:
             await ctx.send(f"Task {args[0]} not found!")
             return
-        self.task.remove(to_be_archived)
+        self.tasks.remove(to_be_archived)
         self.archives.append(to_be_archived)
 
+        await ctx.send(f"Task {args[0]} successfully archived.")
+
         with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.task], t)
+            json.dump([task.to_dict() for task in self.tasks], t)
         with open(self.archives_fn, "w") as t:
             json.dump([task.to_dict() for task in self.archives], t)
 
