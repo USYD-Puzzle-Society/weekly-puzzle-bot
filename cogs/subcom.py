@@ -198,7 +198,7 @@ class SubcomTasks(commands.Cog):
                 "global_id": get_global_id(),
                 "tasks": [task.to_dict() for task in self.tasks],
                 "archives": [task.to_dict() for task in self.archives]
-            }, t) 
+            }, t, indent=4) 
     
     @commands.command(name="set-archive-channel")
     @commands.has_role(exec_role)
