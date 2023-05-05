@@ -173,7 +173,7 @@ class SubcomTasks(commands.Cog):
 
         await ctx.send(f"Task {to_be_archived.task_id} successfully archived.")
         if archive_channel:
-            embed = discord.Embed(title=f"Task {to_be_archived.task_id}", color=discord.Color.greyple())
+            embed = discord.Embed(title=f"New Archived Task: Task {to_be_archived.task_id}", color=discord.Color.greyple())
             embed.add_field(name="Archive Date", value=archived.archived_date.isoformat())
             await archive_channel.send(embed=embed)
 
