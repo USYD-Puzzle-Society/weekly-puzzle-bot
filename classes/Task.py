@@ -1,7 +1,16 @@
 import datetime
-from classes.ArchivedTask import ArchivedTask
+import os
+import json
+from json.decoder import JSONDecodeError
 
 global_id: int = 1
+tasks_fn = "subcom_tasks.json"
+if os.path.exists(tasks_fn): # note that this is susceptible to a race condition
+    with open(tasks_fn, "r") as t:
+        try:
+            global_id = json.load(t)["global_id"]
+        except JSONDecodeError:
+            pass
 
 class Task():
     def __init__(self, task_name="None", owner="None", contributors=["None"], \
@@ -46,20 +55,8 @@ class Task():
         global global_id
         global_id += -1 
 
-    def archive(self):
-        archived_task = ArchivedTask()
-        archived_task.task_id = self.task_id
-        archived_task.task_name = self.task_name
-        archived_task.owner = self.owner
-        archived_task.contributors = self.contributors
-        archived_task.creation_date = self.creation_date
-        archived_task.due_date = self.due_date
-        archived_task.status = self.status
-        archived_task.description = self.description
-        archived_task.comments = self.comments
-
-        return archived_task
-
+def get_global_id():
+    return global_id
     
 # def from_dict(data):
 #     task = Task()

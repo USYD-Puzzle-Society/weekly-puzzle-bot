@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from classes.Task import Task
+from classes.Task import Task, get_global_id
 from classes.ArchivedTask import ArchivedTask
 import datetime
 import os
@@ -10,6 +10,7 @@ from json.decoder import JSONDecodeError
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
+archive_channel = None
 
 def from_dict(data):
     task = Task(increment=False)
@@ -31,21 +32,14 @@ class SubcomTasks(commands.Cog):
         self.tasks: list[Task] = []
         self.archives: list[Task] = []
         self.tasks_fn = "subcom_tasks.json"
-        self.archives_fn = "subcom_tasks_archive.json"
 
         if os.path.exists(self.tasks_fn): # note that this is susceptible to a race condition
             with open(self.tasks_fn, "r") as t:
                 try:
-                    temp = json.load(t)
+                    temp = json.load(t)["tasks"]
                     for task in temp:
                         self.tasks.append(from_dict(task))
-                except JSONDecodeError:
-                    pass
-        
-        if os.path.exists(self.archives_fn): 
-            with open(self.archives_fn, "r") as t:
-                try:
-                    temp = json.load(t)
+                    temp = json.load(t)["archives"]
                     for task in temp:
                         self.archives.append(from_dict(task))
                 except JSONDecodeError:
@@ -70,9 +64,9 @@ class SubcomTasks(commands.Cog):
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
         task = Task(" ".join(args) if args else "None", ctx.author.mention)
         self.tasks.append(task)
-        with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.tasks], t)
         await ctx.send(f"New Task created with Task ID {task.task_id}")
+
+        await self.dump_tasks()
 
     async def view_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
@@ -160,8 +154,7 @@ class SubcomTasks(commands.Cog):
             except:
                 await ctx.send(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`")
 
-        with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.tasks], t)
+        await self.dump_tasks()
     
     async def archive_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
@@ -172,15 +165,14 @@ class SubcomTasks(commands.Cog):
             await ctx.send(f"Task {args[0]} not found!")
             return
         self.tasks.remove(to_be_archived)
-        self.archives.append(to_be_archived.archive())
+        self.archives.append(ArchivedTask(to_be_archived))
 
         await ctx.send(f"Task {args[0]} successfully archived.")
+        if archive_channel:
+            await archive_channel.send(f"Task {args[0]} successfully archived.")
 
-        with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.tasks], t)
-        with open(self.archives_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.archives], t)
-
+        await self.dump_tasks()
+    
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for deletion!")
@@ -191,10 +183,25 @@ class SubcomTasks(commands.Cog):
             await ctx.send(f"Task {to_be_deleted.task_id} successfully deleted.")
         else:
             await ctx.send(f"Task {args[0]} not found!")
-        with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.tasks], t)
         
+        await self.dump_tasks()
+
+    async def dump_tasks(self):
+        with open(self.tasks_fn, "w") as t:
+            json.dump({
+                "global_id": get_global_id(),
+                "tasks": [task.to_dict() for task in self.tasks],
+                "archives": [task.to_dict() for task in self.archives]
+            }, t) 
     
+    @commands.command(name="set-archive-channel")
+    @commands.has_role(exec_role)
+    async def set_archive_channel(self, ctx: commands.context.Context):
+        global archive_channel
+        archive_channel = ctx.channel
+        print(ctx.channel)
+        await ctx.send(f"Archive channel set to {archive_channel}.")
+        
     def find_task(self, task_id: str) -> Task:
         result = None 
         for task in self.tasks:
