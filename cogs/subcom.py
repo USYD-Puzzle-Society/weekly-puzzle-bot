@@ -13,7 +13,11 @@ subcom_role = "Subcommittee"
 archive_channel = None
 
 def from_dict(data):
-    task = Task(increment=False)
+    if "archived_date" in data:
+        task = ArchivedTask()
+        task.archived_date = datetime.date.fromisoformat(data["archived_date"])
+    else:
+        task = Task(increment=False)
     task.task_id = data["task_id"]
     task.task_name = data["task_name"]
     task.owner = data["owner"]
@@ -30,17 +34,16 @@ class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tasks: list[Task] = []
-        self.archives: list[Task] = []
+        self.archives: list[ArchivedTask] = []
         self.tasks_fn = "subcom_tasks.json"
 
         if os.path.exists(self.tasks_fn): # note that this is susceptible to a race condition
             with open(self.tasks_fn, "r") as t:
                 try:
-                    temp = json.load(t)["tasks"]
-                    for task in temp:
+                    data = json.load(t)
+                    for task in data["tasks"]:
                         self.tasks.append(from_dict(task))
-                    temp = json.load(t)["archives"]
-                    for task in temp:
+                    for task in data["archives"]:
                         self.archives.append(from_dict(task))
                 except JSONDecodeError:
                     pass
@@ -165,11 +168,14 @@ class SubcomTasks(commands.Cog):
             await ctx.send(f"Task {args[0]} not found!")
             return
         self.tasks.remove(to_be_archived)
-        self.archives.append(ArchivedTask(to_be_archived))
+        archived = ArchivedTask(to_be_archived)
+        self.archives.append(archived)
 
-        await ctx.send(f"Task {args[0]} successfully archived.")
+        await ctx.send(f"Task {to_be_archived.task_id} successfully archived.")
         if archive_channel:
-            await archive_channel.send(f"Task {args[0]} successfully archived.")
+            embed = discord.Embed(title=f"Task {to_be_archived.task_id}", color=discord.Color.greyple())
+            embed.add_field(name="Archive Date", value=archived.archived_date.isoformat())
+            await archive_channel.send(embed=embed)
 
         await self.dump_tasks()
     
@@ -199,7 +205,6 @@ class SubcomTasks(commands.Cog):
     async def set_archive_channel(self, ctx: commands.context.Context):
         global archive_channel
         archive_channel = ctx.channel
-        print(ctx.channel)
         await ctx.send(f"Archive channel set to {archive_channel}.")
         
     def find_task(self, task_id: str) -> Task:
