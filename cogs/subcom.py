@@ -67,7 +67,7 @@ class SubcomTasks(commands.Cog):
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
         task = Task(" ".join(args) if args else "None", ctx.author.mention)
         self.tasks.append(task)
-        await ctx.send(f"New Task created with Task ID {task.task_id}")
+        await ctx.send(f"New Task created with Task ID {task.task_id}.")
 
         await self.dump_tasks()
 
@@ -200,12 +200,12 @@ class SubcomTasks(commands.Cog):
                 "archives": [task.to_dict() for task in self.archives]
             }, t, indent=4) 
     
-    @commands.command(name="set-archive-channel")
+    @commands.command(name="setarchivechannel")
     @commands.has_role(exec_role)
     async def set_archive_channel(self, ctx: commands.context.Context):
         global archive_channel
         archive_channel = ctx.channel
-        await ctx.send(f"Archive channel set to {archive_channel}.")
+        await ctx.send(f"Archive channel set to <#{archive_channel}>.")
         
     def find_task(self, task_id: str) -> Task:
         result = None 
