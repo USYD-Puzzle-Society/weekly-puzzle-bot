@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from classes.Task import Task, get_global_id
+from classes.Task import Task, get_global_id, from_dict
 from classes.ArchivedTask import ArchivedTask
 import datetime
 import os
@@ -12,23 +12,7 @@ exec_role = "Executives"
 subcom_role = "Subcommittee"
 archive_channel = None
 
-def from_dict(data):
-    if "archived_date" in data:
-        task = ArchivedTask()
-        task.archived_date = datetime.date.fromisoformat(data["archived_date"])
-    else:
-        task = Task(increment=False)
-    task.task_id = data["task_id"]
-    task.task_name = data["task_name"]
-    task.owner = data["owner"]
-    task.contributors = data["contributors"]
-    task.creation_date = datetime.date.fromisoformat(data["creation_date"])
-    task.due_date = datetime.date.fromisoformat(data["due_date"])
-    task.status = data["status"]
-    task.description = data["description"]
-    task.comments = data["comments"]
 
-    return task
 
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
