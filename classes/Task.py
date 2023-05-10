@@ -50,26 +50,27 @@ class Task():
         }
 
         return res
+
+    @staticmethod
+    def from_dict(data):
+        task = Task()
+        task.task_id = data["task_id"]
+        task.task_name = data["task_name"]
+        task.owner = data["owner"]
+        task.contributors = data["contributors"]
+        task.creation_date = datetime.date.fromisoformat(data["creation_date"])
+        task.due_date = datetime.date.fromisoformat(data["due_date"])
+        task.status = data["status"]
+        task.description = data["description"]
+        task.comments = data["comments"]
     
     def decrement(self):
         global global_id
         global_id += -1 
-
+    
 def get_global_id():
     return global_id
     
-# def from_dict(data):
-#     task = Task()
-#     task.task_id = data["task_id"]
-#     task.task_name = data["task_name"]
-#     task.owner = data["owner"]
-#     task.contributors = data["contributors"]
-#     task.creation_date = datetime.date.fromisoformat(data["creation_date"])
-#     task.due_date = datetime.date.fromisoformat(data["due_date"])
-#     task.status = data["status"]
-#     task.description = data["description"]
-#     task.comments = data["comments"]
 
-#     return task
     
 

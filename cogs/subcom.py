@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from classes.Task import Task, get_global_id, from_dict
+from classes.Task import Task, get_global_id
 from classes.ArchivedTask import ArchivedTask
 import datetime
 import os
@@ -26,9 +26,9 @@ class SubcomTasks(commands.Cog):
                 try:
                     data = json.load(t)
                     for task in data["tasks"]:
-                        self.tasks.append(from_dict(task))
+                        self.tasks.append(Task.from_dict(task))
                     for task in data["archives"]:
-                        self.archives.append(from_dict(task))
+                        self.archives.append(ArchivedTask.from_dict(task))
                 except JSONDecodeError:
                     pass
 
