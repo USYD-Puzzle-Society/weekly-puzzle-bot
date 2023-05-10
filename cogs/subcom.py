@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from classes.Task import Task, get_global_id
+from classes.Task import Task
 from classes.ArchivedTask import ArchivedTask
 import datetime
 import os
@@ -11,8 +11,6 @@ from json.decoder import JSONDecodeError
 exec_role = "Executives"
 subcom_role = "Subcommittee"
 archive_channel = None
-
-
 
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
@@ -179,7 +177,7 @@ class SubcomTasks(commands.Cog):
     async def dump_tasks(self):
         with open(self.tasks_fn, "w") as t:
             json.dump({
-                "global_id": get_global_id(),
+                "global_id": Task.get_global_id(),
                 "tasks": [task.to_dict() for task in self.tasks],
                 "archives": [task.to_dict() for task in self.archives]
             }, t, indent=4) 

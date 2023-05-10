@@ -53,7 +53,7 @@ class Task():
 
     @staticmethod
     def from_dict(data):
-        task = Task()
+        task = Task(increment=False)
         task.task_id = data["task_id"]
         task.task_name = data["task_name"]
         task.owner = data["owner"]
@@ -64,12 +64,14 @@ class Task():
         task.description = data["description"]
         task.comments = data["comments"]
     
-    def decrement(self):
+    @staticmethod
+    def decrement():
         global global_id
         global_id += -1 
     
-def get_global_id():
-    return global_id
+    @staticmethod
+    def get_global_id():
+        return global_id
     
 
     
