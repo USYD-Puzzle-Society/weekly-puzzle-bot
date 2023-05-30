@@ -63,6 +63,7 @@ class Task():
         task.status = data["status"]
         task.description = data["description"]
         task.comments = data["comments"]
+        return task
     
     @staticmethod
     def decrement():
