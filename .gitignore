@@ -159,3 +159,12 @@ cython_debug/
 # ignore venv (idk why it is not included)
 bin/**
 pyvenv.cfg
+
+# ignore json stuff?
+start.json
+info.json
+subcom_tasks.json
+subcom_tasks_archive.json
+
+# lib64 is a symlink
+lib64

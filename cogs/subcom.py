@@ -2,42 +2,36 @@ import discord
 from discord.ext import commands
 import asyncio
 from classes.Task import Task
+from classes.ArchivedTask import ArchivedTask
 import datetime
 import os
 import json
+from json.decoder import JSONDecodeError
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
-
-def from_dict(data):
-    task = Task(increment=False)
-    task.task_id = data["task_id"]
-    task.task_name = data["task_name"]
-    task.owner = data["owner"]
-    task.contributors = data["contributors"]
-    task.creation_date = datetime.date.fromisoformat(data["creation_date"])
-    task.due_date = datetime.date.fromisoformat(data["due_date"])
-    task.status = data["status"]
-    task.description = data["description"]
-    task.comments = data["comments"]
-
-    return task
+archive_channel = None
 
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tasks: list[Task] = []
+        self.archives: list[ArchivedTask] = []
         self.tasks_fn = "subcom_tasks.json"
 
-        if os.path.exists(self.tasks_fn):
+        if os.path.exists(self.tasks_fn): # note that this is susceptible to a race condition
             with open(self.tasks_fn, "r") as t:
-                temp = json.load(t)
-                for task in temp:
-                    self.tasks.append(from_dict(task))
-        
+                try:
+                    data = json.load(t)
+                    for task in data["tasks"]:
+                        self.tasks.append(Task.from_dict(task))
+                    for task in data["archives"]:
+                        self.archives.append(ArchivedTask.from_dict(task))
+                except JSONDecodeError:
+                    pass
 
         '''
-        self.tasks is a list of Tasks
+        # self.tasks is a list of Tasks
         Ideal format is going to be:
         [
             {
@@ -55,14 +49,15 @@ class SubcomTasks(commands.Cog):
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
         task = Task(" ".join(args) if args else "None", ctx.author.mention)
         self.tasks.append(task)
-        with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.tasks], t)
-        await ctx.send(f"New Task created with Task ID {task.task_id}")
+        await ctx.send(f"New Task created with Task ID {task.task_id}.")
+
+        await self.dump_tasks()
 
     async def view_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for viewing!")
             return
+        
         to_be_viewed = self.find_task(args[0])
         if to_be_viewed:
             embed = discord.Embed(title=f"Task Details for Task {to_be_viewed.task_id}", color=discord.Color.greyple())
@@ -74,18 +69,28 @@ class SubcomTasks(commands.Cog):
             embed.add_field(name="Due Date", value=to_be_viewed.due_date.isoformat(), inline=False)
             embed.add_field(name="Description", value=to_be_viewed.description, inline=False)
             embed.add_field(name="Comments", value=to_be_viewed.comments, inline=False)
+            if isinstance(to_be_viewed, ArchivedTask):
+                embed.add_field(name="Archive Date", value=to_be_viewed.archived_date.isoformat(), inline=False)
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"Task {args[0]} not found!")
 
     async def view_all_tasks(self, ctx: commands.context.Context, args: "list[str]"):
         '''
-        view_all_task ignore all args given to it.
+        view_all_task takes an optional argument, "-a", that allows you to view the archive
         can eventually support different sorts of task i.e by ID, by due date, ...
         '''
 
-        embed = discord.Embed(title="All Active Tasks", color=discord.Color.greyple())
-        values = list(map(list, zip(*[task.summary_to_tuple() for task in self.tasks]))) # cursed
+        if len(args) > 0 and args[0] == "-a":
+            title = "All Archived Tasks"
+            view_list = self.archives
+        else:
+            title = "All Active Tasks"
+            view_list = self.tasks
+
+        embed = discord.Embed(title=title, color=discord.Color.greyple())
+        values = list(map(list, zip(*[task.summary_to_tuple() for task in view_list]))) # cursed
+
         if not values:
             embed.add_field(name="Tasks", value="")
             embed.add_field(name="Owner", value="")
@@ -134,9 +139,28 @@ class SubcomTasks(commands.Cog):
             except:
                 await ctx.send(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`")
 
-        with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.tasks], t)
+        await self.dump_tasks()
+    
+    async def archive_task(self, ctx: commands.context.Context, args: "list[str]"):
+        if not args:
+            await ctx.send("You must provide a Task ID for archiving!")
+            return
+        to_be_archived = self.find_task(args[0])
+        if not to_be_archived:
+            await ctx.send(f"Task {args[0]} not found!")
+            return
+        self.tasks.remove(to_be_archived)
+        archived = ArchivedTask(to_be_archived)
+        self.archives.append(archived)
 
+        await ctx.send(f"Task {to_be_archived.task_id} successfully archived.")
+        if archive_channel:
+            embed = discord.Embed(title=f"New Archived Task: Task {to_be_archived.task_id}", color=discord.Color.greyple())
+            embed.add_field(name="Archive Date", value=archived.archived_date.isoformat())
+            await archive_channel.send(embed=embed)
+
+        await self.dump_tasks()
+    
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for deletion!")
@@ -147,22 +171,39 @@ class SubcomTasks(commands.Cog):
             await ctx.send(f"Task {to_be_deleted.task_id} successfully deleted.")
         else:
             await ctx.send(f"Task {args[0]} not found!")
-        with open(self.tasks_fn, "w") as t:
-            json.dump([task.to_dict() for task in self.tasks], t)
         
+        await self.dump_tasks()
+
+    async def dump_tasks(self):
+        with open(self.tasks_fn, "w") as t:
+            json.dump({
+                "global_id": Task.get_global_id(),
+                "tasks": [task.to_dict() for task in self.tasks],
+                "archives": [task.to_dict() for task in self.archives]
+            }, t, indent=4) 
     
-    def find_task(self, task_id: int) -> Task:
+    @commands.command(name="setarchivechannel")
+    @commands.has_role(exec_role)
+    async def set_archive_channel(self, ctx: commands.context.Context):
+        global archive_channel
+        archive_channel = ctx.channel
+        await ctx.send(f"Archive channel set to <#{archive_channel}>.")
+        
+    def find_task(self, task_id: str) -> Task:
         result = None 
         for task in self.tasks:
             if (str(task.task_id) == task_id):
-                result  = task
+                result = task
+        for task in self.archives:
+            if (str(task.task_id) == task_id):
+                result = task
         return result
     
     @commands.command()
     @commands.has_any_role(exec_role, subcom_role)
     async def task(self, ctx: commands.context.Context, *args):
-        if len(args) < 1 or args[0] not in ["new", "view", "viewall", "edit", "delete"]:
-            await ctx.send("Please use the command in the form `.task [new/view/viewall/edit/delete]`")
+        if len(args) < 1 or args[0] not in ["new", "view", "viewall", "edit", "archive", "delete"]:
+            await ctx.send("Please use the command in the form `.task [new/view/viewall/edit/archive/delete]`")
             return
         
         operation = args[0]
@@ -174,6 +215,8 @@ class SubcomTasks(commands.Cog):
             await self.view_all_tasks(ctx, list(args)[1:])
         elif operation == "edit":
             await self.edit_task(ctx, list(args)[1:])
+        elif operation == "archive":
+            await self.archive_task(ctx, list(args)[1:])
         elif operation == "delete":
             await self.delete_task(ctx, list(args)[1:])
 
