@@ -47,7 +47,7 @@ class WeeklyPuz(commands.Cog):
     async def on_message(self, message):
         if message.channel.id != 1100077444922359959:
             return
-        await self.bot.get_channel(994948949536407612).send("Top 3 Taken!")
+        await self.bot.get_channel(994948949536407612).send("Hints are enabled!")
         
 
 
