@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import os.path
 import requests
+from info import Info
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -12,9 +13,9 @@ from googleapiclient.errors import HttpError
 FORM_API = ""
 
 class WeeklyPuz(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, info: Info):
         self.bot = bot
-        pass
+        self.info = info
 
     @commands.command()
     async def weeklypuz(self, ctx: commands.context.Context, *args):
@@ -47,9 +48,8 @@ class WeeklyPuz(commands.Cog):
     async def on_message(self, message):
         if message.channel.id != 1100077444922359959:
             return
-        await self.bot.get_channel(994948949536407612).send("Hints are enabled!")
+        await self.bot.get_channel(self.info["rebuscryptic"]["channel_id"]).send("Hints are enabled!")
         
-
-
 async def setup(bot: commands.Bot):
-    await bot.add_cog(WeeklyPuz(bot))
+    info = Info()
+    await bot.add_cog(WeeklyPuz(bot, info))
