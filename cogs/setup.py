@@ -2,6 +2,7 @@ import os
 import json
 import discord
 import datetime
+import re
 from info import Info
 from discord.ext import commands
 
@@ -309,7 +310,8 @@ class Setup(commands.Cog):
         new_data = {
             "img_urls": [],
             "week_num": -1,
-            "submission_link": ""
+            "submission_link": "",
+            "prefilled_submission_link": ""
         }
 
         while True:
@@ -343,14 +345,16 @@ class Setup(commands.Cog):
                 await ctx.send("Please enter a number.")
 
         # no check will be done to see if the link is a real link 
-        await ctx.send("Please send the submission link for the rebus and cryptic.")
+        await ctx.send("Please send a prefilled submission link for the rebus and cryptic, with all entries being `a`.")
         msg = await self.bot.wait_for("message", check=check)
         
         if ".stop" == msg.content.lower():
             await ctx.send("Command stopped. No changes have been made to the minipuzz info.")
             return
         else:
-            new_data["submission_link"] = msg.content
+            new_data["prefilled_submission_link"] = msg.content
+            form_id = self.retrieveFormId(msg.content)
+            new_data["submission_link"] = f"https://docs.google.com/forms/d/e/{form_id}/viewform"
 
         # if this point is reached, then the new data will be saved
         self.info_obj.change_data("rebuscryptic", new_data)
@@ -386,6 +390,7 @@ class Setup(commands.Cog):
             "img_urls": [],
             "week_num": -1,
             "submission_link": "",
+            "prefilled_submission_link": "",
             "interactive_link": ""
         }
 
@@ -422,14 +427,16 @@ class Setup(commands.Cog):
                 await ctx.send("Please enter a number.")
 
         # no check will be done to see if the link is a real link 
-        await ctx.send("Please send the submission link for the puzzles.")
+        await ctx.send("Please send a prefilled submission link for the puzzles, with all entries being `a`.")
         msg = await self.bot.wait_for("message", check=check)
         
         if ".stop" == msg.content.lower():
             await ctx.send("Command stopped. No changes have been made to the minipuzz info.")
             return
         else:
-            new_data["submission_link"] = msg.content
+            new_data["prefilled_submission_link"] = msg.content
+            form_id = self.retrieveFormId(msg.content)
+            new_data["submission_link"] = f"https://docs.google.com/forms/d/e/{form_id}/viewform"
 
 
         # add interactive link if there is one
@@ -652,6 +659,13 @@ class Setup(commands.Cog):
             "Remember to do `.start ciyk`"
         )
         await ctx.send(ciyk_text)
+
+    @staticmethod
+    async def retrieveFormId(prefilledLink: str) -> str:
+        match = re.fullmatch(r"https://docs\.google\.com/forms/d/e/(.+?)/viewform.+", prefilledLink)
+        if not match:
+            raise Exception("Malformed submission link provided!")
+        return match.group(1)
 
 async def setup(bot: commands.Bot):
     info = Info()
