@@ -64,7 +64,7 @@ class Info():
                     "discuss_id": 1001742642427744326,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
-                    "img_url": "",
+                    "img_urls": [],
                     "submission_link": "",
                     "releasing": False
                 }
@@ -232,7 +232,7 @@ class Info():
         line2 = f'If you think you know the pattern, comment an answer that follows it in <#{ciyk_info["discuss_id"]}>\n'
         line3 = f'We\'ll react with a {emojis["heart"]} if you\'re right and a {emojis["cross"]} if you\'re wrong!\n\n'
 
-        return ciyk_tag + line1 + line2 + line3 + ciyk_info["img_url"]
+        return ciyk_tag + line1 + line2 + line3
 
     def get_text(self, ctx: commands.context.Context, puzz_name: str, mention: bool):
         get_text = {
@@ -251,12 +251,7 @@ class Info():
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
         if "minipuzz" == puzz_name:
-            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
             self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
-        elif "rebuscryptic" == puzz_name or "sudoku" == puzz_name or "crossword" == puzz_name:
-            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
-        else:
-            self.info[puzz_name]["img_url"] = new_data["img_url"]
 
         # write the new info to the json file so that it is not lost if the bot shuts down
         with open(self.info_fn, "w") as info:

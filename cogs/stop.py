@@ -16,10 +16,7 @@ class Stop(commands.Cog):
         try:
             release = currently_releasing[release_id]
             release_text = release["text"]
-            release_urls = None
-            
-            if "urls" in release:
-                release_urls = release["urls"]
+            release_urls = release["urls"]
 
             release_datetime = release["datetime"]
             release_channel = release["channel"]
