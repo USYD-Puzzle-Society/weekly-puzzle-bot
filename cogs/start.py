@@ -36,8 +36,7 @@ class Start(commands.Cog):
         text = self.info_obj.get_text(ctx, puzz_name, True)
         no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
         
-        if "ciyk" != puzz_name:
-            urls = self.info_obj.info[puzz_name]["img_urls"]
+        urls = self.info_obj.info[puzz_name]["img_urls"]
 
         str_release = self.info_obj.info[puzz_name]["release_datetime"]
         release_datetime = self.info_obj.str_to_datetime(str_release)
@@ -60,19 +59,12 @@ class Start(commands.Cog):
         else:
             currently_releasing = {}
         
-        if "ciyk" != puzz_name:
-            currently_releasing[release_id] = {
-                "text": text,
-                "urls": urls,
-                "datetime": str_release,
-                "channel": channel_id
-            }
-        else:
-            currently_releasing[release_id] = {
-                "text": text,
-                "datetime": str_release,
-                "channel": channel_id
-            }
+        currently_releasing[release_id] = {
+            "text": text,
+            "urls": urls,
+            "datetime": str_release,
+            "channel": channel_id
+        }
 
         # add the release to the json file
         with open(self.start_json, "w") as sj:
@@ -85,9 +77,8 @@ class Start(commands.Cog):
             f"The ID for this release is {release_id}. Do `.stop {release_id}` to stop this release."
         )
         await ctx.send(no_mention_text)
-        if "ciyk" != puzz_name:
-            for i in range(len(urls)):
-                await ctx.send(urls[i])
+        for i in range(len(urls)):
+            await ctx.send(urls[i])
 
         # sleep until release time
         await asyncio.sleep(wait_time+1)
@@ -101,9 +92,8 @@ class Start(commands.Cog):
             return
         else:
             await channel.send(text)
-            if "ciyk" != puzz_name:
-                for i in range(len(urls)):
-                    await channel.send(urls[i])
+            for i in range(len(urls)):
+                await channel.send(urls[i])
 
             # remove from the json file
             with open(self.start_json, "r") as sj:

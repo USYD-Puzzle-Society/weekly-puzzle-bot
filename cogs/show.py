@@ -77,6 +77,8 @@ class Show(commands.Cog):
 
         await ctx.send(f"The following will be set at {ciyk_time} in <#{ciyk_channel}>.")
         await ctx.send(ciyk_text)
+        for i in range(len(ciyk_info["img_urls"])):
+            await ctx.send(ciyk_info["img_urls"][i])
 
 async def setup(bot: commands.Bot):
     info = Info()

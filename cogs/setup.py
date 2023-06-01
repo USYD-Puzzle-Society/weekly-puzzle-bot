@@ -479,12 +479,12 @@ class Setup(commands.Cog):
         await ctx.send("Now setting info for the crossword. Do `stop` at anytime and no changes will be made to the crossword.")
 
         new_data = {
-            "img_urls": "",
+            "img_urls": [],
             "week_num": -1,
             "submission_link": ""
         }
 
-        await ctx.send("Please send the images for the crossword.")
+        await ctx.send("Please send the images for the crossword in one message..")
 
         while True:
             msg = await self.bot.wait_for("message", check=check)
@@ -497,7 +497,7 @@ class Setup(commands.Cog):
                 new_data["img_urls"] = [image.url for image in msg.attachments]
                 break
             else:
-                await ctx.send("Please send the image for the crossword.")
+                await ctx.send("Please send the images for the crossword in one message..")
 
         # get week number
         await ctx.send("Please enter the week number.")
@@ -542,12 +542,12 @@ class Setup(commands.Cog):
         await ctx.send("Now setting info for the sudoku. Do `stop` at anytime and no changes will be made to the sudoku.")
 
         new_data = {
-            "img_urls": "",
+            "img_urls": [],
             "week_num": -1,
             "submission_link": ""
         }
 
-        await ctx.send("Please send the images for the sudoku.")
+        await ctx.send("Please send the images for the sudoku in one message..")
 
         while True:
             msg = await self.bot.wait_for("message", check=check)
@@ -560,7 +560,7 @@ class Setup(commands.Cog):
                 new_data["img_urls"] = [image.url for image in msg.attachments]
                 break
             else:
-                await ctx.send("Please send the image for the sudoku.")
+                await ctx.send("Please send the images for the sudoku in one message..")
 
         # get week number
         await ctx.send("Please enter the week number.")
@@ -605,26 +605,27 @@ class Setup(commands.Cog):
         await ctx.send("Now setting info for CIYK. Do `.stop` at any time and no changes will be made to the CIYK announcement.")
         
         new_data = {
-            "img_url": "",
+            "img_urls": [],
             "week_num": -1,
             "submission_link": ""
         }
 
         # get image for ciyk
-        await ctx.send("Please send the image for CIYK.")
+        await ctx.send("Please send the images for CIYK in one message..")
 
         while True:
             msg = await self.bot.wait_for("message", check=check)
 
             if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes will be made to the CIYK announcement.")
+                await ctx.send("Command stopped. No changes will be made to the CIYK.")
                 return
 
             if len(msg.attachments):
-                new_data["img_url"] = msg.attachments[0].url
+                new_data["img_urls"] = [image.url for image in msg.attachments]
                 break
             else:
-                await ctx.send("Please send the image for CIYK")
+                await ctx.send("Please send the images for the CIYK in one message..")
+
 
         # get week number
         await ctx.send("Please enter the week number.")
