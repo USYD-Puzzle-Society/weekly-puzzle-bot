@@ -165,6 +165,7 @@ start.json
 info.json
 subcom_tasks.json
 subcom_tasks_archive.json
+weeklypuz_name.json
 
 # lib64 is a symlink
 lib64
