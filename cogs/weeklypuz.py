@@ -5,7 +5,6 @@ import requests
 from info import Info
 import json
 from json import JSONDecodeError
-import re
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -42,45 +41,14 @@ class WeeklyPuz(commands.Cog):
             self.register(ctx, args[1:])
 
     @commands.command()
-    async def answer(self, ctx: commands.context.Context, args: "list[str]"):
-        if not isinstance(ctx.channel, discord.channel.DMChannel):
-            await ctx.send("Please DM the bot with this command!")
+    async def answer(self, ctx: commands.context.Context, *args):
+        if len(args) < 2:
+            await ctx.send("Please submit answer in the form .answer ")
             return
 
-        if len(args) < 2 or args[0] not in ["rc", "minipuz"]:
-            await ctx.send("Please submit answer in the form .answer [rc/minipuz] <answer>")
-            return
-    
-        if ctx.author.id not in self.names:
-            await ctx.send("You're not yet registered - use the command `.weeklypuz register` to register.")
-            return
-        
         form_data = {}
-        
-        if args[0] == "rc":
-            match = re.fullmatch(r"https://docs\.google\.com/forms/d/e/(.+?)/viewform\?usp=pp_url&(entry\.\d+)=a&(entry\.\d+)=a&(entry\.\d+)=a&(entry\.\d+)=a",  
-                                 self.info["rebuscryptic"]["prefilled_submission_link"])
-            form_id = match.group(1)
-            form_data = {
-                match.group(2): ctx.author.id,
-                match.group(3): self.names[ctx.author.id],
-                match.group(4): args[0],
-                match.group(5): args[1]
-            }
-        
-        elif args[0] == "minipuz":
-            match = re.fullmatch(r"https://docs\.google\.com/forms/d/e/(.+?)/viewform\?usp=pp_url&(entry\.\d+)=a&(entry\.\d+)=a&(entry\.\d+)=a",
-                                self.info["minipuz"]["prefilled_submission_link"])
-            form_id = match.group(1)
-            form_data = {
-                match.group(2): ctx.author.id,
-                match.group(3): self.names[ctx.author.id],
-                match.group(4): args[0]
-            }
 
-        form_api = f"https://docs.google.com/forms/u/0/d/e/{form_id}/formResponse"
-
-        response = requests.post(form_api, data=form_data)
+        response = requests.post(FORM_API, data=form_data)
         if response.status_code == 200:
             await ctx.send('Form submitted successfully.')
         else:
@@ -90,7 +58,7 @@ class WeeklyPuz(commands.Cog):
         if len(args) < 1:
             await ctx.send("Please register in the form `.weeklypuz register <name>`. Your name can contain multiple words.")
             return
-        self.names[ctx.author.id] = " ".join(args)
+        self.names[ctx.author] = " ".join(args)
         
         try:
             with open(WEEKLYPUZ_FILE, "w") as f:
