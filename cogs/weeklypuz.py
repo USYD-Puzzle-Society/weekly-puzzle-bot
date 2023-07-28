@@ -9,7 +9,7 @@ class WeeklyPuz(commands.Cog):
         self.watch_channel_id = None
 
     @commands.command()
-    @commands.has_role("Executive")
+    @commands.has_role("Executives")
     async def weekly_puz_set_channel(self, ctx: commands.Context):
         self.watch_channel_id = ctx.channel.id
         await ctx.send(f"Weekly Puzzle watch channel set to {ctx.channel.name}")
@@ -18,7 +18,7 @@ class WeeklyPuz(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot and message.content == 'from webhook: top 3 taken' \
             and message.channel.id == self.watch_channel_id:
-            await self.bot.get_channel(self.info_obj["minipuzz"]["channel_id"]).send("Hints are enabled!")
+            await self.bot.get_channel(self.info_obj.info["minipuzz"]["channel_id"]).send("Hints are enabled!")
         
 async def setup(bot: commands.Bot):
     info = Info()
