@@ -1,17 +1,25 @@
 from discord.ext import commands
-
-FORM_API = ""
+import discord
+from info import Info
 
 class WeeklyPuz(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
-        pass
+        self.info_obj = info
+        self.watch_channel_id = None
+
+    @commands.command()
+    @commands.has_role("Executive")
+    async def weekly_puz_set_channel(self, ctx: commands.Context):
+        self.watch_channel_id = ctx.channel.id
+        await ctx.send(f"Weekly Puzzle watch channel set to {ctx.channel.name}")
 
     @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.channel.id != 1100077444922359959:
-            return
-        await self.bot.get_channel(994948949536407612).send("Hints are enabled!")
+    async def on_message(self, message: discord.Message):
+        if message.author.bot and message.content == 'from webhook: top 3 taken' \
+            and message.channel.id == self.watch_channel_id:
+            await self.bot.get_channel(self.info_obj["minipuzz"]["channel_id"]).send("Hints are enabled!")
         
 async def setup(bot: commands.Bot):
-    await bot.add_cog(WeeklyPuz(bot))
+    info = Info()
+    await bot.add_cog(WeeklyPuz(bot, info))
