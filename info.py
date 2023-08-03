@@ -49,8 +49,17 @@ class Info():
                     "submission_link": "",
                     "releasing": False
                 },
-                "sudoku": {
-                    "role_name": "sudokus",
+                "wordsearch": {
+                    "role_name": "word search",
+                    "channel_id": 1135184991928721448,
+                    "release_datetime": "08/08/2022 12:00",
+                    "week_num": -1,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "releasing": False
+                },
+                "logicpuzz": {
+                    "role_name": "logic puzzles",
                     "channel_id": 1074684130794672138,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
