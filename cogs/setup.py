@@ -533,7 +533,6 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def setwordsearch(self, ctx: commands.context.Context):
-        print(self.info_obj.info)
         wordsearch_info = self.info_obj.info["wordsearch"]
         user = ctx.author
 
@@ -563,36 +562,36 @@ class Setup(commands.Cog):
             else:
                 await ctx.send("Please send the image for the logic puzzle.")
 
-            # get week number
-            await ctx.send("Please enter the week number.")
-            is_number = False
-            while not is_number:
-                msg = await self.bot.wait_for("message", check=check)
+        # get week number
+        await ctx.send("Please enter the week number.")
+        is_number = False
+        while not is_number:
+            msg = await self.bot.wait_for("message", check=check)
 
-                if ".stop" == msg.content.lower():
-                    await ctx.send("Command stopped. No changes will be made to the logic puzzle.")
-                    return
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the logic puzzle.")
+                return
 
-                try:
-                    new_week = int(msg.content)
-                    new_data["week_num"] = new_week
-                    is_number = True
-                except ValueError:
-                    await ctx.send("Please enter a number.")
+            try:
+                new_week = int(msg.content)
+                new_data["week_num"] = new_week
+                is_number = True
+            except ValueError:
+                await ctx.send("Please enter a number.")
 
-            # if this point is reached, then the new data will be saved
-            self.info_obj.change_data("wordsearch", new_data)
+        # if this point is reached, then the new data will be saved
+        self.info_obj.change_data("wordsearch", new_data)
 
-            # show the user the new changes
-            wordsearch_text = self.info_obj.get_wordsearch_text(ctx, False)
-            wordsearch_images = wordsearch_info["img_urls"]
-            await ctx.send(
-                f"Done. The following will be released at {wordsearch_info['release_datetime']} in <#{wordsearch_info['channel_id']}>. " + 
-                "Remember to do `.start wordsearch`"
-            )
-            await ctx.send(wordsearch_text)
-            for i in range(len(wordsearch_images)):
-                await ctx.send(wordsearch_images[i])
+        # show the user the new changes
+        wordsearch_text = self.info_obj.get_wordsearch_text(ctx, False)
+        wordsearch_images = wordsearch_info["img_urls"]
+        await ctx.send(
+            f"Done. The following will be released at {wordsearch_info['release_datetime']} in <#{wordsearch_info['channel_id']}>. " + 
+            "Remember to do `.start wordsearch`"
+        )
+        await ctx.send(wordsearch_text)
+        for i in range(len(wordsearch_images)):
+            await ctx.send(wordsearch_images[i])
 
     @commands.command()
     @commands.has_role("Executives")
