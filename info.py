@@ -50,7 +50,7 @@ class Info():
                     "releasing": False
                 },
                 "wordsearch": {
-                    "role_name": "word search",
+                    "role_name": "word searches",
                     "channel_id": 1135184991928721448,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
