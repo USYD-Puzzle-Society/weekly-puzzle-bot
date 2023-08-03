@@ -205,21 +205,40 @@ class Info():
 
         return "".join(lines)
     
-    def get_sudoku_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_wordsearch_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
-        sudoku_info = self.info["sudoku"]
-        role_name = sudoku_info["role_name"]
+        wordsearch_info = self.info["wordsearch"]
+        role_name = wordsearch_info["role_name"]
 
         if mention:
-            sudoku_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            wordsearch_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
         else:
-            sudoku_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            wordsearch_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
         lines = [
-            sudoku_tag,
-            f"**VARIANT SUDOKU: WEEK {sudoku_info['week_num']}**"
+            wordsearch_tag,
+            f"**WORD SEARCH: WEEK {wordsearch_info['week_num']}**"
+        ]
+
+        return "".join(lines)
+    
+    def get_logicpuzz_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        logicpuzz_info = self.info["logicpuzz"]
+        role_name = logicpuzz_info["role_name"]
+
+        if mention:
+            logicpuzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            logicpuzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            logicpuzz_tag,
+            f"**VARIANT SUDOKU: WEEK {logicpuzz_info['week_num']}**"
         ]
 
         return "".join(lines)
