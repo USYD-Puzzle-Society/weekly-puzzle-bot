@@ -267,8 +267,9 @@ class Info():
             "rebuscryptic": self.get_rebuscryptic_text,
             "minipuzz": self.get_minipuzz_text,
             "crossword": self.get_crossword_text,
-            "sudoku": self.get_sudoku_text,
-            "ciyk": self.get_ciyk_text
+            "wordsearch": self.get_wordsearch_text,
+            "logicpuzz": self.get_logicpuzz_text,
+            "ciyk": self.get_ciyk_text,
         }
 
         return get_text[puzz_name](ctx, mention)
