@@ -282,7 +282,7 @@ class Info():
         if "minipuzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
             self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
-        elif "rebuscryptic" == puzz_name or "sudoku" == puzz_name or "crossword" == puzz_name:
+        elif "rebuscryptic" == puzz_name or "logicpuzz" == puzz_name or "wordsearch" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
         else:
             self.info[puzz_name]["img_url"] = new_data["img_url"]
