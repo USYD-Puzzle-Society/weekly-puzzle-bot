@@ -532,14 +532,14 @@ class Setup(commands.Cog):
 
     @commands.command()
     @commands.has_role("Executives")
-    async def setsudoku(self, ctx: commands.context.Context):
-        sudoku_info = self.info_obj.info["sudoku"]
+    async def setwordsearch(self, ctx: commands.context.Context):
+        wordsearch_info = self.info_obj.info["wordsearch"]
         user = ctx.author
 
         def check(m):
             return m.author == user
         
-        await ctx.send("Now setting info for the sudoku. Do `stop` at anytime and no changes will be made to the sudoku.")
+        await ctx.send("Now setting info for the word search. Do `.stop` at anytime and no changes will be made to the word search.")
 
         new_data = {
             "img_urls": "",
@@ -547,20 +547,83 @@ class Setup(commands.Cog):
             "submission_link": ""
         }
 
-        await ctx.send("Please send the images for the sudoku.")
+        await ctx.send("Please send the images for the word search.")
 
         while True:
             msg = await self.bot.wait_for("message", check=check)
 
             if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes will be made to the sudoku.")
+                await ctx.send("Command stopped. No changes will be made to the word search.")
+                return
+            
+            if len(msg.attachments):
+                new_data["img_urls"] = [image.url for image in msg.attachments]
+                break
+            else:
+                await ctx.send("Please send the image for the logic puzzle.")
+
+            # get week number
+            await ctx.send("Please enter the week number.")
+            is_number = False
+            while not is_number:
+                msg = await self.bot.wait_for("message", check=check)
+
+                if ".stop" == msg.content.lower():
+                    await ctx.send("Command stopped. No changes will be made to the logic puzzle.")
+                    return
+
+                try:
+                    new_week = int(msg.content)
+                    new_data["week_num"] = new_week
+                    is_number = True
+                except ValueError:
+                    await ctx.send("Please enter a number.")
+
+            # if this point is reached, then the new data will be saved
+            self.info_obj.change_data("wordsearch", new_data)
+
+            # show the user the new changes
+            wordsearch_text = self.info_obj.get_wordsearch_text(ctx, False)
+            wordsearch_images = wordsearch_info["img_urls"]
+            await ctx.send(
+                f"Done. The following will be released at {wordsearch_info['release_datetime']} in <#{wordsearch_info['channel_id']}>. " + 
+                "Remember to do `.start wordsearch`"
+            )
+            await ctx.send(wordsearch_text)
+            for i in range(len(wordsearch_images)):
+                await ctx.send(wordsearch_images[i])
+
+    @commands.command()
+    @commands.has_role("Executives")
+    async def setlogicpuzz(self, ctx: commands.context.Context):
+        logicpuzz_info = self.info_obj.info["logicpuzz"]
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+        
+        await ctx.send("Now setting info for the logic puzzle. Do `.stop` at anytime and no changes will be made to the logic puzzle.")
+
+        new_data = {
+            "img_urls": "",
+            "week_num": -1,
+            "submission_link": ""
+        }
+
+        await ctx.send("Please send the images for the logic puzzle.")
+
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes will be made to the logic puzzle.")
                 return
 
             if len(msg.attachments):
                 new_data["img_urls"] = [image.url for image in msg.attachments]
                 break
             else:
-                await ctx.send("Please send the image for the sudoku.")
+                await ctx.send("Please send the image for the logic puzzle.")
 
         # get week number
         await ctx.send("Please enter the week number.")
@@ -569,7 +632,7 @@ class Setup(commands.Cog):
             msg = await self.bot.wait_for("message", check=check)
             
             if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes will be made to the sudoku.")
+                await ctx.send("Command stopped. No changes will be made to the logic puzzle.")
                 return
 
             try:
@@ -580,18 +643,18 @@ class Setup(commands.Cog):
                 await ctx.send("Please enter a number.")
 
         # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("sudoku", new_data)
+        self.info_obj.change_data("logicpuzz", new_data)
 
         # show the user the new changes
-        sudoku_text = self.info_obj.get_sudoku_text(ctx, False)
-        sudoku_images = sudoku_info["img_urls"]
+        logicpuzz_text = self.info_obj.get_logicpuzz_text(ctx, False)
+        logicpuzz_images = logicpuzz_info["img_urls"]
         await ctx.send(
-            f"Done. The following will be released at {sudoku_info['release_datetime']} in <#{sudoku_info['channel_id']}>. " + 
-            "Remember to do `.start sudoku`"
+            f"Done. The following will be released at {logicpuzz_info['release_datetime']} in <#{logicpuzz_info['channel_id']}>. " + 
+            "Remember to do `.start logicpuzz`"
         )
-        await ctx.send(sudoku_text)
-        for i in range(len(sudoku_images)):
-            await ctx.send(sudoku_images[i])
+        await ctx.send(logicpuzz_text)
+        for i in range(len(logicpuzz_images)):
+            await ctx.send(logicpuzz_images[i])
 
     @commands.command()
     @commands.has_role("Executives")
