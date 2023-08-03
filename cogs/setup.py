@@ -533,6 +533,7 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def setwordsearch(self, ctx: commands.context.Context):
+        print(self.info_obj.info)
         wordsearch_info = self.info_obj.info["wordsearch"]
         user = ctx.author
 
