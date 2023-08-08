@@ -279,13 +279,13 @@ class Info():
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
-        if "minipuzz" == puzz_name:
+        if "ciyk" == puzz_name:
+            self.info[puzz_name]["img_url"] = new_data["img_url"]
+        elif "minipuzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
             self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
-        elif "rebuscryptic" == puzz_name or "logicpuzz" == puzz_name or "wordsearch" == puzz_name:
-            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
         else:
-            self.info[puzz_name]["img_url"] = new_data["img_url"]
+            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
 
         # write the new info to the json file so that it is not lost if the bot shuts down
         with open(self.info_fn, "w") as info:
