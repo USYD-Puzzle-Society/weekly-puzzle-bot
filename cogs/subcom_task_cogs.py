@@ -1,12 +1,12 @@
-import discord
 from discord.ext import commands
-import asyncio
-from classes.Task import Task
-from classes.ArchivedTask import ArchivedTask
 import datetime
 import os
 import json
 from json.decoder import JSONDecodeError
+
+from classes.Task import Task
+from classes.ArchivedTask import ArchivedTask
+from src.subcom_task import *
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -30,22 +30,6 @@ class SubcomTasks(commands.Cog):
                 except JSONDecodeError:
                     pass
 
-        '''
-        # self.tasks is a list of Tasks
-        Ideal format is going to be:
-        [
-            {
-                "Task Name": "Testing 1 2 3",
-                "Owner": None,
-                "Due Date": None
-            },
-            {
-                "Task Name": "Testing 4 5 6",
-                "Owner": "turtle#6635",
-                "Due Date": None
-            }
-        ]
-        '''
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
         task = Task(" ".join(args) if args else "None", ctx.author.mention)
         self.tasks.append(task)
