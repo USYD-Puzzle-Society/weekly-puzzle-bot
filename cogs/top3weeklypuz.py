@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 from info import Info
 
-class WeeklyPuz(commands.Cog):
+class Top3WeeklyPuz(commands.Cog):
     def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
         self.info_obj = info
@@ -22,4 +22,4 @@ class WeeklyPuz(commands.Cog):
         
 async def setup(bot: commands.Bot):
     info = Info()
-    await bot.add_cog(WeeklyPuz(bot, info))
+    await bot.add_cog(Top3WeeklyPuz(bot, info))
