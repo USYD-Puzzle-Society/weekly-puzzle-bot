@@ -25,6 +25,13 @@ To run the bot, simply do:
 
 ## Connecting to a database
 
-The Discord Bot uses MongoDB Atlas by default. To connect to your own Atlas instance, include the following content in a .env file:
+The Discord Bot uses MongoDB Atlas by default. To connect to your own Atlas instance, include the following content in a `.env` file:
 
     DB_URI = <your-uri-string>
+
+
+## Running tests
+
+To run tests, navigate to the project root and do:
+
+    py.test tests/
