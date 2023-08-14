@@ -7,7 +7,7 @@ from classes.Task import Task
 
 load_dotenv()
 
-uri = f"mongodb+srv://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@dev.cpp759d.mongodb.net/?retryWrites=true&w=majority"
+uri = os.getenv('DB_URI')
 
 try:
     client = pymongo.MongoClient(uri)
