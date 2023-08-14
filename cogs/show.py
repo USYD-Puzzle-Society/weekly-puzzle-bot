@@ -45,7 +45,7 @@ class Show(commands.Cog):
     @commands.has_role("Executives")
     async def showcrossword(self, ctx: commands.context.Context):
         crossword_info = self.info_obj.info["crossword"]
-        crossword_text = self.info_obj.get_rebuscryptic_text(ctx, False)
+        crossword_text = self.info_obj.get_crossword_text(ctx, False)
         crossword_time = crossword_info["release_datetime"]
         crossword_channel = crossword_info["channel_id"]
 
@@ -56,16 +56,29 @@ class Show(commands.Cog):
 
     @commands.command()
     @commands.has_role("Executives")
-    async def showsudoku(self, ctx: commands.context.Context):
-        sudoku_info = self.info_obj.info["sudoku"]
-        sudoku_text = self.info_obj.get_rebuscryptic_text(ctx, False)
-        sudoku_time = sudoku_info["release_datetime"]
-        sudoku_channel = sudoku_info["channel_id"]
+    async def showwordsearch(self, ctx: commands.context.Context):
+        wordsearch_info = self.info_obj.info["wordsearch"]
+        wordsearch_text = self.info_obj.get_wordsearch_text(ctx, False)
+        wordsearch_time = wordsearch_info["release_datetime"]
+        wordsearch_channel = wordsearch_info["channel_id"]
 
-        await ctx.send(f"The following will be released at {sudoku_time} in <#{sudoku_channel}>")
-        await ctx.send(sudoku_text)
-        for i in range(len(sudoku_info["img_urls"])):
-            await ctx.send(sudoku_info["img_urls"][i])
+        await ctx.send(f"The following will be released at {wordsearch_time} in <#{wordsearch_channel}>")
+        await ctx.send(wordsearch_text)
+        for i in range(len(wordsearch_info["img_urls"])):
+            await ctx.send(wordsearch_info["img_urls"][i])
+
+    @commands.command()
+    @commands.has_role("Executives")
+    async def showlogicpuzz(self, ctx: commands.context.Context):
+        logicpuzz_info = self.info_obj.info["logicpuzz"]
+        logicpuzz_text = self.info_obj.get_logicpuzz_text(ctx, False)
+        logicpuzz_time = logicpuzz_info["release_datetime"]
+        logicpuzz_channel = logicpuzz_info["channel_id"]
+
+        await ctx.send(f"The following will be released at {logicpuzz_time} in <#{logicpuzz_channel}>")
+        await ctx.send(logicpuzz_text)
+        for i in range(len(logicpuzz_info["img_urls"])):
+            await ctx.send(logicpuzz_info["img_urls"][i])
 
     @commands.command()
     @commands.has_role("Executives")

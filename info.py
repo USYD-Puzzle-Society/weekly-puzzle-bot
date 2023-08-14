@@ -49,8 +49,17 @@ class Info():
                     "submission_link": "",
                     "releasing": False
                 },
-                "sudoku": {
-                    "role_name": "sudokus",
+                "wordsearch": {
+                    "role_name": "word searches",
+                    "channel_id": 1135184991928721448,
+                    "release_datetime": "08/08/2022 12:00",
+                    "week_num": -1,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "releasing": False
+                },
+                "logicpuzz": {
+                    "role_name": "logic puzzles",
                     "channel_id": 1074684130794672138,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
@@ -196,21 +205,40 @@ class Info():
 
         return "".join(lines)
     
-    def get_sudoku_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_wordsearch_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
-        sudoku_info = self.info["sudoku"]
-        role_name = sudoku_info["role_name"]
+        wordsearch_info = self.info["wordsearch"]
+        role_name = wordsearch_info["role_name"]
 
         if mention:
-            sudoku_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            wordsearch_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
         else:
-            sudoku_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            wordsearch_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
         lines = [
-            sudoku_tag,
-            f"**VARIANT SUDOKU: WEEK {sudoku_info['week_num']}**"
+            wordsearch_tag,
+            f"**WORD SEARCH: WEEK {wordsearch_info['week_num']}**"
+        ]
+
+        return "".join(lines)
+    
+    def get_logicpuzz_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        logicpuzz_info = self.info["logicpuzz"]
+        role_name = logicpuzz_info["role_name"]
+
+        if mention:
+            logicpuzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            logicpuzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            logicpuzz_tag,
+            f"**VARIANT SUDOKU: WEEK {logicpuzz_info['week_num']}**"
         ]
 
         return "".join(lines)
@@ -239,8 +267,9 @@ class Info():
             "rebuscryptic": self.get_rebuscryptic_text,
             "minipuzz": self.get_minipuzz_text,
             "crossword": self.get_crossword_text,
-            "sudoku": self.get_sudoku_text,
-            "ciyk": self.get_ciyk_text
+            "wordsearch": self.get_wordsearch_text,
+            "logicpuzz": self.get_logicpuzz_text,
+            "ciyk": self.get_ciyk_text,
         }
 
         return get_text[puzz_name](ctx, mention)
@@ -250,13 +279,13 @@ class Info():
         self.info[puzz_name]["week_num"] = new_data["week_num"]
         self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
-        if "minipuzz" == puzz_name:
+        if "ciyk" == puzz_name:
+            self.info[puzz_name]["img_url"] = new_data["img_url"]
+        elif "minipuzz" == puzz_name:
             self.info[puzz_name]["img_urls"] = new_data["img_urls"]
             self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
-        elif "rebuscryptic" == puzz_name or "sudoku" == puzz_name or "crossword" == puzz_name:
-            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
         else:
-            self.info[puzz_name]["img_url"] = new_data["img_url"]
+            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
 
         # write the new info to the json file so that it is not lost if the bot shuts down
         with open(self.info_fn, "w") as info:
