@@ -238,7 +238,7 @@ class Info():
 
         lines = [
             logicpuzz_tag,
-            f"**VARIANT SUDOKU: WEEK {logicpuzz_info['week_num']}**"
+            f"**LOGIC PUZZLE: WEEK {logicpuzz_info['week_num']}**"
         ]
 
         return "".join(lines)
