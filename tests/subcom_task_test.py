@@ -4,6 +4,12 @@ def setup_function():
     clear()
 
 def test_create_one_task():
-    new_task('bob')
+    new_task('alice')
     task_list = view_all_tasks()
     assert len(task_list) == 1
+
+def test_create_multiple_tasks():
+    new_task('alice', 'Write EOS Hunt')
+    new_task('bob', 'Purchase Prizes')
+    task_list = view_all_tasks()
+    assert len(task_list) == 2

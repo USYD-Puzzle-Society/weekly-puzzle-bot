@@ -1,25 +1,9 @@
 import datetime
-import os
-import json
-from json.decoder import JSONDecodeError
-
-global_id: int = 1
-tasks_fn = "subcom_tasks.json"
-if os.path.exists(tasks_fn): # note that this is susceptible to a race condition
-    with open(tasks_fn, "r") as t:
-        try:
-            global_id = json.load(t)["global_id"]
-        except JSONDecodeError:
-            pass
 
 class Task():
-    def __init__(self, task_name="None", owner="None", contributors=["None"], \
-                 status="Unassigned", description="None", comments="None", increment=True):
-        global global_id
-        self.task_id: int = global_id
-        if increment:
-            global_id += 1
-
+    def __init__(self, task_name="None", owner="None", contributors=["None"],
+                 status="Unassigned", description="None", comments="None"):
+        self.task_id: int = None
         self.task_name: str = task_name
         self.owner: str = owner
         self.contributors: "list[str]" = contributors
@@ -29,6 +13,9 @@ class Task():
 
         self.description: str = description
         self.comments: str = comments
+
+        self.archived = False
+        self.archived_date: datetime.date = None
 
     def summary_to_tuple(self):
         return (self.task_id, self.task_name, self.owner, self.due_date)
@@ -53,7 +40,7 @@ class Task():
 
     @staticmethod
     def from_dict(data):
-        task = Task(increment=False)
+        task = Task()
         task.task_id = data["task_id"]
         task.task_name = data["task_name"]
         task.owner = data["owner"]
@@ -64,16 +51,5 @@ class Task():
         task.description = data["description"]
         task.comments = data["comments"]
         return task
-    
-    @staticmethod
-    def decrement():
-        global global_id
-        global_id += -1 
-    
-    @staticmethod
-    def get_global_id():
-        return global_id
-    
-
     
 
