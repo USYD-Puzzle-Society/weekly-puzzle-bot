@@ -18,13 +18,16 @@ def new_task(owner: str, task_name: str = "None") -> Task:
 
 def view_task(task_id: int) -> Task:
     """
-    Given a task id, retrieve the corresponding Task, or None if no task with such id exist.
+    Given a task id, retrieve the corresponding Task.
 
     Args:
         task_id: id of the task being viewed.
     
     Returns:
         The Task object with the matching id.
+
+    Raises:
+        TaskNotFoundError: if there are no Task with a matching id.
     """
 
     task = db.retrieve_task_by_id(task_id)
@@ -36,7 +39,7 @@ def view_all_tasks(view_archive: bool = False) -> "list[Task]":
 
     Args:
         view_archive: if True, return all Task where Task.archived == True. 
-          Otherwise, return all Task where Task.archived = false
+          Otherwise, return all Task where Task.archived == False
         
     Returns:
         A list of Tasks that fulfills the condition.
@@ -50,8 +53,8 @@ def archive_task(task_id: int) -> None:
     Args:
         task_id: id of the task being archived.
 
-    Returns:
-        None.
+    Raises:
+        TaskNotFoundError: if there are no Task with a matching id.
     """
     task = db.retrieve_task_by_id(task_id)
     task.archived = True
@@ -64,8 +67,7 @@ def delete_task(task_id: int) -> None:
     Args:
         task_id: id of the task being deleted.
 
-    Returns:
-        None.
+    Raises: TaskNotFoundError: if there are no Task with a matching id.
     """
     db.delete_task(task_id)
 

@@ -1,13 +1,10 @@
 import discord
 from discord.ext import commands
 import datetime
-import os
-import json
-from json.decoder import JSONDecodeError
 
 from classes.Task import Task
 from classes.ArchivedTask import ArchivedTask
-from src.subcom_task import *
+from src import subcom_task
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -16,34 +13,18 @@ archive_channel = None
 class SubcomTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.tasks: list[Task] = []
-        self.archives: list[ArchivedTask] = []
-        self.tasks_fn = "subcom_tasks.json"
-
-        if os.path.exists(self.tasks_fn): # note that this is susceptible to a race condition
-            with open(self.tasks_fn, "r") as t:
-                try:
-                    data = json.load(t)
-                    for task in data["tasks"]:
-                        self.tasks.append(Task.from_dict(task))
-                    for task in data["archives"]:
-                        self.archives.append(ArchivedTask.from_dict(task))
-                except JSONDecodeError:
-                    pass
 
     async def new_task(self, ctx: commands.context.Context, args: "list[str]"):
-        task = Task(" ".join(args) if args else "None", ctx.author.mention)
-        self.tasks.append(task)
+        task = subcom_task.new_task(ctx.author.mention, " ".join(args) if args else None)
         await ctx.send(f"New Task created with Task ID {task.task_id}.")
-
-        await self.dump_tasks()
 
     async def view_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for viewing!")
             return
         
-        to_be_viewed = self.find_task(args[0])
+        to_be_viewed = subcom_task.view_task(args[0])
+
         if to_be_viewed:
             embed = discord.Embed(title=f"Task Details for Task {to_be_viewed.task_id}", color=discord.Color.greyple())
             embed.add_field(name="Task ID", value=to_be_viewed.task_id, inline=False)
@@ -124,48 +105,27 @@ class SubcomTasks(commands.Cog):
             except:
                 await ctx.send(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`")
 
-        await self.dump_tasks()
-    
     async def archive_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for archiving!")
             return
-        to_be_archived = self.find_task(args[0])
-        if not to_be_archived:
-            await ctx.send(f"Task {args[0]} not found!")
-            return
-        self.tasks.remove(to_be_archived)
-        archived = ArchivedTask(to_be_archived)
-        self.archives.append(archived)
+        subcom_task.archive_task(args[0])
 
-        await ctx.send(f"Task {to_be_archived.task_id} successfully archived.")
+        await ctx.send(f"Task {args[0]} successfully archived.")
         if archive_channel:
-            embed = discord.Embed(title=f"New Archived Task: Task {to_be_archived.task_id}", color=discord.Color.greyple())
-            embed.add_field(name="Archive Date", value=archived.archived_date.isoformat())
+            embed = discord.Embed(title=f"New Archived Task: Task {args[0].task_id}", color=discord.Color.greyple())
+            embed.add_field(name="Archive Date", value=subcom_task.view_task(args[0]).archived_date.isoformat())
             await archive_channel.send(embed=embed)
-
-        await self.dump_tasks()
     
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]"):
         if not args:
             await ctx.send("You must provide a Task ID for deletion!")
             return
-        to_be_deleted = self.find_task(args[0])
-        if to_be_deleted:
-            self.tasks.remove(to_be_deleted)
-            await ctx.send(f"Task {to_be_deleted.task_id} successfully deleted.")
+        result = subcom_task.delete_task(args[0])
+        if result:
+            await ctx.send(f"Task {args[0]} successfully deleted.")
         else:
             await ctx.send(f"Task {args[0]} not found!")
-        
-        await self.dump_tasks()
-
-    async def dump_tasks(self):
-        with open(self.tasks_fn, "w") as t:
-            json.dump({
-                "global_id": Task.get_global_id(),
-                "tasks": [task.to_dict() for task in self.tasks],
-                "archives": [task.to_dict() for task in self.archives]
-            }, t, indent=4) 
     
     @commands.command(name="setarchivechannel")
     @commands.has_role(exec_role)
@@ -174,16 +134,6 @@ class SubcomTasks(commands.Cog):
         archive_channel = ctx.channel
         await ctx.send(f"Archive channel set to <#{archive_channel}>.")
         
-    def find_task(self, task_id: str) -> Task:
-        result = None 
-        for task in self.tasks:
-            if (str(task.task_id) == task_id):
-                result = task
-        for task in self.archives:
-            if (str(task.task_id) == task_id):
-                result = task
-        return result
-    
     @commands.command()
     @commands.has_any_role(exec_role, subcom_role)
     async def task(self, ctx: commands.context.Context, *args):
