@@ -45,7 +45,7 @@ def set_task_id_counter(task_id_counter: int) -> None:
     """
     db = client['tasks_database']
     task_id_counter_collection = db['id_counter']
-    task_id_counter_collection.update_one({ 'task_id': task_id_counter['task_id'] }, 
+    task_id_counter_collection.update_one({}, 
                                           { '$set': { 'task_id': task_id_counter } }, upsert=True)
 
 
@@ -155,5 +155,7 @@ def create_task_from_document(doc) -> Task:
     """
     Given a Mongo document, create a Task object from the document's fields.
     """
-    return Task(doc['task_name'], doc['owner'], doc['contributors'], doc['status'],
-                doc['description'], doc['comments'])
+    task = Task(doc['task_name'], doc['owner'], doc['contributors'], doc['status'],
+                doc['description'], doc['comments'], doc['archived'], doc['archived_date'])
+    task.task_id = doc['task_id']
+    return task

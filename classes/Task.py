@@ -2,7 +2,7 @@ import datetime
 
 class Task():
     def __init__(self, task_name="None", owner="None", contributors=["None"],
-                 status="Unassigned", description="None", comments="None"):
+                 status="Unassigned", description="None", comments="None", archived=False, archived_date=None):
         self.task_id: int = None
         self.task_name: str = task_name
         self.owner: str = owner
@@ -14,8 +14,8 @@ class Task():
         self.description: str = description
         self.comments: str = comments
 
-        self.archived = False
-        self.archived_date: datetime.date = None
+        self.archived = archived
+        self.archived_date: datetime.date = archived_date
 
     def summary_to_tuple(self):
         return (self.task_id, self.task_name, self.owner, self.due_date)
@@ -34,6 +34,8 @@ class Task():
             "status": self.status,
             "description": self.description,
             "comments": self.comments,
+            "archived": str(self.archived),
+            "archived_date": self.archived_date.isoformat() if self.archived_date else "None"
         }
 
         return res
@@ -51,5 +53,14 @@ class Task():
         task.description = data["description"]
         task.comments = data["comments"]
         return task
+    
+    def __eq__(self, other):
+        if not isinstance(other, Task):
+            return False
+        
+        return (self.task_id == other.task_id and self.task_name == other.task_name and self.owner == other.owner and 
+               self.contributors == other.contributors and self.creation_date == self.creation_date and 
+               self.due_date == other.due_date and self.status == other.status and self.description == other.description 
+               and self.comments == other.comments)
     
 

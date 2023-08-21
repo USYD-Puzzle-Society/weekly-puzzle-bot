@@ -13,3 +13,7 @@ def test_create_multiple_tasks():
     new_task('bob', 'Purchase Prizes')
     task_list = view_all_tasks()
     assert len(task_list) == 2
+
+def test_view_task():
+    task = new_task('alice')
+    assert task == view_task(task.task_id)
