@@ -3,7 +3,6 @@ from pymongo.cursor import Cursor
 import os
 import sys
 from dotenv import load_dotenv
-from typing import Union
 
 from classes.Task import Task
 from src.subcom_task_errors import TaskNotFoundError
@@ -18,6 +17,10 @@ except errors.ConfigurationError:
     print("An Invalid URI host error was received. Is your Atlas host name correct in your connection string?")
     sys.exit(1)
 
+db = client['tasks_database']
+task_id_counter_collection = db['id_counter']
+tasks_collection = db['tasks']
+
 def retrieve_task_id_counter() -> int:
     """
     Retrieves the current task_id counter. Note that task_id are sequential, and the current
@@ -27,8 +30,6 @@ def retrieve_task_id_counter() -> int:
     Returns:
         The current task_id counter.
     """
-    db = client['tasks_database']
-    task_id_counter_collection = db['id_counter']
     task_id_counter = task_id_counter_collection.find_one({})
 
     if task_id_counter:
@@ -43,8 +44,6 @@ def set_task_id_counter(task_id_counter: int) -> None:
     Args:
         task_id_counter: the value task id counter will be set to.
     """
-    db = client['tasks_database']
-    task_id_counter_collection = db['id_counter']
     task_id_counter_collection.update_one({}, 
                                           { '$set': { 'task_id': task_id_counter } }, upsert=True)
 
@@ -61,9 +60,6 @@ def create_task(task: Task) -> Task:
     Returns:
         The Task object, now with task_id assigned to task_id_counter.
     """
-    db = client['tasks_database']
-    tasks_collection = db['tasks']
-
     task.task_id = retrieve_task_id_counter()
     set_task_id_counter(task.task_id + 1)
 
@@ -84,8 +80,6 @@ def retrieve_task_by_id(task_id: int) -> Task:
     Raises:
         TaskNotFoundError: if there are no task with the given id.
     """
-    db = client['tasks_database']
-    tasks_collection = db['tasks']
     cursor: Cursor = tasks_collection.find({ "task_id": task_id })
     results: 'list[Task]' = list(cursor)
     if len(results) == 0:
@@ -99,8 +93,6 @@ def retrieve_tasks() -> 'list[Task]':
     Returns:
         A list of Tasks.
     """
-    db = client['tasks_database']
-    tasks_collection = db['tasks']
     tasks: "list[Task]" = [create_task_from_document(doc) for doc in tasks_collection.find({})]
     tasks.sort(key=lambda task: task.task_id)
     return tasks
@@ -117,8 +109,6 @@ def update_task(task_id: int, task: Task) -> None:
     Raises:
         TaskNotFoundError: if there are no task with the given id.
     """
-    db = client['tasks_database']
-    tasks_collection = db['tasks']
     task.task_id = task_id
     result = tasks_collection.update_one({ 'task_id': task_id }, { '$set': task.to_dict() })
     if result.matched_count == 0:
@@ -134,21 +124,15 @@ def delete_task(task_id: int) -> bool:
     Raises:
         TaskNotFoundError: if there are no task with the given id.
     """
-    db = client['tasks_database']
-    tasks_collection = db['tasks']
     result = tasks_collection.delete_one({ 'task_id' : task_id })
     return result.deleted_count == 1
 
 def clear_all_tasks() -> None:
     """Remove all tasks from the database."""
-    db = client['tasks_database']
-    tasks_collection = db['tasks']
     tasks_collection.drop()
 
 def clear_task_id_counter() -> None:
     """Remove task id counter from the database, resetting the counter back to 1."""
-    db = client['tasks_database']
-    task_id_counter_collection = db['id_counter']
     task_id_counter_collection.drop()
 
 def create_task_from_document(doc) -> Task:
