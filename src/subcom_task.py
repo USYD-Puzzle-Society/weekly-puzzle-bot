@@ -1,3 +1,5 @@
+import datetime
+
 from classes.Task import Task
 from db import db
 
@@ -51,6 +53,7 @@ def view_all_tasks(view_archive: bool = False) -> "list[Task]":
 def archive_task(task_id: int) -> None:
     """
     Given a task id, archive the corresponding Task.
+    Note that this does not update all existing Task objects! Use view_task to get an updated Task object.
 
     Args:
         task_id: id of the task being archived.
@@ -60,6 +63,7 @@ def archive_task(task_id: int) -> None:
     """
     task = db.retrieve_task_by_id(task_id)
     task.archived = True
+    task.archived_date = datetime.date.today()
     db.update_task(task_id, task)
 
 def delete_task(task_id: int) -> None:
