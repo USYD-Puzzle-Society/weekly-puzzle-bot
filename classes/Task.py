@@ -34,8 +34,8 @@ class Task():
             "status": self.status,
             "description": self.description,
             "comments": self.comments,
-            "archived": str(self.archived),
-            "archived_date": self.archived_date.isoformat() if self.archived_date else "None"
+            "archived": self.archived,
+            "archived_date": self.archived_date.isoformat() if self.archived_date else None
         }
 
         return res
@@ -52,6 +52,8 @@ class Task():
         task.status = data["status"]
         task.description = data["description"]
         task.comments = data["comments"]
+        task.archived = data["archived"]
+        task.archived_date = datetime.date.fromisoformat(data["archived_date"]) if data["archived_date"] else None
         return task
     
     def __eq__(self, other):
