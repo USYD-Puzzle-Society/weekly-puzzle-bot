@@ -44,7 +44,9 @@ def view_all_tasks(view_archive: bool = False) -> "list[Task]":
     Returns:
         A list of Tasks that fulfills the condition.
     """
-    return db.retrieve_tasks()
+    tasks = db.retrieve_tasks()
+    tasks = list(filter(lambda task: task.archived == view_archive, tasks))
+    return tasks
 
 def archive_task(task_id: int) -> None:
     """
