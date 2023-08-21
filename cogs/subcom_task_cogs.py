@@ -7,6 +7,7 @@ from classes.ArchivedTask import ArchivedTask
 from src import subcom_task
 from src.subcom_task_errors import TaskNotFoundError
 from src.subcom_task_errors import IllegalTaskIDError
+from embeds.subcom_task_embeds import task_view_embed, tasks_list_view_embed
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -26,19 +27,10 @@ class SubcomTasks(commands.Cog):
         except (ValueError, IndexError):
             raise IllegalTaskIDError()
         
-        to_be_viewed = subcom_task.view_task(task_id)
+        task = subcom_task.view_task(task_id)
+    
+        embed = task_view_embed(task)
 
-        embed = discord.Embed(title=f"Task Details for Task {to_be_viewed.task_id}", color=discord.Color.greyple())
-        embed.add_field(name="Task ID", value=to_be_viewed.task_id, inline=False)
-        embed.add_field(name="Task Name", value=to_be_viewed.task_name, inline=False)
-        embed.add_field(name="Owner", value=to_be_viewed.owner, inline=False)
-        embed.add_field(name="Contributors", value=to_be_viewed.contributors_to_str(), inline=False)
-        embed.add_field(name="Creation Date", value=to_be_viewed.creation_date.isoformat())
-        embed.add_field(name="Due Date", value=to_be_viewed.due_date.isoformat(), inline=False)
-        embed.add_field(name="Description", value=to_be_viewed.description, inline=False)
-        embed.add_field(name="Comments", value=to_be_viewed.comments, inline=False)
-        if to_be_viewed.archived:
-            embed.add_field(name="Archive Date", value=to_be_viewed.archived_date.isoformat(), inline=False)
         await ctx.send(embed=embed)
 
     async def view_all_tasks(self, ctx: commands.context.Context, args: "list[str]"):
@@ -46,25 +38,14 @@ class SubcomTasks(commands.Cog):
         view_all_task takes an optional argument, "-a", that allows you to view the archive
         can eventually support different sorts of task i.e by ID, by due date, ...
         '''
+        view_archive = len(args) > 0 and args[0] == '-a'
 
-        if len(args) > 0 and args[0] == "-a":
-            view_list = subcom_task.view_all_tasks(view_archive=True)
-            title = "All Archived Tasks"
+        if view_archive:
+            tasks = subcom_task.view_all_tasks(view_archive=True)
         else:
-            view_list = subcom_task.view_all_tasks(view_archive=False)
-            title = "All Active Tasks"
+            tasks = subcom_task.view_all_tasks(view_archive=False)
 
-        embed = discord.Embed(title=title, color=discord.Color.greyple())
-        values = list(map(list, zip(*[task.summary_to_tuple() for task in view_list]))) # cursed
-
-        if not values:
-            embed.add_field(name="Tasks", value="")
-            embed.add_field(name="Owner", value="")
-            embed.add_field(name="Due Date", value="")
-        else:
-            embed.add_field(name="Tasks", value="\n".join((['. '.join(x) for x in zip([str(x) for x in values[0]], values[1])])))
-            embed.add_field(name="Owner", value="\n".join(values[2]))
-            embed.add_field(name="Due Date", value="\n".join([time.isoformat() for time in values[3]] ))
+        embed = tasks_list_view_embed(tasks, view_archive)
 
         await ctx.send(embed=embed)
     
