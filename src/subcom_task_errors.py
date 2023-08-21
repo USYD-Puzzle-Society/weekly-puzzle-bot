@@ -5,3 +5,10 @@ class TaskNotFoundError(Exception):
     
     def __str__(self):
         return self.message
+    
+class IllegalTaskIDError(Exception):
+    def __init__(self):
+        self.message = f'Task ID was not provided or is not a valid number!'
+    
+    def __str__(self):
+        return self.message

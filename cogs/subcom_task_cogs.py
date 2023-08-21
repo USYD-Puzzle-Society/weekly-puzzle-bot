@@ -5,6 +5,8 @@ import datetime
 from classes.Task import Task
 from classes.ArchivedTask import ArchivedTask
 from src import subcom_task
+from src.subcom_task_errors import TaskNotFoundError
+from src.subcom_task_errors import IllegalTaskIDError
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -19,27 +21,25 @@ class SubcomTasks(commands.Cog):
         await ctx.send(f"New Task created with Task ID {task.task_id}.")
 
     async def view_task(self, ctx: commands.context.Context, args: "list[str]"):
-        if not args:
-            await ctx.send("You must provide a Task ID for viewing!")
-            return
+        try:
+            task_id = int(args[0])
+        except (ValueError, IndexError):
+            raise IllegalTaskIDError()
         
-        to_be_viewed = subcom_task.view_task(args[0])
+        to_be_viewed = subcom_task.view_task(task_id)
 
-        if to_be_viewed:
-            embed = discord.Embed(title=f"Task Details for Task {to_be_viewed.task_id}", color=discord.Color.greyple())
-            embed.add_field(name="Task ID", value=to_be_viewed.task_id, inline=False)
-            embed.add_field(name="Task Name", value=to_be_viewed.task_name, inline=False)
-            embed.add_field(name="Owner", value=to_be_viewed.owner, inline=False)
-            embed.add_field(name="Contributors", value=to_be_viewed.contributors_to_str(), inline=False)
-            embed.add_field(name="Creation Date", value=to_be_viewed.creation_date.isoformat())
-            embed.add_field(name="Due Date", value=to_be_viewed.due_date.isoformat(), inline=False)
-            embed.add_field(name="Description", value=to_be_viewed.description, inline=False)
-            embed.add_field(name="Comments", value=to_be_viewed.comments, inline=False)
-            if isinstance(to_be_viewed, ArchivedTask):
-                embed.add_field(name="Archive Date", value=to_be_viewed.archived_date.isoformat(), inline=False)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"Task {args[0]} not found!")
+        embed = discord.Embed(title=f"Task Details for Task {to_be_viewed.task_id}", color=discord.Color.greyple())
+        embed.add_field(name="Task ID", value=to_be_viewed.task_id, inline=False)
+        embed.add_field(name="Task Name", value=to_be_viewed.task_name, inline=False)
+        embed.add_field(name="Owner", value=to_be_viewed.owner, inline=False)
+        embed.add_field(name="Contributors", value=to_be_viewed.contributors_to_str(), inline=False)
+        embed.add_field(name="Creation Date", value=to_be_viewed.creation_date.isoformat())
+        embed.add_field(name="Due Date", value=to_be_viewed.due_date.isoformat(), inline=False)
+        embed.add_field(name="Description", value=to_be_viewed.description, inline=False)
+        embed.add_field(name="Comments", value=to_be_viewed.comments, inline=False)
+        if to_be_viewed.archived:
+            embed.add_field(name="Archive Date", value=to_be_viewed.archived_date.isoformat(), inline=False)
+        await ctx.send(embed=embed)
 
     async def view_all_tasks(self, ctx: commands.context.Context, args: "list[str]"):
         '''
@@ -48,11 +48,11 @@ class SubcomTasks(commands.Cog):
         '''
 
         if len(args) > 0 and args[0] == "-a":
+            view_list = subcom_task.view_all_tasks(view_archive=True)
             title = "All Archived Tasks"
-            view_list = self.archives
         else:
+            view_list = subcom_task.view_all_tasks(view_archive=False)
             title = "All Active Tasks"
-            view_list = self.tasks
 
         embed = discord.Embed(title=title, color=discord.Color.greyple())
         values = list(map(list, zip(*[task.summary_to_tuple() for task in view_list]))) # cursed
@@ -73,10 +73,13 @@ class SubcomTasks(commands.Cog):
             await ctx.send("Please use the command in the form `.task edit " + 
                            "[name/owner/contributors/desc/description/comments/duedate] <task_id> <arguments>`")
             return
-        task = self.find_task(args[1])
-        if not task:
-            await ctx.send(f"Task {args[1]} not found!")
-            return
+        
+        try:
+            task_id = int(args[1])
+        except ValueError:
+            raise IllegalTaskIDError()
+        
+        task = subcom_task.view_task(task_id)
         
         operation = args[0]
         if operation == "name":
@@ -102,30 +105,31 @@ class SubcomTasks(commands.Cog):
                 date = datetime.date(int(args[2]), int(args[3]), int(args[4]))
                 task.due_date = date
                 await ctx.send(f"Task {task.task_id} due date edited to {date.isoformat()}")
-            except:
+            except ValueError:
                 await ctx.send(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`")
 
     async def archive_task(self, ctx: commands.context.Context, args: "list[str]"):
-        if not args:
-            await ctx.send("You must provide a Task ID for archiving!")
-            return
-        subcom_task.archive_task(args[0])
+        try:
+            task_id = int(args[0])
+        except (ValueError, IndexError):
+            raise IllegalTaskIDError()
+        
+        subcom_task.archive_task(task_id)
 
-        await ctx.send(f"Task {args[0]} successfully archived.")
+        await ctx.send(f"Task {task_id} successfully archived.")
         if archive_channel:
-            embed = discord.Embed(title=f"New Archived Task: Task {args[0].task_id}", color=discord.Color.greyple())
-            embed.add_field(name="Archive Date", value=subcom_task.view_task(args[0]).archived_date.isoformat())
+            embed = discord.Embed(title=f"New Archived Task: Task {task_id}", color=discord.Color.greyple())
+            embed.add_field(name="Archive Date", value=subcom_task.view_task(task_id).archived_date.isoformat())
             await archive_channel.send(embed=embed)
     
     async def delete_task(self, ctx: commands.context.Context, args: "list[str]"):
-        if not args:
-            await ctx.send("You must provide a Task ID for deletion!")
-            return
-        result = subcom_task.delete_task(args[0])
-        if result:
-            await ctx.send(f"Task {args[0]} successfully deleted.")
-        else:
-            await ctx.send(f"Task {args[0]} not found!")
+        try:
+            task_id = int(args[0])
+        except ValueError:
+            raise IllegalTaskIDError()
+
+        subcom_task.delete_task(task_id)
+        await ctx.send(f"Task {task_id} successfully deleted.")
     
     @commands.command(name="setarchivechannel")
     @commands.has_role(exec_role)
@@ -141,19 +145,22 @@ class SubcomTasks(commands.Cog):
             await ctx.send("Please use the command in the form `.task [new/view/viewall/edit/archive/delete]`")
             return
         
-        operation = args[0]
-        if operation == "new":
-            await self.new_task(ctx, list(args)[1:])
-        elif operation == "view":
-            await self.view_task(ctx, list(args)[1:])
-        elif operation == "viewall":
-            await self.view_all_tasks(ctx, list(args)[1:])
-        elif operation == "edit":
-            await self.edit_task(ctx, list(args)[1:])
-        elif operation == "archive":
-            await self.archive_task(ctx, list(args)[1:])
-        elif operation == "delete":
-            await self.delete_task(ctx, list(args)[1:])
+        try:    
+            operation = args[0]
+            if operation == "new":
+                await self.new_task(ctx, list(args)[1:])
+            elif operation == "view":
+                await self.view_task(ctx, list(args)[1:])
+            elif operation == "viewall":
+                await self.view_all_tasks(ctx, list(args)[1:])
+            elif operation == "edit":
+                await self.edit_task(ctx, list(args)[1:])
+            elif operation == "archive":
+                await self.archive_task(ctx, list(args)[1:])
+            elif operation == "delete":
+                await self.delete_task(ctx, list(args)[1:])
+        except (TaskNotFoundError, IllegalTaskIDError) as e:
+            await ctx.send(e)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(SubcomTasks(bot))
