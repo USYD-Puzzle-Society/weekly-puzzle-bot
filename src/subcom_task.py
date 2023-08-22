@@ -50,6 +50,19 @@ def view_all_tasks(view_archive: bool = False) -> "list[Task]":
     tasks = list(filter(lambda task: task.archived == view_archive, tasks))
     return tasks
 
+def update_task(task: Task) -> None:
+    """
+    Given a Task, update the task in the database with the same task_id as the given task.
+
+    Args:
+        task: Task object to be updated.
+    
+    Raises:
+        TaskNotFoundError: if there are no Task with a matching id.
+    """
+    task_id = task.task_id
+    db.update_task(task_id, task)
+
 def archive_task(task_id: int) -> None:
     """
     Given a task id, archive the corresponding Task.
