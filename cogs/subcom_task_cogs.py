@@ -35,10 +35,6 @@ class SubcomTasks(commands.GroupCog, name="task"):
     @app_commands.command(name='viewall')
     @app_commands.check(has_appropriate_role)
     async def task_view_all(self, interaction: discord.Interaction, view_archive: bool = False):
-        '''
-        view_all_task takes an optional argument, "-a", that allows you to view the archive
-        can eventually support different sorts of task i.e by ID, by due date, ...
-        '''
         tasks = subcom_task.view_all_tasks(view_archive=view_archive)
         embed = tasks_list_view_embed(tasks, view_archive)
         await interaction.response.send_message(embed=embed)
@@ -50,7 +46,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     async def task_edit_name(self, interaction: discord.Interaction, task_id: int, task_name: str):
         task = subcom_task.view_task(task_id)
         task.task_name = task_name
-        # TODO: write back to db
+        subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} renamed to {task.task_name}.")
     
     @task_edit.command(name='owner')
@@ -58,16 +54,16 @@ class SubcomTasks(commands.GroupCog, name="task"):
     async def task_edit_owner(self, interaction: discord.Interaction, task_id: int, owner: discord.Member):
         task = subcom_task.view_task(task_id)
         task.owner = owner.name
-        # TODO: write back to db
+        subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} assigned to {task.owner}.")
     
     @task_edit.command(name='contributors')
     @app_commands.check(has_appropriate_role)
     async def task_edit_contributors(self, interaction: discord.Interaction, task_id: int, 
-                                     contributors: commands.Greedy[discord.Member]):
+                                     contributors: str):
         task = subcom_task.view_task(task_id)
-        task.contributors = list(contributors)
-        # TODO: write back to db
+        task.contributors = contributors.split()
+        subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} contributors edited.")
     
     @task_edit.command(name='description')
@@ -75,7 +71,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     async def task_edit_description(self, interaction: discord.Interaction, task_id: int, description: str):
         task = subcom_task.view_task(task_id)
         task.description = description
-        # TODO: write back to db
+        subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} description edited.")
     
     @task_edit.command(name='comments')
@@ -83,7 +79,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     async def task_edit_comments(self, interaction: discord.Interaction, task_id: int, comments: str):
         task = subcom_task.view_task(task_id)
         task.comments = comments
-        # TODO: write back to db
+        subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} comments edited.")
     
     @task_edit.command(name='due_date')
