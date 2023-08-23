@@ -20,9 +20,6 @@ class Task():
     def summary_to_tuple(self):
         return (self.task_id, self.task_name, self.owner, self.due_date)
     
-    def contributors_to_str(self):
-        return ", ".join(self.contributors)
-    
     def to_dict(self):
         res = {
             "task_id": self.task_id,

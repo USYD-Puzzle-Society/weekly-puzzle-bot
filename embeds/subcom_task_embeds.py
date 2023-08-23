@@ -7,7 +7,7 @@ def task_view_embed(task: Task) -> discord.Embed:
     embed.add_field(name="Task ID", value=task.task_id, inline=False)
     embed.add_field(name="Task Name", value=task.task_name, inline=False)
     embed.add_field(name="Owner", value=task.owner, inline=False)
-    embed.add_field(name="Contributors", value=task.contributors_to_str(), inline=False)
+    embed.add_field(name="Contributors", value=', '.join(task.contributors), inline=False)
     embed.add_field(name="Creation Date", value=task.creation_date.isoformat())
     embed.add_field(name="Due Date", value=task.due_date.isoformat(), inline=False)
     embed.add_field(name="Description", value=task.description, inline=False)
