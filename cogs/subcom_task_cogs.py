@@ -98,7 +98,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
         try:
             date = datetime.datetime(year, month, day)
             task.due_date = date
-            await interaction.response.send_message(f"Task {task.task_id} due date edited to {date.isoformat()}")
+            await interaction.response.send_message(f"Task {task.task_id} due date edited to {date.strftime('%Y-%m-%d')}")
         except ValueError:
             await interaction.response.send_message(f"Invalid date format supplied. Please supply the date in format `<year> <month> <day>`",
                                                     ephemeral=True)
@@ -112,7 +112,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await interaction.response.send_message(f"Task {task_id} successfully archived.")
         if archive_channel:
             embed = discord.Embed(title=f"New Archived Task: Task {task_id}", color=discord.Color.greyple())
-            embed.add_field(name="Archive Date", value=(await subcom_task.view_task(task_id)).archived_date.isoformat())
+            embed.add_field(name="Archive Date", 
+                            value=(await subcom_task.view_task(task_id)).archived_date.strftime('%Y-%m-%d'))
             await archive_channel.send(embed=embed)
     
     @app_commands.command(name='delete')

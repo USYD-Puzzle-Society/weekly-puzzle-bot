@@ -8,12 +8,12 @@ def task_view_embed(task: Task) -> discord.Embed:
     embed.add_field(name="Task Name", value=task.task_name, inline=False)
     embed.add_field(name="Owner", value=task.owner, inline=False)
     embed.add_field(name="Contributors", value=', '.join(task.contributors), inline=False)
-    embed.add_field(name="Creation Date", value=task.creation_date.isoformat())
-    embed.add_field(name="Due Date", value=task.due_date.isoformat(), inline=False)
+    embed.add_field(name="Creation Date", value=task.creation_date.strftime('%Y-%m-%d'))
+    embed.add_field(name="Due Date", value=task.due_date.strftime('%Y-%m-%d') if task.due_date else 'None', inline=False)
     embed.add_field(name="Description", value=task.description, inline=False)
     embed.add_field(name="Comments", value=task.comments, inline=False)
     if task.archived:
-        embed.add_field(name="Archive Date", value=task.archived_date.isoformat(), inline=False)
+        embed.add_field(name="Archive Date", value=task.archived_date.strftime('%Y-%m-%d'), inline=False)
     return embed
 
 def tasks_list_view_embed(tasks: "list[Task]", view_archive) -> discord.Embed:
@@ -32,6 +32,6 @@ def tasks_list_view_embed(tasks: "list[Task]", view_archive) -> discord.Embed:
     else:
         embed.add_field(name="Tasks", value="\n".join((['. '.join(x) for x in zip([str(x) for x in values[0]], values[1])])))
         embed.add_field(name="Owner", value="\n".join(values[2]))
-        embed.add_field(name="Due Date", value="\n".join([time.isoformat() for time in values[3]] ))
+        embed.add_field(name="Due Date", value="\n".join([time.strftime('%Y-%m-%d') if time else 'None' for time in values[3]] ))
     
     return embed
