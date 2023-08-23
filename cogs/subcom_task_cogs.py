@@ -23,14 +23,14 @@ class SubcomTasks(commands.GroupCog, name="task"):
     @app_commands.check(has_appropriate_role)
     async def task_new(self, interaction: discord.Interaction, task_name: str = "None"):
         """Create a new Task. Default owner is the creator of the task."""
-        task = subcom_task.new_task(interaction.user.mention, task_name)
+        task = await subcom_task.new_task(interaction.user.mention, task_name)
         await interaction.response.send_message(f"New Task created with Task ID {task.task_id}.")
 
     @app_commands.command(name='view')
     @app_commands.check(has_appropriate_role)
     async def task_view(self, interaction: discord.Interaction, task_id: int):
         """View the details of a specific task."""
-        task = subcom_task.view_task(task_id)
+        task = await subcom_task.view_task(task_id)
         embed = task_view_embed(task)
         await interaction.response.send_message(embed=embed)
 
@@ -38,7 +38,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     @app_commands.check(has_appropriate_role)
     async def task_view_all(self, interaction: discord.Interaction, view_archive: bool = False):
         """View the details of all tasks."""
-        tasks = subcom_task.view_all_tasks(view_archive=view_archive)
+        tasks = await subcom_task.view_all_tasks(view_archive=view_archive)
         embed = tasks_list_view_embed(tasks, view_archive)
         await interaction.response.send_message(embed=embed)
 
@@ -48,18 +48,18 @@ class SubcomTasks(commands.GroupCog, name="task"):
     @app_commands.check(has_appropriate_role)
     async def task_edit_name(self, interaction: discord.Interaction, task_id: int, task_name: str):
         """Edit the name of a task."""
-        task = subcom_task.view_task(task_id)
+        task = await subcom_task.view_task(task_id)
         task.task_name = task_name
-        subcom_task.update_task(task)
+        await subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} renamed to {task.task_name}.")
     
     @task_edit.command(name='owner')
     @app_commands.check(has_appropriate_role)
     async def task_edit_owner(self, interaction: discord.Interaction, task_id: int, owner: discord.Member):
         """Edit the owner of a task."""
-        task = subcom_task.view_task(task_id)
+        task = await subcom_task.view_task(task_id)
         task.owner = owner.name
-        subcom_task.update_task(task)
+        await subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} assigned to {task.owner}.")
     
     @task_edit.command(name='contributors')
@@ -67,34 +67,34 @@ class SubcomTasks(commands.GroupCog, name="task"):
     async def task_edit_contributors(self, interaction: discord.Interaction, task_id: int, 
                                      contributors: str):
         """Edit the contributors of a task."""
-        task = subcom_task.view_task(task_id)
+        task = await subcom_task.view_task(task_id)
         task.contributors = contributors.split()
-        subcom_task.update_task(task)
+        await subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} contributors edited.")
     
     @task_edit.command(name='description')
     @app_commands.check(has_appropriate_role)
     async def task_edit_description(self, interaction: discord.Interaction, task_id: int, description: str):
         """Edit the description of a task."""
-        task = subcom_task.view_task(task_id)
+        task = await subcom_task.view_task(task_id)
         task.description = description
-        subcom_task.update_task(task)
+        await subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} description edited.")
     
     @task_edit.command(name='comments')
     @app_commands.check(has_appropriate_role)
     async def task_edit_comments(self, interaction: discord.Interaction, task_id: int, comments: str):
         """Edit the comments of a task."""
-        task = subcom_task.view_task(task_id)
+        task = await subcom_task.view_task(task_id)
         task.comments = comments
-        subcom_task.update_task(task)
+        await subcom_task.update_task(task)
         await interaction.response.send_message(f"Task {task.task_id} comments edited.")
     
     @task_edit.command(name='due_date')
     @app_commands.check(has_appropriate_role)
     async def task_edit_duedate(self, interaction: discord.Interaction, task_id: int, day: int, month: int, year: int):
         """Edit the due date of a task."""
-        task = subcom_task.view_task(task_id)
+        task = await subcom_task.view_task(task_id)
         try:
             date = datetime.date(year, month, day)
             task.due_date = date
@@ -107,19 +107,19 @@ class SubcomTasks(commands.GroupCog, name="task"):
     @app_commands.check(has_appropriate_role)
     async def task_archive(self, interaction: discord.Interaction, task_id: int):
         """Archive an existing task."""
-        subcom_task.archive_task(task_id)
+        await subcom_task.archive_task(task_id)
 
         await interaction.response.send_message(f"Task {task_id} successfully archived.")
         if archive_channel:
             embed = discord.Embed(title=f"New Archived Task: Task {task_id}", color=discord.Color.greyple())
-            embed.add_field(name="Archive Date", value=subcom_task.view_task(task_id).archived_date.isoformat())
+            embed.add_field(name="Archive Date", value=(await subcom_task.view_task(task_id)).archived_date.isoformat())
             await archive_channel.send(embed=embed)
     
     @app_commands.command(name='delete')
     @app_commands.check(has_appropriate_role)
     async def task_delete(self, interaction: discord.Interaction, task_id: int):
         """Delete a task."""
-        subcom_task.delete_task(task_id)
+        await subcom_task.delete_task(task_id)
         await interaction.response.send_message(f"Task {task_id} successfully deleted.")
     
     @app_commands.command(name="set_archive_channel")
