@@ -23,7 +23,7 @@ def tasks_list_view_embed(tasks: "list[Task]", view_archive) -> discord.Embed:
         title = "All Active Tasks"
 
     embed = discord.Embed(title=title, color=discord.Color.greyple())
-    values = list(map(list, zip(*[task.summary_to_tuple() for task in tasks]))) # cursed
+    values = list(map(list, zip(*[task.get_summary() for task in tasks]))) # cursed
 
     if not values:
         embed.add_field(name="Tasks", value="")

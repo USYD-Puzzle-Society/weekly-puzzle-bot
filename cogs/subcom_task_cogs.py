@@ -96,7 +96,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
         """Edit the due date of a task."""
         task = await subcom_task.view_task(task_id)
         try:
-            date = datetime.date(year, month, day)
+            date = datetime.datetime(year, month, day)
             task.due_date = date
             await interaction.response.send_message(f"Task {task.task_id} due date edited to {date.isoformat()}")
         except ValueError:

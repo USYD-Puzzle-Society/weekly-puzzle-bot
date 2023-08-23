@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from classes.Task import Task
 from db.db import database
@@ -19,7 +19,7 @@ async def new_task(owner: str, task_name: str = "None") -> Task:
     task.task_id = await retrieve_task_id_counter()
     await set_task_id_counter(task.task_id + 1)
 
-    await database.tasks_collection.insert_one(task.to_dict())
+    await database.tasks_collection.insert_one(dict(task))
 
     return task
 
@@ -70,7 +70,7 @@ async def update_task(task: Task) -> None:
         TaskNotFoundError: if there are no Task with a matching id.
     """
     
-    result = await database.tasks_collection.update_one({ 'task_id': task.task_id }, { '$set': task.to_dict() })
+    result = await database.tasks_collection.update_one({ 'task_id': task.task_id }, { '$set': dict(task) })
     if result.matched_count == 0:
         raise TaskNotFoundError(task.task_id)
 
@@ -90,7 +90,7 @@ async def archive_task(task_id: int) -> None:
         { '$set': 
             { 
                 'archived': True,
-                'archived_date': datetime.date.today().isoformat() 
+                'archived_date': datetime.now().replace(microsecond=0)
             }
         }
     )
@@ -145,7 +145,7 @@ async def create_task_from_document(doc) -> Task:
     """
     Given a Mongo document, create a Task object from the document's fields.
     """
-    task = Task(doc['task_name'], doc['owner'], doc['contributors'], doc['status'],
-                doc['description'], doc['comments'], doc['archived'], doc['archived_date'])
-    task.task_id = doc['task_id']
+    # print(doc)
+    task = Task(**doc)
+    # print(task)
     return task
