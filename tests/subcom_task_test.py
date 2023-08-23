@@ -1,5 +1,6 @@
 import pytest
 import pytest_asyncio
+import datetime
 
 from src.subcom_task import *
 from src.subcom_task_errors import TaskNotFoundError
@@ -42,6 +43,7 @@ class TestClass:
         await archive_task(task.task_id)
         task = await view_task(task.task_id)
         assert task.archived == True
+        assert task.archived_date == datetime.date.today()
         assert len(await view_all_tasks()) == 0
         assert len(await view_all_tasks(view_archive=True)) == 1
         assert (await view_all_tasks(view_archive=True))[0] == task

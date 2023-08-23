@@ -1,5 +1,4 @@
 import datetime
-from pymongo.cursor import Cursor
 
 from classes.Task import Task
 from db.db import database
@@ -86,7 +85,15 @@ async def archive_task(task_id: int) -> None:
     Raises:
         TaskNotFoundError: if there are no Task with a matching id.
     """
-    result = await database.tasks_collection.update_one({ 'task_id': task_id }, { '$set': { 'archived': True } })
+    result = await database.tasks_collection.update_one(
+        { 'task_id': task_id }, 
+        { '$set': 
+            { 
+                'archived': True,
+                'archived_date': datetime.date.today().isoformat() 
+            }
+        }
+    )
     if result.matched_count == 0:
         raise TaskNotFoundError(task_id)
 

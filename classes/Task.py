@@ -15,7 +15,7 @@ class Task():
         self.comments: str = comments
 
         self.archived = archived
-        self.archived_date: datetime.date = archived_date
+        self.archived_date: datetime.date = datetime.date.fromisoformat(archived_date) if archived_date else None
 
     def summary_to_tuple(self):
         return (self.task_id, self.task_name, self.owner, self.due_date)
