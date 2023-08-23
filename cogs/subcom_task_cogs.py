@@ -135,6 +135,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
                                     error: discord.app_commands.AppCommandError):
         if isinstance(error, discord.app_commands.CheckFailure):
             await interaction.response.send_message("You don't have the permission to execute this command!", ephemeral=True)
+        elif isinstance(error, TaskNotFoundError):
+            await interaction.response.send_message(error, ephemeral=True)
         else:
             print(error)
 
