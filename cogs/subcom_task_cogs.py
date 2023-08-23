@@ -23,7 +23,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     @app_commands.check(has_appropriate_role)
     async def task_new(self, interaction: discord.Interaction, task_name: str = "None"):
         """Create a new Task. Default owner is the creator of the task."""
-        task = await subcom_task.new_task(interaction.user.mention, task_name)
+        task = await subcom_task.new_task(interaction.user.name, task_name)
         await interaction.response.send_message(f"New Task created with Task ID {task.task_id}.")
 
     @app_commands.command(name='view')

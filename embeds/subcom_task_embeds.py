@@ -1,4 +1,5 @@
 import discord
+from datetime import datetime
 
 from classes.Task import Task
 
@@ -23,15 +24,24 @@ def tasks_list_view_embed(tasks: "list[Task]", view_archive) -> discord.Embed:
         title = "All Active Tasks"
 
     embed = discord.Embed(title=title, color=discord.Color.greyple())
-    values = list(map(list, zip(*[task.get_summary() for task in tasks]))) # cursed
 
-    if not values:
-        embed.add_field(name="Tasks", value="")
-        embed.add_field(name="Owner", value="")
-        embed.add_field(name="Due Date", value="")
-    else:
-        embed.add_field(name="Tasks", value="\n".join((['. '.join(x) for x in zip([str(x) for x in values[0]], values[1])])))
-        embed.add_field(name="Owner", value="\n".join(values[2]))
-        embed.add_field(name="Due Date", value="\n".join([time.strftime('%Y-%m-%d') if time else 'None' for time in values[3]] ))
+    values = [format_task_summary(*task.get_summary()) for task in tasks]
+
+    embed.description = '\n'.join(values)
     
     return embed
+
+def format_task_summary(task_id: int, task_name: str, owner: str, due_date: datetime):
+    due_date = due_date.strftime('%Y-%m-%d') if due_date else 'None'
+    task = f'{task_id}. {task_name}'
+    task_name_width = 40
+    owner_width = 20
+    due_date_width = 20
+
+    task_name_formatted = f"{task[:task_name_width-3]}..." if len(task) > task_name_width else task.ljust(task_name_width)
+    owner_formatted = f"{owner[:owner_width-3]}..." if len(owner) > owner_width else owner.ljust(owner_width)
+    due_date_formatted = f"{due_date[:due_date_width-3]}..." if len(due_date) > due_date_width else due_date.ljust(due_date_width)
+
+    formatted_string = f"{task_name_formatted}{owner_formatted}{due_date_formatted}"
+
+    return formatted_string
