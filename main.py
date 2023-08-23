@@ -53,7 +53,7 @@ async def sync(ctx: commands.context.Context, globally: bool = False):
     if globally:
         await bot.tree.sync()
     else:
-        ctx.bot.tree.copy_global_to(guild=ctx.guild)
+        bot.tree.copy_global_to(guild=ctx.guild)
         await bot.tree.sync(guild=ctx.guild)
 
     await ctx.send(
