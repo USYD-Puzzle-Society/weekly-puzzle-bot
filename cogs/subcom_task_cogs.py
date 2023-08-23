@@ -3,7 +3,6 @@ from discord.ext import commands
 from discord import app_commands
 import datetime
 
-from classes.Task import Task
 from src import subcom_task
 from src.subcom_task_errors import TaskNotFoundError
 from embeds.subcom_task_embeds import task_view_embed, tasks_list_view_embed
