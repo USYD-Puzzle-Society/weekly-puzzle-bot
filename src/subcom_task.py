@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from classes.Task import Task
 from db.db import database
@@ -40,9 +41,9 @@ async def view_task(task_id: int) -> Task:
     task = await database.tasks_collection.find_one({ "task_id": task_id })
     if not task:
         raise TaskNotFoundError(task_id)
-    return await create_task_from_document(task)
+    return create_task_from_document(task)
 
-async def view_all_tasks(view_archive: bool = False) -> "list[Task]":
+async def view_all_tasks(view_archive: bool = False) -> List[Task]:
     """
     Retrieve all archived or unarchived Task objects.
 
@@ -54,7 +55,7 @@ async def view_all_tasks(view_archive: bool = False) -> "list[Task]":
         A list of Tasks that fulfills the condition.
     """
     cursor = database.tasks_collection.find({})
-    tasks: "list[Task]" = [await create_task_from_document(doc) for doc in await cursor.to_list(length=None)]
+    tasks: List[Task] = [create_task_from_document(doc) for doc in await cursor.to_list(length=None)]
     tasks.sort(key=lambda task: task.task_id)
     tasks = [task for task in tasks if task.archived == view_archive]
     return tasks
@@ -141,7 +142,7 @@ async def set_task_id_counter(task_id_counter: int) -> None:
     await database.task_id_counter_collection.update_one({}, 
                                           { '$set': { 'task_id': task_id_counter } }, upsert=True)
 
-async def create_task_from_document(doc) -> Task:
+def create_task_from_document(doc) -> Task:
     """
     Given a Mongo document, create a Task object from the document's fields.
     """

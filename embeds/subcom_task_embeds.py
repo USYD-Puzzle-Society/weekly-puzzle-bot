@@ -1,5 +1,6 @@
 import discord
 from datetime import datetime
+from typing import List
 
 from classes.Task import Task
 
@@ -17,7 +18,7 @@ def task_view_embed(task: Task) -> discord.Embed:
         embed.add_field(name="Archive Date", value=task.archived_date.strftime('%Y-%m-%d'), inline=False)
     return embed
 
-def tasks_list_view_embed(tasks: "list[Task]", view_archive) -> discord.Embed:
+def tasks_list_view_embed(tasks: List[Task], view_archive: bool) -> discord.Embed:
     if view_archive:
         title = "All Archived Tasks"
     else:
