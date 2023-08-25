@@ -29,6 +29,11 @@ class TestClass:
     async def test_view_task(self):  
         task = await new_task('alice')
         assert task == await view_task(task.task_id)
+    
+    @pytest.mark.asyncio
+    async def test_view_nonexistant_task(self):
+        with pytest.raises(TaskNotFoundError):
+            await view_task(0)
 
     @pytest.mark.asyncio
     async def test_view_all_tasks(self):  
