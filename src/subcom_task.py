@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List
 from beanie.exceptions import DocumentNotFound
+from beanie.odm.operators.update.general import Set
 
 from classes.SubcomTask import Task, TaskMetadata
 from src.subcom_task_errors import TaskNotFoundError
@@ -127,10 +128,4 @@ async def set_task_id_counter(task_id_counter: int) -> None:
     Args:
         task_id_counter: the value task id counter will be set to.
     """
-    await TaskMetadata.find_one().upsert(
-        {
-            '$set': {
-                TaskMetadata.task_id_counter: task_id_counter
-            }
-        }
-    )
+    await TaskMetadata.find_one().upsert(Set({TaskMetadata.task_id_counter: task_id_counter}))
