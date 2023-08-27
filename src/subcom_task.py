@@ -118,10 +118,7 @@ async def retrieve_task_id_counter() -> int:
     """
     metadata = await TaskMetadata.find_one()
 
-    if metadata:
-        return metadata.task_id_counter
-    else:
-        return 1
+    return metadata.task_id_counter if metadata else 1
 
 async def set_task_id_counter(task_id_counter: int) -> None:
     """
