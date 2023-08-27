@@ -4,8 +4,13 @@ from datetime import datetime
 
 from src.subcom_task import *
 from src.subcom_task_errors import TaskNotFoundError
+from db import db
 
 class TestClass:
+    @pytest_asyncio.fixture(scope="class", autouse=True)
+    async def init_db(self):
+        await db.init_db()
+
     @pytest_asyncio.fixture(autouse=True)
     async def async_setup(self):
         await clear()

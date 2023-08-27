@@ -1,6 +1,9 @@
+import asyncio
 import os
 import discord
 from discord.ext import commands
+
+from db.db import init_db
 
 TOKEN = ""
 
@@ -15,6 +18,8 @@ command_prefix = "."
 activity = discord.Game(name="Professor Layton")
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None, intents=intents)
+
+asyncio.run(init_db())
 
 # load all available cogs on startup
 @bot.event

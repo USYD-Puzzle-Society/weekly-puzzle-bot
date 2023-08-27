@@ -1,8 +1,9 @@
 from datetime import datetime 
-from pydantic import BaseModel
+from beanie import Document, Indexed
 from typing import List, Optional, Tuple
+from pydantic import Field
 
-class Task(BaseModel):
+class Task(Document):
     """A task in the task board.
 
     Attributes:
@@ -19,7 +20,7 @@ class Task(BaseModel):
         archived: A boolean indicating whether the task has been archived.
         archived_date: A Datetime object representing the archival date of the task.
     """
-    task_id: Optional[int] = None
+    task_id: Indexed(int) = 1
     task_name: str = "None"
     owner: str = "None"
     contributors: List[str] = ["None"]
@@ -40,3 +41,6 @@ class Task(BaseModel):
                 A tuple consisting of the task ID, task name, owner and due date.
         """
         return (self.task_id, self.task_name, self.owner, self.due_date)
+    
+class TaskMetadata(Document):
+    task_id_counter: int
