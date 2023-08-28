@@ -43,4 +43,5 @@ class Task(Document):
         return (self.task_id, self.task_name, self.owner, self.due_date)
     
 class TaskMetadata(Document):
-    task_id_counter: int
+    task_id_counter: int = 1
+    archive_channel_id: Optional[int] = None

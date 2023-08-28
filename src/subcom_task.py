@@ -1,7 +1,9 @@
+import discord
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.operators.update.general import Set
+from discord.abc import GuildChannel
 
 from classes.SubcomTask import Task, TaskMetadata
 from src.subcom_task_errors import TaskNotFoundError
@@ -129,3 +131,10 @@ async def set_task_id_counter(task_id_counter: int) -> None:
         task_id_counter: the value task id counter will be set to.
     """
     await TaskMetadata.find_one().upsert(Set({TaskMetadata.task_id_counter: task_id_counter}))
+
+async def get_archive_channel() -> Optional[GuildChannel]:
+    metadata = await TaskMetadata.find_one()
+    return discord.Client.get_channel(metadata.archive_channel_id) if metadata else None
+
+async def set_archive_channel(channel: GuildChannel) -> None:
+    await TaskMetadata.find_one().upsert(Set({TaskMetadata.archive_channel_id == channel.id}))

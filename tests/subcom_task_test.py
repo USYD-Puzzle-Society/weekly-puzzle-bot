@@ -65,3 +65,8 @@ class TestClass:
         assert len(await view_all_tasks()) == 0
         with pytest.raises(TaskNotFoundError):
             await view_task(task.task_id)
+
+    @pytest.mark.asyncio
+    async def test_get_archive_channel(self):
+        channel = await get_archive_channel()
+        assert channel is None

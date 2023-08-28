@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from discord.abc import GuildChannel
 import datetime
 
 from src import subcom_task
@@ -10,7 +11,6 @@ from utils import middleware
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
-archive_channel = None
 
 class SubcomTasks(commands.GroupCog, name="task"):
     def __init__(self, bot):
@@ -107,6 +107,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await subcom_task.archive_task(task_id)
 
         await interaction.response.send_message(f"Task {task_id} successfully archived.")
+        archive_channel = await subcom_task.get_archive_channel()
         if archive_channel:
             embed = discord.Embed(title=f"New Archived Task: Task {task_id}", color=discord.Color.greyple())
             embed.add_field(name="Archive Date", 
@@ -124,8 +125,10 @@ class SubcomTasks(commands.GroupCog, name="task"):
     @middleware.has_any_role(exec_role, subcom_role)
     async def set_archive_channel(self, interaction: discord.Interaction):
         """Set the archive channel to the current channel."""
-        global archive_channel
         archive_channel = interaction.channel
+        if not archive_channel or not isinstance(archive_channel, GuildChannel):
+            return await interaction.response.send_message("This is not a valid channel for archiving!", ephemeral=True)
+        await subcom_task.set_archive_channel(archive_channel)
         await interaction.response.send_message(f"Archive channel set to <#{archive_channel}>.")
     
     async def cog_app_command_error(self, interaction: discord.Interaction, 
