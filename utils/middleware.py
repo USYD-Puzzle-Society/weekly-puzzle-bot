@@ -1,8 +1,8 @@
 from functools import wraps
-from typing import List, Coroutine
+from typing import Tuple, Coroutine, Callable, Type
 import discord
 
-def has_any_role(*roles: List[str]) -> Coroutine:
+def has_any_role(*roles: Tuple[str]) -> Callable:
     def decorator(func: Coroutine) -> Coroutine:
         @wraps(func)
         async def wrapper(self, interaction: discord.Interaction, *args, **kwargs):
@@ -15,5 +15,16 @@ def has_any_role(*roles: List[str]) -> Coroutine:
                     return await func(self, interaction, *args, **kwargs)
 
             await interaction.response.send_message("You don't have the permission to execute this command!", ephemeral=True)
+        return wrapper
+    return decorator
+
+def handle_errors(*errors: Type[Exception]) -> Callable:
+    def decorator(func: Coroutine) -> Coroutine:
+        @wraps(func)
+        async def wrapper(self, interaction: discord.Interaction, *args, **kwargs):
+            try:
+                await func(self, interaction, *args, **kwargs)
+            except errors as error:
+                await interaction.response.send_message(error, ephemeral=True)
         return wrapper
     return decorator

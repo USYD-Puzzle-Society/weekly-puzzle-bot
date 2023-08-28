@@ -25,6 +25,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
 
     @app_commands.command(name='view')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_view(self, interaction: discord.Interaction, task_id: int):
         """View the details of a specific task."""
         task = await subcom_task.view_task(task_id)
@@ -43,6 +44,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     
     @task_edit.command(name='name')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_edit_name(self, interaction: discord.Interaction, task_id: int, task_name: str):
         """Edit the name of a task."""
         task = await subcom_task.view_task(task_id)
@@ -52,6 +54,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     
     @task_edit.command(name='owner')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_edit_owner(self, interaction: discord.Interaction, task_id: int, owner: discord.Member):
         """Edit the owner of a task."""
         task = await subcom_task.view_task(task_id)
@@ -61,6 +64,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     
     @task_edit.command(name='contributors')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_edit_contributors(self, interaction: discord.Interaction, task_id: int, 
                                      contributors: str):
         """Edit the contributors of a task."""
@@ -71,6 +75,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     
     @task_edit.command(name='description')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_edit_description(self, interaction: discord.Interaction, task_id: int, description: str):
         """Edit the description of a task."""
         task = await subcom_task.view_task(task_id)
@@ -80,6 +85,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     
     @task_edit.command(name='comments')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_edit_comments(self, interaction: discord.Interaction, task_id: int, comments: str):
         """Edit the comments of a task."""
         task = await subcom_task.view_task(task_id)
@@ -89,6 +95,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     
     @task_edit.command(name='due_date')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_edit_duedate(self, interaction: discord.Interaction, task_id: int, day: int, month: int, year: int):
         """Edit the due date of a task."""
         task = await subcom_task.view_task(task_id)
@@ -102,6 +109,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
 
     @app_commands.command(name='archive')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_archive(self, interaction: discord.Interaction, task_id: int):
         """Archive an existing task."""
         await subcom_task.archive_task(task_id)
@@ -116,6 +124,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
     
     @app_commands.command(name='delete')
     @middleware.has_any_role(exec_role, subcom_role)
+    @middleware.handle_errors(TaskNotFoundError)
     async def task_delete(self, interaction: discord.Interaction, task_id: int):
         """Delete a task."""
         await subcom_task.delete_task(task_id)
@@ -130,13 +139,6 @@ class SubcomTasks(commands.GroupCog, name="task"):
             return await interaction.response.send_message("This is not a valid channel for archiving!", ephemeral=True)
         await subcom_task.set_archive_channel(archive_channel)
         await interaction.response.send_message(f"Archive channel set to <#{archive_channel}>.")
-    
-    async def cog_app_command_error(self, interaction: discord.Interaction, 
-                                    error: discord.app_commands.AppCommandError):
-        if isinstance(error, TaskNotFoundError):
-            await interaction.response.send_message(error, ephemeral=True)
-        else:
-            print(error)
 
 
 async def setup(bot: commands.Bot):
