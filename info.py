@@ -47,6 +47,7 @@ class Info():
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
+                    "interactive_link": "",
                     "releasing": False
                 },
                 "wordsearch": {
@@ -56,6 +57,7 @@ class Info():
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
+                    "interactive_link": "",
                     "releasing": False
                 },
                 "logicpuzz": {
@@ -65,6 +67,7 @@ class Info():
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
+                    "interactive_link": "",
                     "releasing": False
                 },
                 "ciyk": {
@@ -75,6 +78,7 @@ class Info():
                     "week_num": -1,
                     "img_url": "",
                     "submission_link": "",
+                    "interactive_link": "",
                     "releasing": False
                 }
             }
@@ -200,8 +204,12 @@ class Info():
 
         lines = [
             crossword_tag,
-            f"**MIDI CROSSWORD: WEEK {crossword_info['week_num']}**"
+            f"**CROSSWORD: WEEK {crossword_info['week_num']}**"
         ]
+
+        interactive_link = crossword_info["interactive_link"]
+        if interactive_link:
+            lines.append(f"\n\nInteractive version: {interactive_link}")
 
         return "".join(lines)
     
