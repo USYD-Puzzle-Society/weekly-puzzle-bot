@@ -28,6 +28,7 @@ class Info():
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
+                    "interactive_link": "",
                     "releasing": False
                 },
                 "minipuzz": {
@@ -76,7 +77,7 @@ class Info():
                     "discuss_id": 1001742642427744326,
                     "release_datetime": "08/08/2022 12:00",
                     "week_num": -1,
-                    "img_url": "",
+                    "img_urls": [],
                     "submission_link": "",
                     "interactive_link": "",
                     "releasing": False
@@ -284,16 +285,23 @@ class Info():
 
     # this method exists as just an easy way to change the data in one method call in setpuzzles/setciyk    
     def change_data(self, puzz_name: str, new_data: "dict[str, any]"):
-        self.info[puzz_name]["week_num"] = new_data["week_num"]
-        self.info[puzz_name]["submission_link"] = new_data["submission_link"]
+        # self.info[puzz_name]["week_num"] = new_data["week_num"]
+        # self.info[puzz_name]["submission_link"] = new_data["submission_link"]
 
-        if "ciyk" == puzz_name:
-            self.info[puzz_name]["img_url"] = new_data["img_url"]
-        elif "minipuzz" == puzz_name:
-            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
-            self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
-        else:
-            self.info[puzz_name]["img_urls"] = new_data["img_urls"]
+        # if "ciyk" == puzz_name:
+        #     self.info[puzz_name]["img_url"] = new_data["img_url"]
+        # elif "minipuzz" == puzz_name:
+        #     self.info[puzz_name]["img_urls"] = new_data["img_urls"]
+        #     self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
+        # else:
+        #     self.info[puzz_name]["img_urls"] = new_data["img_urls"]
+
+        puzz_data = ["week_num", "submission_link", 
+                     "img_urls", "interactive_link",
+                    ]
+
+        for data in puzz_data:
+            self.info[puzz_name][data] = new_data[data]
 
         # write the new info to the json file so that it is not lost if the bot shuts down
         with open(self.info_fn, "w") as info:
