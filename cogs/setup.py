@@ -684,7 +684,8 @@ class Setup(commands.Cog):
         new_data = {
             "img_urls": "",
             "week_num": -1,
-            "submission_link": ""
+            "submission_link": "",
+            "interactive_link": ""
         }
 
         await ctx.send("Please send the images for the logic puzzle.")
@@ -718,6 +719,28 @@ class Setup(commands.Cog):
                 is_number = True
             except ValueError:
                 await ctx.send("Please enter a number.")
+
+        # add interactive link if there is one
+        await ctx.send("Is there an interactive link? y/n")
+
+        confirmation = False
+        while not confirmation:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made to the minipuzz info.")
+                return
+            elif "y" == msg.content.lower():
+                confirmation = "y"
+            elif "n" == msg.content.lower():
+                confirmation = "n"
+
+        if "y" == confirmation:
+            await ctx.send("Please send the interactive link for the puzzle.")
+
+            link = await self.bot.wait_for("message", check=check)
+
+            new_data["interactive_link"] = link.content
 
         # if this point is reached, then the new data will be saved
         self.info_obj.change_data("logicpuzz", new_data)
