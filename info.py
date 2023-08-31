@@ -250,6 +250,10 @@ class Info():
             f"**LOGIC PUZZLE: WEEK {logicpuzz_info['week_num']}**"
         ]
 
+        interactive_link = logicpuzz_info["interactive_link"]
+        if interactive_link:
+            lines.append(f"\n\nInteractive version: {interactive_link}")
+
         return "".join(lines)
 
     def get_ciyk_text(self, ctx: commands.context.Context, mention: bool) -> str:
