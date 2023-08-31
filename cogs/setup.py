@@ -621,7 +621,8 @@ class Setup(commands.Cog):
         new_data = {
             "img_urls": "",
             "week_num": -1,
-            "submission_link": ""
+            "submission_link": "",
+            "interactive_link": ""
         }
 
         await ctx.send("Please send the images for the word search.")
