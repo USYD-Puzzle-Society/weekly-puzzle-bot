@@ -133,8 +133,20 @@ async def set_task_id_counter(task_id_counter: int) -> None:
     await TaskMetadata.find_one().upsert(Set({TaskMetadata.task_id_counter: task_id_counter}))
 
 async def get_archive_channel() -> Optional[GuildChannel]:
+    """
+    Get the current archive channel.
+
+    Returns:
+        The archive channel, or None if not set.
+    """
     metadata = await TaskMetadata.find_one()
     return discord.Client.get_channel(metadata.archive_channel_id) if metadata else None
 
 async def set_archive_channel(channel: GuildChannel) -> None:
+    """
+    Set the archive channel id to the given channel id.
+
+    Args:
+        channel: The archive channel.
+    """
     await TaskMetadata.find_one().upsert(Set({TaskMetadata.archive_channel_id == channel.id}))
