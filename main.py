@@ -1,6 +1,9 @@
+import asyncio
 import os
 import discord
 from discord.ext import commands
+
+from db.db import init_db
 
 TOKEN = ""
 
@@ -16,15 +19,16 @@ activity = discord.Game(name="Professor Layton")
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None, intents=intents)
 
+asyncio.run(init_db())
+
 # load all available cogs on startup
-@bot.command()
+@bot.event
 @commands.has_role(exec_id)
-async def startup(ctx: commands.context.Context):
+async def on_ready():
     for filename in os.listdir("cogs/"):
         if filename.endswith(".py"):
             await bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
             print(f"Loaded {filename}")
-    await ctx.send(f"Loaded all cogs")
 
 # command to load a cog
 @bot.command()
@@ -46,5 +50,19 @@ async def unload(ctx: commands.context.Context, extension):
 async def reload(ctx: commands.context.Context, extension):
     await bot.reload_extension(f"{cogs_dir}.{extension}")
     await ctx.send(f"Reloaded {extension} cog")
+
+# command to sync the command trees either globally, or to the current guild
+@bot.command()
+@commands.has_role(exec_id)
+async def sync(ctx: commands.context.Context, globally: bool = False):
+    if globally:
+        await bot.tree.sync()
+    else:
+        bot.tree.copy_global_to(guild=ctx.guild)
+        await bot.tree.sync(guild=ctx.guild)
+
+    await ctx.send(
+        f"Synced commands {'globally' if globally else 'to the current guild.'}"
+    )
 
 bot.run(TOKEN)
