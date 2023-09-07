@@ -2,9 +2,9 @@ name: Run tests with Pytests
 
 on:
   push:
-    branches: [ "master", "development_branch" ]
+    branches: [ "master", "development-branch" ]
   pull_request:
-    branches: [ "master", "development_branch" ]
+    branches: [ "master", "development-branch" ]
     types: [opened, synchronize]
 
 permissions:
