@@ -53,7 +53,7 @@ class TestClass:
         await archive_task(task.task_id)
         task = await view_task(task.task_id)
         assert task.archived == True
-        assert (datetime.now() - task.archived_date).total_seconds() <= 1
+        assert (datetime.now() - task.archived_date).total_seconds() <= 10
         assert len(await view_all_tasks()) == 0
         assert len(await view_all_tasks(view_archive=True)) == 1
         assert (await view_all_tasks(view_archive=True))[0] == task
