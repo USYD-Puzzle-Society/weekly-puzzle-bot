@@ -1,16 +1,17 @@
-name: Python application
+name: Run tests with Pytests
 
 on:
   push:
     branches: [ "master", "development_branch" ]
   pull_request:
     branches: [ "master", "development_branch" ]
+    types: [opened, synchronize]
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  test-pipeline:
     runs-on: ubuntu-latest
 
     steps:
