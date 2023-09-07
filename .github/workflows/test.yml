@@ -32,6 +32,6 @@ jobs:
         echo $BOT_TOKEN > .token
     - name: Test with pytest
       env:
-        DB_URL: ${{ secrets.DEV_DB_URI }}
+        DB_URI: ${{ secrets.DEV_DB_URI }}
       run: |
         pytest tests/
