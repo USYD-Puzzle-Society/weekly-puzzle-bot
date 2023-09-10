@@ -1,9 +1,17 @@
 from datetime import datetime
 from beanie import Document
 from typing import Optional, List
+from enum import Enum
+
+class WeeklyPuzzleType(Enum):
+    REBUS_CRYPTIC = 1
+    MINIPUZZ = 2
+    WORD_SEARCH = 3
+    LOGIC_PUZZLE = 4
+    CROSSWORD = 5
 
 class WeeklyPuzzle(Document):
-    """Base class for a weekly puzzle. Should be inherited from for specific puzzle type.
+    """Base class for a weekly puzzle.
 
     Attributes:
         role_name: A string representing the role that should be pinged on puzzle release.
@@ -14,6 +22,7 @@ class WeeklyPuzzle(Document):
         submission_link: A string representing the URL to a Google Form to submit the answer.
         releasing: Whether the puzzle is being released.
     """
+    type: WeeklyPuzzleType
     role_name: Optional[str]
     channel_id: int
     release_datetime: datetime
