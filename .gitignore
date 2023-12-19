@@ -168,3 +168,6 @@ subcom_tasks_archive.json
 
 # lib64 is a symlink
 lib64
+
+# IDE Stuff
+.vscode/
