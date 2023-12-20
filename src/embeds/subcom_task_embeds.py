@@ -33,7 +33,7 @@ def tasks_list_view_embed(tasks: List[Task], view_archive: bool) -> discord.Embe
     return embed
 
 def format_task_summary(task_id: int, task_name: str, owner: str, due_date: datetime):
-    due_date = due_date.strftime('%Y-%m-%d') if due_date else 'None'
+    due_date_string = due_date.strftime('%Y-%m-%d') if due_date else 'None'
     task = f'{task_id}. {task_name}'
     task_name_width = 40
     owner_width = 20
@@ -41,7 +41,7 @@ def format_task_summary(task_id: int, task_name: str, owner: str, due_date: date
 
     task_name_formatted = f"{task[:task_name_width-3]}..." if len(task) > task_name_width else task.ljust(task_name_width)
     owner_formatted = f"{owner[:owner_width-3]}..." if len(owner) > owner_width else owner.ljust(owner_width)
-    due_date_formatted = f"{due_date[:due_date_width-3]}..." if len(due_date) > due_date_width else due_date.ljust(due_date_width)
+    due_date_formatted = f"{due_date_string[:due_date_width-3]}..." if len(due_date_string) > due_date_width else due_date_string.ljust(due_date_width)
 
     formatted_string = f"{task_name_formatted}{owner_formatted}{due_date_formatted}"
 

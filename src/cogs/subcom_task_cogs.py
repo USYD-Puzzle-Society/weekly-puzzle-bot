@@ -7,7 +7,7 @@ import datetime
 from src import subcom_task
 from src.subcom_task_errors import TaskNotFoundError
 from embeds.subcom_task_embeds import task_view_embed, tasks_list_view_embed
-from utils import middleware
+from src.utils.middleware import handle_errors, has_any_role
 
 exec_role = "Executives"
 subcom_role = "Subcommittee"
@@ -17,15 +17,15 @@ class SubcomTasks(commands.GroupCog, name="task"):
         self.bot = bot
 
     @app_commands.command(name='new')
-    @middleware.has_any_role(exec_role, subcom_role)
+    @has_any_role(exec_role, subcom_role)
     async def task_new(self, interaction: discord.Interaction, task_name: str = "None"):
         """Create a new Task. Default owner is the creator of the task."""
         task = await subcom_task.new_task(interaction.user.name, task_name)
         await interaction.response.send_message(f"New Task created with Task ID {task.task_id}.")
 
     @app_commands.command(name='view')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_view(self, interaction: discord.Interaction, task_id: int):
         """View the details of a specific task."""
         task = await subcom_task.view_task(task_id)
@@ -33,7 +33,7 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name='viewall')
-    @middleware.has_any_role(exec_role, subcom_role)
+    @has_any_role(exec_role, subcom_role)
     async def task_view_all(self, interaction: discord.Interaction, view_archive: bool = False):
         """View the details of all tasks."""
         tasks = await subcom_task.view_all_tasks(view_archive=view_archive)
@@ -43,8 +43,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
     task_edit = app_commands.Group(name='edit', description='Commands related to editing a specific task.')
     
     @task_edit.command(name='name')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_edit_name(self, interaction: discord.Interaction, task_id: int, task_name: str):
         """Edit the name of a task."""
         task = await subcom_task.view_task(task_id)
@@ -53,8 +53,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await interaction.response.send_message(f"Task {task.task_id} renamed to {task.task_name}.")
     
     @task_edit.command(name='owner')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_edit_owner(self, interaction: discord.Interaction, task_id: int, owner: discord.Member):
         """Edit the owner of a task."""
         task = await subcom_task.view_task(task_id)
@@ -63,8 +63,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await interaction.response.send_message(f"Task {task.task_id} assigned to {task.owner}.")
     
     @task_edit.command(name='contributors')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_edit_contributors(self, interaction: discord.Interaction, task_id: int, 
                                      contributors: str):
         """Edit the contributors of a task."""
@@ -74,8 +74,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await interaction.response.send_message(f"Task {task.task_id} contributors edited.")
     
     @task_edit.command(name='description')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_edit_description(self, interaction: discord.Interaction, task_id: int, description: str):
         """Edit the description of a task."""
         task = await subcom_task.view_task(task_id)
@@ -84,8 +84,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await interaction.response.send_message(f"Task {task.task_id} description edited.")
     
     @task_edit.command(name='comments')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_edit_comments(self, interaction: discord.Interaction, task_id: int, comments: str):
         """Edit the comments of a task."""
         task = await subcom_task.view_task(task_id)
@@ -94,8 +94,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
         await interaction.response.send_message(f"Task {task.task_id} comments edited.")
     
     @task_edit.command(name='due_date')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_edit_duedate(self, interaction: discord.Interaction, task_id: int, day: int, month: int, year: int):
         """Edit the due date of a task."""
         task = await subcom_task.view_task(task_id)
@@ -108,8 +108,8 @@ class SubcomTasks(commands.GroupCog, name="task"):
                                                     ephemeral=True)
 
     @app_commands.command(name='archive')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_archive(self, interaction: discord.Interaction, task_id: int):
         """Archive an existing task."""
         await subcom_task.archive_task(task_id)
@@ -123,15 +123,15 @@ class SubcomTasks(commands.GroupCog, name="task"):
             await archive_channel.send(embed=embed)
     
     @app_commands.command(name='delete')
-    @middleware.has_any_role(exec_role, subcom_role)
-    @middleware.handle_errors(TaskNotFoundError)
+    @has_any_role(exec_role, subcom_role)
+    @handle_errors(TaskNotFoundError)
     async def task_delete(self, interaction: discord.Interaction, task_id: int):
         """Delete a task."""
         await subcom_task.delete_task(task_id)
         await interaction.response.send_message(f"Task {task_id} successfully deleted.")
     
     @app_commands.command(name="set_archive_channel")
-    @middleware.has_any_role(exec_role, subcom_role)
+    @has_any_role(exec_role, subcom_role)
     async def set_archive_channel(self, interaction: discord.Interaction):
         """Set the archive channel to the current channel."""
         archive_channel = interaction.channel
