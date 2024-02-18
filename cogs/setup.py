@@ -141,7 +141,7 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def qsetweek(self, ctx: commands.context.Context, preset: str, week_num: str):
-        preset, accepted = self.check_reset(preset)
+        preset, accepted = self.info_obj.check_preset(preset)
         if not accepted:
             await ctx.send(f"Please use one of the accepted presets: {', '.join(self.default_presets)}")
             return
