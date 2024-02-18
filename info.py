@@ -8,6 +8,7 @@ class Info():
     def __init__(self):
         self.info_fn = "info.json" # fn = filename
         self.datetime_format = "%d/%m/%Y %H:%M"
+        self.default_presets = ["monday", "wednesday", "friday"]
 
         if os.path.exists(self.info_fn):
             with open(self.info_fn, "r") as fn:
@@ -21,10 +22,40 @@ class Info():
                     "heart": ":heart:",
                     "cross": ":x:"
                 },
+                "monday": {
+                    "role_name": "weekly puzzles",
+                    "channel_id": 892032997220573204,
+                    "release_datetime": "08/08/2022 16:00",
+                    "week_num": 0,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "interactive_link": "",
+                    "releasing": False
+                },
+                "wednesday": {
+                    "role_name": "weekly puzzles",
+                    "channel_id": 892032997220573204,
+                    "release_datetime": "08/08/2022 16:00",
+                    "week_num": 0,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "interactive_link": "",
+                    "releasing": False
+                },
+                "friday": {
+                    "role_name": "weekly puzzles",
+                    "channel_id": 892032997220573204,
+                    "release_datetime": "08/08/2022 16:00",
+                    "week_num": 0,
+                    "img_urls": [],
+                    "submission_link": "",
+                    "interactive_link": "",
+                    "releasing": False
+                },
                 "rebuscryptic": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
-                    "release_datetime": "08/08/2022 12:00",
+                    "release_datetime": "08/08/2022 16:00",
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
@@ -34,7 +65,7 @@ class Info():
                 "minipuzz": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
-                    "release_datetime": "08/08/2022 12:00",
+                    "release_datetime": "08/08/2022 16:00",
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
@@ -44,7 +75,7 @@ class Info():
                 "crossword": {
                     "role_name": "crosswords",
                     "channel_id": 1074683905405358171,
-                    "release_datetime": "08/08/2022 12:00",
+                    "release_datetime": "08/08/2022 16:00",
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
@@ -54,7 +85,7 @@ class Info():
                 "wordsearch": {
                     "role_name": "word searches",
                     "channel_id": 1135184991928721448,
-                    "release_datetime": "08/08/2022 12:00",
+                    "release_datetime": "08/08/2022 16:00",
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
@@ -64,7 +95,7 @@ class Info():
                 "logicpuzz": {
                     "role_name": "logic puzzles",
                     "channel_id": 1074684130794672138,
-                    "release_datetime": "08/08/2022 12:00",
+                    "release_datetime": "08/08/2022 16:00",
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
@@ -75,7 +106,7 @@ class Info():
                     "role_name": "weekly games",
                     "channel_id": 1001742058601590824,
                     "discuss_id": 1001742642427744326,
-                    "release_datetime": "08/08/2022 12:00",
+                    "release_datetime": "08/08/2022 16:00",
                     "week_num": -1,
                     "img_urls": [],
                     "submission_link": "",
@@ -96,6 +127,24 @@ class Info():
             5: "Saturday",
             6: "Sunday"
         }
+
+    def check_preset(self, preset: str):
+        shortened_presets = {
+            "mon": "monday",
+            "wed": "wednesday",
+            "fri": "friday"
+        }
+        preset = preset.lower()
+
+        try:
+            preset = shortened_presets[preset]
+        except KeyError:
+            pass
+
+        if preset not in self.default_presets:
+            return preset, False
+        
+        return preset, True
 
     # expects the %d/%m/%Y %H:%M format
     def str_to_datetime(self, string: str) -> datetime.datetime:
@@ -159,6 +208,46 @@ class Info():
             "_You can submit as many times as you want!_\n",
             "_Your highest score will be kept._"
         ]
+
+        return "".join(lines)
+    
+    def get_qtext(self, ctx: commands.context.Context, mention: bool, preset: str, week_num: int) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        puzz_info = self.info[preset]
+        role_name = puzz_info["role_name"]
+
+        if mention: 
+            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        preset_puzzles = {
+            "wednesday": "**MINIPUZZLE**\n\n",
+            "friday": "**PRINTER'S DEVILRY\n\n**"
+        }
+        puzzle_list = ""
+        if preset == "monday":
+            if week_num % 2 == 0:
+                puzzle_list = "**LOGIC + CRYPTIC**\n\n"
+            else:
+                puzzle_list = "**REBUS + CRYPTIC**\n\n"
+        else:
+            puzzle_list = preset_puzzles[preset]
+
+        lines = [
+            puzz_tag,
+            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            puzzle_list,
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._"
+        ]
+
+        if puzz_info["interactive_link"]:
+            lines.append(f"\n\nInteractive version: {puzz_info["interactive_link"]}")
 
         return "".join(lines)
 
@@ -289,19 +378,8 @@ class Info():
 
     # this method exists as just an easy way to change the data in one method call in setpuzzles/setciyk    
     def change_data(self, puzz_name: str, new_data: "dict[str, any]"):
-        # self.info[puzz_name]["week_num"] = new_data["week_num"]
-        # self.info[puzz_name]["submission_link"] = new_data["submission_link"]
-
-        # if "ciyk" == puzz_name:
-        #     self.info[puzz_name]["img_url"] = new_data["img_url"]
-        # elif "minipuzz" == puzz_name:
-        #     self.info[puzz_name]["img_urls"] = new_data["img_urls"]
-        #     self.info[puzz_name]["interactive_link"] = new_data["interactive_link"]
-        # else:
-        #     self.info[puzz_name]["img_urls"] = new_data["img_urls"]
-
         puzz_data = ["week_num", "submission_link", 
-                     "img_urls", "interactive_link",
+                     "img_urls", "interactive_link"
                     ]
 
         for data in puzz_data:
@@ -317,6 +395,14 @@ class Info():
         self.info[puzz_name]["release_datetime"] = new_time.strftime(self.datetime_format)
         
         with open(self.info_fn, "w") as info:
+            new_json = json.dumps(self.info, indent=4)
+
+            info.write(new_json)
+
+    def change_week(self, puzz_name: str, new_week: int):
+        self.info[puzz_name]["week_num"] = new_week
+
+        with open (self.info_fn, "w") as info:
             new_json = json.dumps(self.info, indent=4)
 
             info.write(new_json)
