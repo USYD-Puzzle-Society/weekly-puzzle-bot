@@ -45,7 +45,7 @@ class Info():
                 "friday": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
-                    "release_datetime": "21/02/2024 16:00",
+                    "release_datetime": "23/02/2024 16:00",
                     "week_num": 0,
                     "img_urls": [],
                     "submission_link": "",
