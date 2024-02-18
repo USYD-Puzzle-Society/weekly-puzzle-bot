@@ -12,9 +12,8 @@ with open(".token", "r") as token_file:
     TOKEN = token_file.readline().strip()
 
 command_prefix = "."
-activity = discord.Game(name="Professor Layton")
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=command_prefix, activity=activity, help_command=None, intents=intents)
+bot = commands.Bot(command_prefix=command_prefix, help_command=None, intents=intents)
 
 # load all available cogs on startup
 @bot.command()
