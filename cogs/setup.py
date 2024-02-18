@@ -106,7 +106,7 @@ class Setup(commands.Cog):
         for i in range(len(images)):
             await ctx.send(images[i])
 
-    @commands.command
+    @commands.command()
     @commands.has_role("Executives")
     async def qsettime(self, ctx: commands.context.Context, preset: str, date: str, time: str):
         preset, accepted = self.info_obj.check_preset(preset)
@@ -138,7 +138,7 @@ class Setup(commands.Cog):
             f"Remember to do `.start {preset}`"
         )
 
-    @commands.command
+    @commands.command()
     @commands.has_role("Executives")
     async def qsetweek(self, ctx: commands.context.Context, preset: str, week_num: str):
         preset, accepted = self.check_reset(preset)
