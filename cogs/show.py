@@ -17,6 +17,25 @@ class Show(commands.Cog):
 
     @commands.command()
     @commands.has_role("Executives")
+    async def show(self, ctx: commands.context.Context, preset: str):
+        preset, accepted = self.info_obj.check_preset(preset)
+        if not accepted:
+            await ctx.send(f"Please use one of the accepted presets: {", ".join(self.info_obj.default_presets)}")
+            return
+    
+        puzz_info = self.info_obj.info[preset]
+        puzz_week = puzz_info["week_num"]
+        puzz_text = self.info_obj.get_qtext(ctx, False, preset, puzz_week)
+        puzz_time = puzz_info["release_datetime"]
+        puzz_channel = puzz_info["channel_id"]
+
+        await ctx.send(f"The following will be released at {puzz_time} in <#{puzz_channel}>:")
+        await ctx.send(puzz_text)
+        for i in range(len(puzz_info["img_urls"])):
+            await ctx.send(puzz_info["img_urls"][i])
+
+    @commands.command()
+    @commands.has_role("Executives")
     async def showrc(self, ctx: commands.context.Context):
         rc_info = self.info_obj.info["rebuscryptic"]
         rc_text = self.info_obj.get_rebuscryptic_text(ctx, False)
