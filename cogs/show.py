@@ -32,6 +32,7 @@ class Show(commands.Cog):
         await ctx.send(f"The following will be released at {puzz_time} in <#{puzz_channel}>:")
         await ctx.send(puzz_text)
         for i in range(len(puzz_info["img_urls"])):
+            print(puzz_info["img_urls"][i])
             await ctx.send(puzz_info["img_urls"][i])
 
     @commands.command()

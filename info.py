@@ -25,7 +25,7 @@ class Info():
                 "monday": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
-                    "release_datetime": "08/08/2022 16:00",
+                    "release_datetime": "19/02/2024 16:00",
                     "week_num": 0,
                     "img_urls": [],
                     "submission_link": "",
@@ -35,7 +35,7 @@ class Info():
                 "wednesday": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
-                    "release_datetime": "08/08/2022 16:00",
+                    "release_datetime": "21/02/2024 16:00",
                     "week_num": 0,
                     "img_urls": [],
                     "submission_link": "",
@@ -45,7 +45,7 @@ class Info():
                 "friday": {
                     "role_name": "weekly puzzles",
                     "channel_id": 892032997220573204,
-                    "release_datetime": "08/08/2022 16:00",
+                    "release_datetime": "21/02/2024 16:00",
                     "week_num": 0,
                     "img_urls": [],
                     "submission_link": "",
@@ -221,7 +221,7 @@ class Info():
         if mention: 
             puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
         else:
-            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
 
         preset_puzzles = {
             "wednesday": "**MINIPUZZLE**\n\n",
