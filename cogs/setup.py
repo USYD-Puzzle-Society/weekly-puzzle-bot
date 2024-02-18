@@ -10,7 +10,126 @@ class Setup(commands.Cog):
     def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
         self.exec_id = "Executives"
-        self.info_obj= info
+        self.info_obj = info
+        self.datetime_format = "%d/%m/%Y %H:%M"
+        
+    # command for quick setup of puzzles. user will only have to send the images
+    @commands.command()
+    @commands.has_role("Executives")
+    async def qset(self, ctx: commands.context.Context, preset: str):
+        user = ctx.author
+
+        def check(m):
+            return m.author == user
+
+        default_presets = ["monday", "wednesday", "friday"]
+        shortened_presets = {
+            "mon": "monday",
+            "wed": "wednesday",
+            "fri": "friday"
+        }
+        preset = preset.lower()
+
+        try:
+            preset = shortened_presets[preset]
+        except KeyError:
+            pass
+
+        if preset not in default_presets:
+            await ctx.send(f"Please use one of the accepted presets: {", ".join(default_presets)}")
+            return
+        
+        original_data = self.info_obj.info[preset]
+        puzzle_data = {
+            "release_datetime": original_data["release_datetime"],
+            "week_num": original_data["week_num"],
+            "img_urls": [],
+            "submission_link": "",
+            "interactive_link": ""
+        }
+
+        # below is what the puzzle data contains
+        """
+        {
+            "role_name": "weekly puzzles",
+            "channel_id": 892032997220573204,
+            "release_datetime": "08/08/2022 16:00",
+            "week_num": 0,
+            "img_urls": [],
+            "submission_link": "",
+            "interactive_link": "",
+            "releasing": False
+        }
+        """
+
+        # change the date to be a week ahead of the previously stored date
+        release_datetime = self.info_obj.str_to_datetime(puzzle_data["release_datetime"])
+        release_datetime = release_datetime + datetime.timedelta(days=7)
+        puzzle_data["release_datetime"] = release_datetime.strftime(self.datetime_format)
+
+        # increase the week number to be one higher than the previously stored week
+        puzzle_data["week_num"] = puzzle_data["week_num"] + 1
+
+        # ask for images
+        await ctx.send(
+            "Please send all images for the puzzle in one message." + 
+            " Type `.stop` at any time and no changes will be made."
+        )
+
+        while True:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made.")
+                return
+            elif len(msg.attachments):
+                puzzle_data["img_urls"] = [image.url for image in msg.attachments]
+                break
+            else:
+                await ctx.send("Please send the images in one message.")
+        
+        # ask for submission link
+        await ctx.send("Please send the submission link.")
+        msg = await self.bot.wait_for("message", check=check)
+        
+        if ".stop" == msg.content.lower():
+            await ctx.send("Command stopped. No changes have been made.")
+            return
+        else:
+            puzzle_data["submission_link"] = msg.content
+        
+        # check for interactive link and ask for one if there is
+        await ctx.send("Is there an interactive link? y/n")
+
+        confirmation = False
+        while not confirmation:
+            msg = await self.bot.wait_for("message", check=check)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made.")
+                return
+            elif "y" == msg.content.lower():
+                confirmation = "y"
+            elif "n" == msg.content.lower():
+                confirmation = "n"
+
+        if "y" == confirmation:
+            await ctx.send("Please send the interactive link for the puzzle.")
+
+            link = await self.bot.wait_for("message", check=check)
+
+            puzzle_data["interactive_link"] = link.content
+
+        self.info_obj.change_data(preset, puzzle_data)
+
+        # show the user the new changes
+        text = self.info_obj.get_qtext(ctx, False, preset, original_data["week_num"])
+        images = original_data["img_urls"]
+        await ctx.send(f"Done. The following will be released at {original_data['release_datetime']} in <#{original_data['channel_id']}>" +
+        f"Remember to do `.start {preset}`")
+        await ctx.send(text)
+        for i in range(len(images)):
+            await ctx.send(images[i])
 
     @commands.command()
     @commands.has_role("Executives")
