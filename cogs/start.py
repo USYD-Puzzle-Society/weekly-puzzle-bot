@@ -35,7 +35,7 @@ class Start(commands.Cog):
         # get the puzzle info
         if puzz_name in self.info_obj.default_presets:
             text = self.info_obj.get_qtext(ctx, True, puzz_name)
-            no_mention_text = self.info_obj.get_qtext(ctx, puzz_name, False)
+            no_mention_text = self.info_obj.get_qtext(ctx, False, puzz_name)
         else:
             text = self.info_obj.get_text(ctx, puzz_name, True)
             no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
