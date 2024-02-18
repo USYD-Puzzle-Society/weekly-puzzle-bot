@@ -16,7 +16,7 @@ class Setup(commands.Cog):
     # command for quick setup of puzzles. user will only have to send the images
     @commands.command()
     @commands.has_role("Executives")
-    async def qset(self, ctx: commands.context.Context, preset: str, change_datetime: str):
+    async def qset(self, ctx: commands.context.Context, preset: str, change_datetime: str = "true"):
         user = ctx.author
 
         def check(m):
@@ -149,14 +149,15 @@ class Setup(commands.Cog):
         new_week = 1
         try:
             new_week = int(week_num)
+
+            self.info_obj.change_week(preset, new_week)
+            await ctx.send(
+                f"The new week number for the {preset.capitalize()} puzzle is {self.info_obj.info[preset]['week_num']}. " +
+                f"Remember to do `.start {preset}`"
+            )
         except ValueError:
             await ctx.send("Please enter the week as a number.")
-        
-        self.info_obj.change_week(preset, new_week)
-        await ctx.send(
-            f"The new week number for the {preset.capitalize()} puzzle is {self.info_obj.info[preset]['week_num']}. " +
-            f"Remember to do `.start {preset}`"
-        )
+            return
 
     @commands.command()
     @commands.has_role("Executives")
