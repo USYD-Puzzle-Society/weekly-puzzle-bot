@@ -159,3 +159,4 @@ cython_debug/
 # ignore venv (idk why it is not included)
 bin/**
 pyvenv.cfg
+venv/
