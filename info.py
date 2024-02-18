@@ -225,7 +225,7 @@ class Info():
 
         preset_puzzles = {
             "wednesday": "**MINIPUZZLE**\n\n",
-            "friday": "**PRINTER'S DEVILRY\n\n**"
+            "friday": "**PRINTER'S DEVILRY**\n\n"
         }
         puzzle_list = ""
         if preset == "monday":
