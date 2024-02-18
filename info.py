@@ -247,7 +247,7 @@ class Info():
         ]
 
         if puzz_info["interactive_link"]:
-            lines.append(f"\n\nInteractive version: {puzz_info["interactive_link"]}")
+            lines.append(f"\n\nInteractive version: {puzz_info['interactive_link']}")
 
         return "".join(lines)
 
