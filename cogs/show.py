@@ -20,7 +20,7 @@ class Show(commands.Cog):
     async def show(self, ctx: commands.context.Context, preset: str):
         preset, accepted = self.info_obj.check_preset(preset)
         if not accepted:
-            await ctx.send(f"Please use one of the accepted presets: {", ".join(self.info_obj.default_presets)}")
+            await ctx.send(f"Please use one of the accepted presets: {', '.join(self.info_obj.default_presets)}")
             return
     
         puzz_info = self.info_obj.info[preset]
