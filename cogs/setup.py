@@ -98,7 +98,7 @@ class Setup(commands.Cog):
         self.info_obj.change_data(preset, puzzle_data)
 
         # show the user the new changes
-        text = self.info_obj.get_qtext(ctx, False, preset, original_data["week_num"])
+        text = self.info_obj.get_qtext(ctx, False, preset)
         images = original_data["img_urls"]
         await ctx.send(f"Done. The following will be released at {original_data['release_datetime']} in <#{original_data['channel_id']}>. " +
         f"Remember to do `.start {preset}`")

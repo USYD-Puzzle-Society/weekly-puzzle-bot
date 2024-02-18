@@ -24,8 +24,7 @@ class Show(commands.Cog):
             return
     
         puzz_info = self.info_obj.info[preset]
-        puzz_week = puzz_info["week_num"]
-        puzz_text = self.info_obj.get_qtext(ctx, False, preset, puzz_week)
+        puzz_text = self.info_obj.get_qtext(ctx, False, preset)
         puzz_time = puzz_info["release_datetime"]
         puzz_channel = puzz_info["channel_id"]
 

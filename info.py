@@ -211,12 +211,13 @@ class Info():
 
         return "".join(lines)
     
-    def get_qtext(self, ctx: commands.context.Context, mention: bool, preset: str, week_num: int) -> str:
+    def get_qtext(self, ctx: commands.context.Context, mention: bool, preset: str) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
         puzz_info = self.info[preset]
         role_name = puzz_info["role_name"]
+        week_num = puzz_info["week_num"]
 
         if mention: 
             puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"

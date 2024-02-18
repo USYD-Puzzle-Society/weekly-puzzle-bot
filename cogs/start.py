@@ -33,8 +33,12 @@ class Start(commands.Cog):
             puzz_name = "rebuscryptic"
                     
         # get the puzzle info
-        text = self.info_obj.get_text(ctx, puzz_name, True)
-        no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
+        if puzz_name in self.info_obj.default_presets:
+            text = self.info_obj.get_qtext(ctx, True, puzz_name)
+            no_mention_text = self.info_obj.get_qtext(ctx, puzz_name, False)
+        else:
+            text = self.info_obj.get_text(ctx, puzz_name, True)
+            no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
         
         if "ciyk" != puzz_name:
             urls = self.info_obj.info[puzz_name]["img_urls"]
