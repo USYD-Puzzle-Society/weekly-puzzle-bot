@@ -35,7 +35,7 @@ class Setup(commands.Cog):
     # command for quick setup of puzzles. user will only have to send the images
     @commands.command()
     @commands.has_role("Executives")
-    async def qset(self, ctx: commands.context.Context, preset: str):
+    async def qset(self, ctx: commands.context.Context, preset: str, change_datetime: str):
         user = ctx.author
 
         def check(m):
@@ -69,13 +69,14 @@ class Setup(commands.Cog):
         }
         """
 
-        # change the date to be a week ahead of the previously stored date
-        release_datetime = self.info_obj.str_to_datetime(puzzle_data["release_datetime"])
-        release_datetime = release_datetime + datetime.timedelta(days=7)
-        puzzle_data["release_datetime"] = release_datetime.strftime(self.datetime_format)
+        # change the date to be a week ahead of the previously stored date unless change_datetime is false
+        if change_datetime.lower() not in ["false", "f"]:
+            release_datetime = self.info_obj.str_to_datetime(puzzle_data["release_datetime"])
+            release_datetime = release_datetime + datetime.timedelta(days=7)
+            puzzle_data["release_datetime"] = release_datetime.strftime(self.datetime_format)
 
-        # increase the week number to be one higher than the previously stored week
-        puzzle_data["week_num"] = puzzle_data["week_num"] + 1
+            # increase the week number to be one higher than the previously stored week
+            puzzle_data["week_num"] = puzzle_data["week_num"] + 1
 
         # ask for images
         await ctx.send(
@@ -140,60 +141,53 @@ class Setup(commands.Cog):
 
     @commands.command
     @commands.has_role("Executives")
-    async def qsettime(self, ctx: commands.context.Context, preset: str):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-        
+    async def qsettime(self, ctx: commands.context.Context, preset: str, date: str, time: str):
         preset, accepted = self.check_reset(preset)
         if not accepted:
             await ctx.send(f"Please use one of the accepted presets: {", ".join(self.default_presets)}")
             return
-        
-        await ctx.send(f"The current release time for the **{preset.capitalize()}** puzzle is {self.info_oj.info[preset]['release_datetime']}.")
-        await ctx.send(
-            "Please enter the new release date in the format DD/MM/YYYY" + 
-            "\nDo `.stop` at any time and no changes will be made."
-        )
 
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made to the release time.")
-                return
-            
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
+        new_date = self.info_obj.check_is_date(date)
+        if not new_date:
+            await ctx.send("Please enter date in the format DD/MM/YYYY")
+            return
+        else:
+            day, month, year = new_date
 
         release_date = datetime.date(year, month, day)
         weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(f"The new release date is now {release_date.strftime('%d/%m/%Y')} ({weekday_name})")
-        await ctx.send(f"Please enter the new release time for the puzzles in the format HH:MM (24 hour time).")
 
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made to the release time.")
-                return
-            
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
-            else:
-                hour, minute = time
-                break
+        new_time = self.info_obj.check_is_time(time)
+        if not new_time:
+            await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
+            return
+        else:
+            hour, minute = new_time
 
         new_release = datetime.datetime(year, month, day, hour, minute)
         self.info_obj.change_time(preset, new_release)
         await ctx.send(
             f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). " +
+            f"Remember to do `.start {preset}`"
+        )
+
+    @commands.command
+    @commands.has_role("Executives")
+    async def qsetweek(self, ctx: commands.context.Context, preset: str, week_num: str):
+        preset, accepted = self.check_reset(preset)
+        if not accepted:
+            await ctx.send(f"Please use one of the accepted presets: {", ".join(self.default_presets)}")
+            return
+
+        new_week = 1
+        try:
+            new_week = int(week_num)
+        except ValueError:
+            await ctx.send("Please enter the week as a number.")
+        
+        self.info_obj.change_week(preset, new_week)
+        await ctx.send(
+            f"The new week number for the {preset.capitalize()} puzzle is {self.info_obj.info[preset]['week_num']}. " +
             f"Remember to do `.start {preset}`"
         )
 
