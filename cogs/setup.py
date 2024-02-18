@@ -12,25 +12,6 @@ class Setup(commands.Cog):
         self.exec_id = "Executives"
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
-        self.default_presets = ["monday", "wednesday", "friday"]
-        
-    def check_preset(self, preset: str):
-        shortened_presets = {
-            "mon": "monday",
-            "wed": "wednesday",
-            "fri": "friday"
-        }
-        preset = preset.lower()
-
-        try:
-            preset = shortened_presets[preset]
-        except KeyError:
-            pass
-
-        if preset not in self.default_presets:
-            return preset, False
-        
-        return preset, True
 
     # command for quick setup of puzzles. user will only have to send the images
     @commands.command()
@@ -41,9 +22,9 @@ class Setup(commands.Cog):
         def check(m):
             return m.author == user
 
-        preset, accepted = self.check_reset(preset)
+        preset, accepted = self.info_obj.check_preset(preset)
         if not accepted:
-            await ctx.send(f"Please use one of the accepted presets: {", ".join(self.default_presets)}")
+            await ctx.send(f"Please use one of the accepted presets: {", ".join(self.info_obj.default_presets)}")
             return
         
         original_data = self.info_obj.info[preset]
@@ -54,20 +35,6 @@ class Setup(commands.Cog):
             "submission_link": "",
             "interactive_link": ""
         }
-
-        # below is what the puzzle data contains
-        """
-        {
-            "role_name": "weekly puzzles",
-            "channel_id": 892032997220573204,
-            "release_datetime": "08/08/2022 16:00",
-            "week_num": 0,
-            "img_urls": [],
-            "submission_link": "",
-            "interactive_link": "",
-            "releasing": False
-        }
-        """
 
         # change the date to be a week ahead of the previously stored date unless change_datetime is false
         if change_datetime.lower() not in ["false", "f"]:
@@ -142,9 +109,9 @@ class Setup(commands.Cog):
     @commands.command
     @commands.has_role("Executives")
     async def qsettime(self, ctx: commands.context.Context, preset: str, date: str, time: str):
-        preset, accepted = self.check_reset(preset)
+        preset, accepted = self.info_obj.check_preset(preset)
         if not accepted:
-            await ctx.send(f"Please use one of the accepted presets: {", ".join(self.default_presets)}")
+            await ctx.send(f"Please use one of the accepted presets: {", ".join(self.info_obj.default_presets)}")
             return
 
         new_date = self.info_obj.check_is_date(date)
