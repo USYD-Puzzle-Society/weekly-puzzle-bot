@@ -110,7 +110,7 @@ class Setup(commands.Cog):
         text = self.info_obj.get_qtext(ctx, False, preset)
         images = puzzle_data["img_urls"]
         await ctx.send(
-            f"Done. The following will be released at {puzzle_data['release_datetime']} in <#{puzzle_data['channel_id']}>. "
+            f"Done. The following will be released at {puzzle_data['release_datetime']} in <#{original_data['channel_id']}>. "
             + f"Remember to do `.start {preset}`"
         )
         await ctx.send(text)
