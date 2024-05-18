@@ -7,6 +7,7 @@ from PIL import ImageFont
 from PIL import ImageDraw
 from discord.ext import commands
 
+
 class Reactions(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -35,15 +36,17 @@ class Reactions(commands.Cog):
 
     @commands.command()
     async def stare(self, ctx: commands.context.Context):
-        await ctx.send("https://tenor.com/view/bird-birds-mynah-capcut-zoom-gif-23327639")
+        await ctx.send(
+            "https://tenor.com/view/bird-birds-mynah-capcut-zoom-gif-23327639"
+        )
 
-    @commands.command(aliases=["a"*i for i in range(3, 11)])
+    @commands.command(aliases=["a" * i for i in range(3, 11)])
     async def aa(self, ctx: commands.context.Context):
         with open(f"{self.reactions_dir}/laugh.gif", "rb") as laugh_gif:
             laugh = discord.File(laugh_gif)
 
         await ctx.send(file=laugh)
-        
+
     @commands.command()
     async def tear(self, ctx: commands.context.Context):
         await ctx.send("https://tenor.com/view/birb-sad-crying-bird-upset-gif-22556773")
@@ -62,7 +65,7 @@ class Reactions(commands.Cog):
     async def rubidance(self, ctx: commands.context.Context):
         with open(f"{self.reactions_dir}/rubidance.gif", "rb") as rd:
             rubidance = discord.File(rd)
-        
+
         await ctx.send(file=rubidance)
 
     @commands.command()
@@ -89,16 +92,17 @@ class Reactions(commands.Cog):
     Hoping to add text wrapping someday so that even longer strings can be
     placed on the image while still be legible
     """
+
     @commands.command()
     async def gunpoint(self, ctx: commands.context.Context, *args):
         # if no arguments are given then just send the image template
         if not args:
             with open(f"{self.reactions_dir}/guns_at_rat.png", "rb") as template:
                 image = discord.File(template)
-            
+
             await ctx.send(file=image)
             return
-        
+
         now = datetime.datetime.now()
         # use the current minute, second and microsecond as a way of generating random numbers for the filename
         # this just ensures that if two people use the command at similar times, the bot won't try
@@ -110,23 +114,26 @@ class Reactions(commands.Cog):
         default_font_size = 128
         text = " ".join(args)
 
-        start_box = (240, 270) # the starting coordinates of the "box" which the text will be bound by
+        start_box = (
+            240,
+            270,
+        )  # the starting coordinates of the "box" which the text will be bound by
         end_box = (600, 370)
-        dist_to_mid_y = (end_box[1] - start_box[1])/2
+        dist_to_mid_y = (end_box[1] - start_box[1]) / 2
         box_length = end_box[0] - start_box[0]
 
-        dist_to_rat_head = 25 # the x coordinate difference to the rat head (rougly) from the start x of the box
+        dist_to_rat_head = 25  # the x coordinate difference to the rat head (rougly) from the start x of the box
         img = Image.open(f"{self.reactions_dir}/guns_at_rat.png")
         I1 = ImageDraw.Draw(img)
         font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
-        text_size = I1.textlength(text=text, font=font) # size of string in pixel
+        text_size = I1.textlength(text=text, font=font)  # size of string in pixel
 
         # if the user has tagged someone with this command, put their pfp on the bonk image
         # only the first tagged user will be used
         if ctx.message.mentions:
             user = ctx.message.mentions[0]
             pfp_filename = f"{self.reactions_dir}/pfp.png"
-            await user.avatar_url.save(pfp_filename)
+            await user.display_avatar.to_file(pfp_filename)
             pfp = Image.open(pfp_filename).convert("RGB")
 
             # resize image
@@ -140,9 +147,11 @@ class Reactions(commands.Cog):
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
             img_arr = np.dstack((img_arr, lum_img_arr))
-            circle_pfp = Image.fromarray(img_arr)# DELETE THIS FILE AT THE END
+            circle_pfp = Image.fromarray(img_arr)  # DELETE THIS FILE AT THE END
 
-            user_status = user.raw_status # get user status as a string (online, dnd, idle, offline)
+            user_status = (
+                user.raw_status
+            )  # get user status as a string (online, dnd, idle, offline)
             pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}.png"
             pfp_template = Image.open(pfp_template_fn)
 
@@ -160,19 +169,23 @@ class Reactions(commands.Cog):
                 while text_size > box_length:
                     amt_decrease += 1
                     new_font_size = default_font_size - amt_decrease
-                    font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=new_font_size)
+                    font = ImageFont.truetype(
+                        font="fonts/Avenir Light.ttf", size=new_font_size
+                    )
                     text_size = I1.textlength(text=text, font=font)
 
                 # the smaller the font, the further down the text will start
                 start_y = start_box[1]
-                start_y = round(start_y + (dist_to_mid_y * amt_decrease/default_font_size))
+                start_y = round(
+                    start_y + (dist_to_mid_y * amt_decrease / default_font_size)
+                )
                 start_box = (start_box[0], start_y)
             else:
                 # the smaller the number of characters, the closer to the rat head the text will start
                 start_x = start_box[0]
-                start_x = round(start_box[0] + (dist_to_rat_head * 1/len(text)))
+                start_x = round(start_box[0] + (dist_to_rat_head * 1 / len(text)))
                 start_box = (start_x, start_box[1])
-            
+
             I1.text(start_box, text, font=font, stroke_width=2)
 
         # save new image with text
@@ -181,7 +194,7 @@ class Reactions(commands.Cog):
         # open and send new image
         with open(img_filename, "rb") as gun_img:
             gun = discord.File(gun_img)
-        
+
         await ctx.send(file=gun)
 
         # delete new image
@@ -207,12 +220,15 @@ class Reactions(commands.Cog):
         default_font_size = 100
         text = " ".join(args)
 
-        start_box = (420, 240) # the starting coordinates of the "box" which the text will be bound by
+        start_box = (
+            420,
+            240,
+        )  # the starting coordinates of the "box" which the text will be bound by
         end_box = (630, 320)
-        dist_to_mid_y = (end_box[1] - start_box[1])/2
+        dist_to_mid_y = (end_box[1] - start_box[1]) / 2
         box_length = end_box[0] - start_box[0]
 
-        dist_to_bonked_head = 20 # the x coordinate difference to the head being bonked (rougly) from the start x of the box
+        dist_to_bonked_head = 20  # the x coordinate difference to the head being bonked (rougly) from the start x of the box
         img = Image.open(f"{self.reactions_dir}/bonk.png")
         I1 = ImageDraw.Draw(img)
 
@@ -221,7 +237,7 @@ class Reactions(commands.Cog):
         if ctx.message.mentions:
             user = ctx.message.mentions[0]
             pfp_filename = f"{self.reactions_dir}/pfp.png"
-            await user.avatar_url.save(pfp_filename)
+            await user.display_avatar.to_file(pfp_filename)
             pfp = Image.open(pfp_filename).convert("RGB")
 
             # resize image
@@ -235,9 +251,11 @@ class Reactions(commands.Cog):
             img_arr = np.array(pfp)
             lum_img_arr = np.array(lum_img)
             img_arr = np.dstack((img_arr, lum_img_arr))
-            circle_pfp = Image.fromarray(img_arr)# DELETE THIS FILE AT THE END
+            circle_pfp = Image.fromarray(img_arr)  # DELETE THIS FILE AT THE END
 
-            user_status = user.raw_status # get user status as a string (online, dnd, idle, offline)
+            user_status = (
+                user.raw_status
+            )  # get user status as a string (online, dnd, idle, offline)
             pfp_template_fn = f"{self.reactions_dir}/pfp_template_{user_status}.png"
             pfp_template = Image.open(pfp_template_fn)
 
@@ -248,8 +266,10 @@ class Reactions(commands.Cog):
             os.remove(pfp_filename)
 
         else:
-            font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=default_font_size)
-            text_size = I1.textlength(text=text, font=font) # size of string in pixel
+            font = ImageFont.truetype(
+                font="fonts/Avenir Light.ttf", size=default_font_size
+            )
+            text_size = I1.textlength(text=text, font=font)  # size of string in pixel
             # check if the string size is larger than the box
             if text_size > box_length:
                 # decrease font size until the string fits
@@ -257,18 +277,22 @@ class Reactions(commands.Cog):
                 while text_size > box_length:
                     amt_decrease += 1
                     new_font_size = default_font_size - amt_decrease
-                    font = ImageFont.truetype(font="fonts/Avenir Light.ttf", size=new_font_size)
+                    font = ImageFont.truetype(
+                        font="fonts/Avenir Light.ttf", size=new_font_size
+                    )
                     text_size = I1.textlength(text=text, font=font)
 
                 # the smaller the font, the further down the text will start
                 start_y = start_box[1]
-                start_y = round(start_y + (dist_to_mid_y * amt_decrease/default_font_size))
+                start_y = round(
+                    start_y + (dist_to_mid_y * amt_decrease / default_font_size)
+                )
                 start_box = (start_box[0], start_y)
             else:
                 # the smaller the number of characters, the closer to the rat head the text will start
-                start_x = round(start_box[0] + (dist_to_bonked_head * 1/len(text)))
+                start_x = round(start_box[0] + (dist_to_bonked_head * 1 / len(text)))
                 start_box = (start_x, start_box[1])
-            
+
             I1.text(start_box, text, font=font, stroke_width=2, fill="black")
 
         # save new image with text
@@ -277,7 +301,7 @@ class Reactions(commands.Cog):
         # open and send new image
         with open(img_filename, "rb") as bonk_img:
             bonk = discord.File(bonk_img)
-        
+
         await ctx.send(file=bonk)
 
         # delete new image
@@ -290,7 +314,7 @@ class Reactions(commands.Cog):
         # check the mentions
         # if no mentions then send the pfp of the command user
         mentions = ctx.message.mentions
-        
+
         if not mentions:
             user = ctx.author
             await ctx.send(user.avatar_url)
@@ -304,7 +328,7 @@ class Reactions(commands.Cog):
     @commands.command()
     async def colour(self, ctx, *colour):
         lower_colour = [word.lower() for word in colour]
-        
+
         colour = "".join(lower_colour)
         img = Image.new("P", (100, 100), None)
         im = ImageDraw.Draw(img)
@@ -322,6 +346,7 @@ class Reactions(commands.Cog):
     @commands.command()
     async def scream(self, ctx):
         await ctx.send("AAAAA")
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Reactions(bot))
