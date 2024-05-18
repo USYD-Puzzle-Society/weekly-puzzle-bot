@@ -133,7 +133,7 @@ class Reactions(commands.Cog):
         if ctx.message.mentions:
             user = ctx.message.mentions[0]
             pfp_filename = f"{self.reactions_dir}/pfp.png"
-            await user.display_avatar.to_file(filename=pfp_filename)
+            await user.display_avatar.save(pfp_filename)
             pfp = Image.open(pfp_filename).convert("RGB")
 
             # resize image
@@ -237,7 +237,7 @@ class Reactions(commands.Cog):
         if ctx.message.mentions:
             user = ctx.message.mentions[0]
             pfp_filename = f"{self.reactions_dir}/pfp.png"
-            await user.display_avatar.to_file(filename=pfp_filename)
+            await user.display_avatar.save(pfp_filename)
             pfp = Image.open(pfp_filename).convert("RGB")
 
             # resize image
