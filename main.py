@@ -2,28 +2,31 @@ import os
 import discord
 from discord.ext import commands
 
-TOKEN = ""
-
-exec_id = "Executives"
-
-cogs_dir = "cogs"
 
 with open(".token", "r") as token_file:
     TOKEN = token_file.readline().strip()
 
-command_prefix = "."
+guild = discord.Object(1153319575048437833)
+exec_id = "Executives"
+cogs_dir = "cogs"
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=command_prefix, help_command=None, intents=intents)
+
+client = discord.Client(intents=intents)
+tree = discord.app_commands.CommandTree(client)
+bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
 
 # load all available cogs on startup
-@bot.command()
+@tree.command(
+    name="startup",
+    guild=guild
+)
 @commands.has_role(exec_id)
 async def startup(ctx: commands.context.Context):
     for filename in os.listdir("cogs/"):
         if filename.endswith(".py"):
             await bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
             print(f"Loaded {filename}")
-    await ctx.send(f"Loaded all cogs")
+    await ctx.channel.send(f"Loaded all cogs")
 
 # command to load a cog
 @bot.command()
@@ -46,4 +49,8 @@ async def reload(ctx: commands.context.Context, extension):
     await bot.reload_extension(f"{cogs_dir}.{extension}")
     await ctx.send(f"Reloaded {extension} cog")
 
-bot.run(TOKEN)
+@client.event
+async def on_ready():
+    await tree.sync(guild=guild)
+
+client.run(TOKEN)
