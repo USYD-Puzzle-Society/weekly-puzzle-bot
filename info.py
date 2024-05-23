@@ -156,7 +156,7 @@ class Info():
 
         return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute))
 
-    def check_is_date(self, msg: str):
+    def check_date(self, msg: str):
         try:
             strday, strmonth, stryear = msg.split("/")
 
@@ -170,7 +170,7 @@ class Info():
         except ValueError:
             return False
 
-    def check_is_time(self, msg: str):
+    def check_time(self, msg: str):
         try:
             strhour, strminute = msg.split(":")
 

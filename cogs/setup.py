@@ -2,6 +2,7 @@ import os
 import json
 import discord
 import datetime
+from typing import Callable
 from info import Info
 from discord.ext import commands
 
@@ -13,9 +14,8 @@ class Setup(commands.Cog):
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
 
-    def check_preset(self, ctx, preset):
+    def check_preset(self, ctx: commands.context.Context, preset: str):
         preset = self.info_obj.check_preset(preset)
-
         if not preset:
             accepted_presets = ', '.join(self.info_obj.default_presets)
             await ctx.send("Please use one of the accepted presets:", accepted_presets)
@@ -23,14 +23,30 @@ class Setup(commands.Cog):
 
         return preset
 
-    def new_datetime_and_week(self, original_datetime, original_week):
+    def check_date(self, ctx: commands.context.Context, date: str):
+        date = self.info_obj.check_date(date)
+        if not date:
+            await ctx.send("Please enter date in the format DD/MM/YYYY")
+            return False
+
+        return data
+
+    def check_time(self, ctx: commands.context.Context, time: str):
+        time = self.info_obj.check_time(time)
+        if not time:
+            await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
+            return False
+        
+        return time
+
+    def new_datetime_and_week(self, original_datetime: str, original_week: int):
         new_datetime = self.info_obj.str_to_datetime(original_datetime)
         new_datetime = new_datetime + datetime.timedelta(days=7)
         new_datetime = new_datetime.strftime(self.datetime_format)
 
         return (new_datetime, original_week + 1)
 
-    async def get_image_urls(self, ctx, message_from_author):
+    async def get_image_urls(self, ctx: commands.context.Context, message_from_author: Callable):
         await ctx.send(
             "Please send all images for the puzzle in one message."
             + " Type `.stop` at any time and no changes will be made."
@@ -56,7 +72,7 @@ class Setup(commands.Cog):
 
         return [image.url for image in msg.attachments]
 
-    async def get_submission_link(self, ctx, message_from_author):
+    async def get_submission_link(self, ctx: commands.context.Context, message_from_author: Callable):
         await ctx.send("Please send the submission link.")
 
         msg = await self.bot.wait_for("message", check=message_from_author)
@@ -67,7 +83,7 @@ class Setup(commands.Cog):
 
         return msg.content
 
-    async def get_interactive_link(self, ctx, message_from_author):
+    async def get_interactive_link(self, ctx: commands.context.Context, message_from_author: Callable):
         await ctx.send("Is there an interactive link? y/n")
 
         msg = await self.bot.wait_for("message", check=message_from_author)
@@ -98,16 +114,12 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def qset(
-        self, 
-        ctx: commands.context.Context, 
-        preset: str,
-        change_datetime: str = "true"
-    ):
+            self, ctx: commands.context.Context, preset: str, 
+            change_datetime: str = "true"):
         def message_from_author(msg):
             return msg.author == ctx.author
 
         preset = self.check_preset(ctx, preset)
-
         if not preset:
             return
 
@@ -123,12 +135,10 @@ class Setup(commands.Cog):
             week_num = original_data["week_num"]
 
         img_urls = await self.get_image_urls(ctx, message_from_author)
-
         if img_urls == []:
             return
 
         submission_link = await self.get_submission_link(ctx, message_from_author)
-
         if submission_link == "":
             return
 
@@ -143,48 +153,43 @@ class Setup(commands.Cog):
         }
 
         self.info_obj.change_data(preset, puzzle_data)
-
-        text = self.info_obj.get_qtext(ctx, False, preset)
         
         await ctx.send(
             f"Done. The following will be released at {release_datetime} in <#{original_data['channel_id']}>. "
             + f"Remember to do `.start {preset}`"
         )
-        
+
+        text = self.info_obj.get_qtext(ctx, False, preset)
         await ctx.send(text)
-        
         for i in range(len(img_urls)):
             await ctx.send(img_urls[i])
 
     @commands.command()
     @commands.has_role("Executives")
     async def qsettime(
-        self, ctx: commands.context.Context, preset: str, date: str, time: str
-    ):
+            self, ctx: commands.context.Context, preset: str, date: str, 
+            time: str):
         preset = self.check_preset(ctx, preset)
-
         if not preset:
             return
 
-        new_date = self.info_obj.check_is_date(date)
+        new_date = self.check_date(ctx, date)
         if not new_date:
-            await ctx.send("Please enter date in the format DD/MM/YYYY")
             return
-        else:
-            day, month, year = new_date
+        day, month, year = new_date
 
         release_date = datetime.date(year, month, day)
         weekday_name = self.info_obj.day_names[release_date.weekday()]
 
-        new_time = self.info_obj.check_is_time(time)
+        new_time = self.check_time(ctx, time)
         if not new_time:
-            await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
             return
-        else:
-            hour, minute = new_time
+        hour, minute = new_time
 
         new_release = datetime.datetime(year, month, day, hour, minute)
+
         self.info_obj.change_time(preset, new_release)
+        
         await ctx.send(
             f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
             + f"Remember to do `.start {preset}`"
