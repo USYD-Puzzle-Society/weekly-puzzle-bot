@@ -48,7 +48,7 @@ class Setup(commands.Cog):
 
     async def get_image_urls(self, ctx: commands.context.Context, message_from_author: Callable):
         await ctx.send(
-            "Please send all images for the puzzle in one message."
+            "Please send all the images for the puzzle in one message."
             + " Type `.stop` at any time and no changes will be made."
         )
 
@@ -60,7 +60,7 @@ class Setup(commands.Cog):
 
         while not len(msg.attachments):
             await ctx.send(
-                "Please send all images for the puzzle in one message."
+                "Please send all the images for the puzzle in one message."
                 + " Type `.stop` at any time and no changes will be made."
             )
 
@@ -305,7 +305,7 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def setrctime(self, ctx: commands.context.Context):
-        self.set_time(ctx, "rebuscryptic")
+        await self.set_time(ctx, "rebuscryptic")
 
     """
     Thinking of making it so that this command allows the user to
@@ -316,546 +316,57 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def setminipuzztime(self, ctx: commands.context.Context):
-        self.set_time(ctx, "minipuzzle")
+        await self.set_time(ctx, "minipuzzle")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setcrosswordtime(self, ctx: commands.context.Context):
-        self.set_time(ctx, "crossword")
+        await self.set_time(ctx, "crossword")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setwordsearchtime(self, ctx: commands.context.Context):
-        self.set_time(ctx, "wordsearch")
+        await self.set_time(ctx, "wordsearch")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setlogicpuzztime(self, ctx: commands.context.Context):
-        self.set_time(ctx, "logicpuzz")
+        await self.set_time(ctx, "logicpuzz")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setciyktime(self, ctx: commands.context.Context):
-        self.set_time(ctx, "ciyk")
+        await self.set_time(ctx, "ciyk")
 
-    # command to set info of rebuscryptic
     @commands.command()
     @commands.has_role("Executives")
     async def setrc(self, ctx: commands.context.Context):
-        rc_info = self.info_obj.info["rebuscryptic"]
-        user = ctx.author
+        await self.qset(ctx, "rebuscryptic")
 
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting the information for the rebus and cryptic."
-            + "Type `.stop` at any time and no changes will be made to the current rebus and cryptic info."
-        )
-        await ctx.send(
-            "Please send the images for the rebus and cryptic in one message."
-        )
-
-        new_data = {
-            "img_urls": [],
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the rebus and cryptic."
-                )
-                return
-            elif len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send(
-                    "Please send the images for the minipuzz in one message."
-                )
-
-        await ctx.send("Please enter the week number.")
-
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the rebus and cryptic."
-                )
-                return
-
-            try:
-                week_num = int(msg.content)
-                new_data["week_num"] = week_num
-
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # no check will be done to see if the link is a real link
-        await ctx.send("Please send the submission link for the rebus and cryptic.")
-        msg = await self.bot.wait_for("message", check=check)
-
-        if ".stop" == msg.content.lower():
-            await ctx.send(
-                "Command stopped. No changes have been made to the minipuzz info."
-            )
-            return
-        else:
-            new_data["submission_link"] = msg.content
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("rebuscryptic", new_data)
-
-        # show the user the new changes
-        rc_text = self.info_obj.get_rebuscryptic_text(ctx, False)
-        rc_images = rc_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {rc_info['release_datetime']} in <#{rc_info['channel_id']}>"
-            + "Remember to do `.start rc`"
-        )
-        await ctx.send(rc_text)
-        for i in range(len(rc_images)):
-            await ctx.send(rc_images[i])
-
-    # commands to set the announcement info for puzzles/ciyk
     @commands.command()
     @commands.has_role("Executives")
     async def setminipuzz(self, ctx: commands.context.Context):
-        puzz_info = self.info_obj.info["minipuzz"]
-        # get the user that is using the command
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting the information for the minipuzz."
-            + "Type `.stop` at any time and no changes will be made to the current minipuzz info."
-        )
-        # first ask for the images for the puzzles
-        await ctx.send("Please send the images for the minipuzz in one message.")
-
-        new_data = {
-            "img_urls": [],
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        # enter loop that only breaks when user stops command or sends the puzzle images
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send(
-                    "Please send the images for the minipuzz in one message."
-                )
-
-        await ctx.send("Please enter the week number.")
-
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-
-            try:
-                week_num = int(msg.content)
-                new_data["week_num"] = week_num
-
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # no check will be done to see if the link is a real link
-        await ctx.send("Please send the submission link for the puzzles.")
-        msg = await self.bot.wait_for("message", check=check)
-
-        if ".stop" == msg.content.lower():
-            await ctx.send(
-                "Command stopped. No changes have been made to the minipuzz info."
-            )
-            return
-        else:
-            new_data["submission_link"] = msg.content
-
-        # add interactive link if there is one
-        await ctx.send("Is there an interactive link? y/n")
-
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
-
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
-
-            link = await self.bot.wait_for("message", check=check)
-
-            new_data["interactive_link"] = link.content
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("minipuzz", new_data)
-
-        # show the user the new changes
-        puzz_text = self.info_obj.get_minipuzz_text(ctx, False)
-        puzz_images = puzz_info["img_urls"]
-        await ctx.send(
-            f'Done. The following will be released at {puzz_info["release_datetime"]} in <#{puzz_info["channel_id"]}>. '
-            + "Remember to do `.start minipuzz`"
-        )
-        await ctx.send(puzz_text)
-        for i in range(len(puzz_images)):
-            await ctx.send(puzz_images[i])
+        await self.qset(ctx, "minipuzzle")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setcrossword(self, ctx: commands.context.Context):
-        crossword_info = self.info_obj.info["crossword"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for the crossword. Do `stop` at anytime and no changes will be made to the crossword."
-        )
-
-        new_data = {
-            "img_urls": "",
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        await ctx.send("Please send the images for the crossword.")
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the crossword."
-                )
-                return
-
-            if len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the image for the crossword.")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the crossword."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # add interactive link if there is one
-        await ctx.send("Is there an interactive link? y/n")
-
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
-
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
-
-            link = await self.bot.wait_for("message", check=check)
-
-            new_data["interactive_link"] = link.content
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("crossword", new_data)
-
-        # show the user the new changes
-        crossword_text = self.info_obj.get_crossword_text(ctx, False)
-        crossword_images = crossword_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {crossword_info['release_datetime']} in <#{crossword_info['channel_id']}>. "
-            + "Remember to do `.start crossword`"
-        )
-        await ctx.send(crossword_text)
-        for i in range(len(crossword_images)):
-            await ctx.send(crossword_images[i])
+        await self.qset(ctx, "crossword")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setwordsearch(self, ctx: commands.context.Context):
-        wordsearch_info = self.info_obj.info["wordsearch"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for the word search. Do `.stop` at anytime and no changes will be made to the word search."
-        )
-
-        new_data = {
-            "img_urls": "",
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        await ctx.send("Please send the images for the word search.")
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the word search."
-                )
-                return
-
-            if len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the image for the logic puzzle.")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the logic puzzle."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("wordsearch", new_data)
-
-        # show the user the new changes
-        wordsearch_text = self.info_obj.get_wordsearch_text(ctx, False)
-        wordsearch_images = wordsearch_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {wordsearch_info['release_datetime']} in <#{wordsearch_info['channel_id']}>. "
-            + "Remember to do `.start wordsearch`"
-        )
-        await ctx.send(wordsearch_text)
-        for i in range(len(wordsearch_images)):
-            await ctx.send(wordsearch_images[i])
+        await self.qset(ctx, "wordsearch")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setlogicpuzz(self, ctx: commands.context.Context):
-        logicpuzz_info = self.info_obj.info["logicpuzz"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for the logic puzzle. Do `.stop` at anytime and no changes will be made to the logic puzzle."
-        )
-
-        new_data = {
-            "img_urls": "",
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        await ctx.send("Please send the images for the logic puzzle.")
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the logic puzzle."
-                )
-                return
-
-            if len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the image for the logic puzzle.")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the logic puzzle."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # add interactive link if there is one
-        await ctx.send("Is there an interactive link? y/n")
-
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
-
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
-
-            link = await self.bot.wait_for("message", check=check)
-
-            new_data["interactive_link"] = link.content
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("logicpuzz", new_data)
-
-        # show the user the new changes
-        logicpuzz_text = self.info_obj.get_logicpuzz_text(ctx, False)
-        logicpuzz_images = logicpuzz_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {logicpuzz_info['release_datetime']} in <#{logicpuzz_info['channel_id']}>. "
-            + "Remember to do `.start logicpuzz`"
-        )
-        await ctx.send(logicpuzz_text)
-        for i in range(len(logicpuzz_images)):
-            await ctx.send(logicpuzz_images[i])
+        self.qset(ctx, "logicpuzz")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setciyk(self, ctx: commands.context.Context):
-        ciyk_info = self.info_obj.info["ciyk"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for CIYK. Do `.stop` at any time and no changes will be made to the CIYK announcement."
-        )
-
-        new_data = {"img_url": "", "week_num": -1, "submission_link": ""}
-
-        # get image for ciyk
-        await ctx.send("Please send the image for CIYK.")
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the CIYK announcement."
-                )
-                return
-
-            if len(msg.attachments):
-                new_data["img_url"] = msg.attachments[0].url
-                break
-            else:
-                await ctx.send("Please send the image for CIYK")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the CIYK announcement."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # store new data
-        self.info_obj.change_data("ciyk", new_data)
-
-        ciyk_text = self.info_obj.get_ciyk_text(ctx, False)
-        await ctx.send(
-            f"Done. The following will be released at {ciyk_info['release_datetime']} in <#{ciyk_info['channel_id']}>"
-            + "Remember to do `.start ciyk`"
-        )
-        await ctx.send(ciyk_text)
+        self.qset(ctx, "ciyk")
 
 
 async def setup(bot: commands.Bot):
