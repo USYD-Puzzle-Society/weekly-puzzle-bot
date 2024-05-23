@@ -2,7 +2,6 @@ import os
 import discord
 from discord.ext import commands
 
-
 with open(".token", "r") as token_file:
     TOKEN = token_file.readline().strip()
 
@@ -11,12 +10,10 @@ exec_id = "Executives"
 cogs_dir = "cogs"
 intents = discord.Intents.all()
 
-client = discord.Client(intents=intents)
-tree = discord.app_commands.CommandTree(client)
 bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
 
 # load all available cogs on startup
-@tree.command(
+@bot.tree.command(
     name="startup",
     guild=guild
 )
@@ -29,28 +26,33 @@ async def startup(ctx: commands.context.Context):
     await ctx.channel.send(f"Loaded all cogs")
 
 # command to load a cog
-@bot.command()
+@bot.tree.command(
+    name="load",
+    guild=guild
+)
 @commands.has_role(exec_id)
-async def load(ctx: commands.context.Context, extension):
+async def load(ctx: commands.context.Context, extension: str):
     await bot.load_extension(f"{cogs_dir}.{extension}")
     await ctx.send(f"Loaded {extension} cog")
 
 # command to unload a cog
-@bot.command()
+@bot.tree.command(
+    name="unload",
+    guild=guild
+)
 @commands.has_role(exec_id)
-async def unload(ctx: commands.context.Context, extension):
+async def unload(ctx: commands.context.Context, extension: str):
     await bot.unload_extension(f"{cogs_dir}.{extension}")
     await ctx.send(f"Unloaded {extension} cog")
 
 # command to reload a cog
-@bot.command()
+@bot.tree.command(
+    name="reload",
+    guild=guild
+)
 @commands.has_role(exec_id)
-async def reload(ctx: commands.context.Context, extension):
+async def reload(ctx: commands.context.Context, extension: str):
     await bot.reload_extension(f"{cogs_dir}.{extension}")
     await ctx.send(f"Reloaded {extension} cog")
 
-@client.event
-async def on_ready():
-    await tree.sync(guild=guild)
-
-client.run(TOKEN)
+bot.run(TOKEN)
