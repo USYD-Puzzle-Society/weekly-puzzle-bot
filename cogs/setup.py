@@ -114,7 +114,7 @@ class Setup(commands.Cog):
 
         return msg.content
 
-    def get_date(self, ctx: commands.context.Context, message_from_author: Callable):
+    async def get_date(self, ctx: commands.context.Context, message_from_author: Callable):
         await ctx.send(
             "Please enter the new release date for the rebus and cryptic in the format DD/MM/YYYY."
             + "Do `.stop` at any time to exit and no changes will be made."
@@ -139,7 +139,7 @@ class Setup(commands.Cog):
             
         return date
 
-    def get_time(self, ctx: commands.context.Context, message_from_author: Callable):
+    async def get_time(self, ctx: commands.context.Context, message_from_author: Callable):
         await ctx.send(
             "Please enter the new release time for the puzzles in the format HH:MM (24 hour time)."
             + "Do `.stop` at any time to exit and no changes will be made."
@@ -165,6 +165,33 @@ class Setup(commands.Cog):
             time = self.info_obj.check_is_time(msg.content)
             
         return time
+
+    def set_time(self, ctx: commands.context.Context, puzzle_name: str):
+        def message_from_author(msg):
+            return msg.author == ctx.author
+
+        await ctx.send(
+            "The current release time for the puzzle is "
+            + f"{self.info_obj.info[puzzle_name]['release_datetime']}"
+        )
+        
+        year, month, day = self.get_date(ctx, message_from_author)
+        release_date = datetime.date(year, month, day)
+        weekday_name = self.info_obj.day_names[release_date.weekday()]
+
+        await ctx.send(
+            f"The new release date is now {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
+        )
+
+        hour, minute = self.get_time(ctx, message_from_author)
+        
+        new_release = datetime.datetime(year, month, day, hour, minute)
+        self.info_obj.change_time(puzzle_name, new_release)
+
+        await ctx.send(
+            f"The new release time for the puzzle is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
+            + "Remember to do `.start rc`"
+        )
 
     # command for quick setup of puzzles. user will only have to send the images
     @commands.command()
@@ -278,30 +305,7 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def setrctime(self, ctx: commands.context.Context):
-        def message_from_author(msg):
-            return msg.author == ctx.author
-
-        await ctx.send(
-            f"The current release time for the rebus and cryptic is {self.info_obj.info['rebuscryptic']['release_datetime']}"
-        )
-        
-        year, month, day = self.get_date(ctx, message_from_author)
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-
-        await ctx.send(
-            f"The new release date is now {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-
-        hour, minute = self.get_time(ctx, message_from_author)
-        
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("rebuscryptic", new_release)
-
-        await ctx.send(
-            f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start rc`"
-        )
+        self.set_time(ctx, "rebuscryptic")
 
     """
     Thinking of making it so that this command allows the user to
@@ -309,328 +313,30 @@ class Setup(commands.Cog):
     Like: `.setminipuzztime 12/08/2022 11:00`
     """
 
-    # commands to set the release time for the puzzles/ciyk
     @commands.command()
     @commands.has_role("Executives")
     async def setminipuzztime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        # show current release time for puzzles
-        await ctx.send(
-            f'The current release time for the minipuzz is {self.info_obj.info["minipuzz"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the minipuzz in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the minipuzz."
-        )
-
-        # exit when valid date is given or .stop is typed
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the puzzles."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is now {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the puzzles in the format HH:MM (24 hour time)."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the puzzles."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("minipuzz", new_release)
-        await ctx.send(
-            f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start minipuzz`"
-        )
+        self.set_time(ctx, "minipuzzle")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setcrosswordtime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for the crossword is {self.info_obj.info["crossword"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the crossword in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the crossword."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the crossword."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the crossword in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release of the crossword."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("crossword", new_release)
-        await ctx.send(
-            f"The new release time for the crossword is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start crossword`"
-        )
+        self.set_time(ctx, "crossword")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setwordsearchtime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for the word search is {self.info_obj.info["wordsearch"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the sudoku in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the word search."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the word search."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the logic puzzle in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release of the word search."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("wordsearch", new_release)
-        await ctx.send(
-            f"The new release time for the word search is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start wordsearch`"
-        )
+        self.set_time(ctx, "wordsearch")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setlogicpuzztime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for the logic puzzle is {self.info_obj.info["logicpuzz"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the sudoku in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the logic puzzle."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the logic puzzle."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the logic puzzle in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release of the logic puzzle."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("logicpuzz", new_release)
-        await ctx.send(
-            f"The new release time for the logic puzzle is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start logicpuzz`"
-        )
+        self.set_time(ctx, "logicpuzz")
 
     @commands.command()
     @commands.has_role("Executives")
     async def setciyktime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for CIYK is {self.info_obj.info["ciyk"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for CIYK in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of CIYK."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of CIYK."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f'The new release date is {release_date.strftime("%d/%m/%Y")} ({weekday_name})'
-        )
-        await ctx.send(
-            f"Please enter the new release time for CIYK in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been amde to the release of CIYK."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("ciyk", new_release)
-        await ctx.send(
-            f"The new release time for CIYK is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start ciyk`"
-        )
+        self.set_time(ctx, "ciyk")
 
     # command to set info of rebuscryptic
     @commands.command()
