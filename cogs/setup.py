@@ -13,6 +13,16 @@ class Setup(commands.Cog):
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
 
+    def check_preset(self, ctx, preset):
+        preset = self.info_obj.check_preset(preset)
+
+        if not preset:
+            accepted_presets = ', '.join(self.info_obj.default_presets)
+            await ctx.send("Please use one of the accepted presets:", accepted_presets)
+            return False
+
+        return preset
+
     def new_datetime_and_week(self, original_datetime, original_week):
         new_datetime = self.info_obj.str_to_datetime(original_datetime)
         new_datetime = new_datetime + datetime.timedelta(days=7)
@@ -96,11 +106,9 @@ class Setup(commands.Cog):
         def message_from_author(msg):
             return msg.author == ctx.author
 
-        preset = self.info_obj.check_preset(preset)
+        preset = self.check_preset(ctx, preset)
 
         if not preset:
-            accepted_presets = ', '.join(self.info_obj.default_presets)
-            await ctx.send("Please use one of the accepted presets:", accepted_presets)
             return
 
         original_data = self.info_obj.info[preset]
@@ -136,7 +144,6 @@ class Setup(commands.Cog):
 
         self.info_obj.change_data(preset, puzzle_data)
 
-        # show the user the new changes
         text = self.info_obj.get_qtext(ctx, False, preset)
         
         await ctx.send(
@@ -154,11 +161,9 @@ class Setup(commands.Cog):
     async def qsettime(
         self, ctx: commands.context.Context, preset: str, date: str, time: str
     ):
-        preset = self.info_obj.check_preset(preset)
+        preset = self.check_preset(ctx, preset)
 
         if not preset:
-            accepted_presets = ', '.join(self.info_obj.default_presets)
-            await ctx.send("Please use one of the accepted presets:", accepted_presets)
             return
 
         new_date = self.info_obj.check_is_date(date)
@@ -188,11 +193,9 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def qsetweek(self, ctx: commands.context.Context, preset: str, week_num: str):
-        preset = self.info_obj.check_preset(preset)
+        preset = self.check_preset(ctx, preset)
 
         if not preset:
-            accepted_presets = ', '.join(self.info_obj.default_presets)
-            await ctx.send("Please use one of the accepted presets:", accepted_presets)
             return
 
         new_week = 1
