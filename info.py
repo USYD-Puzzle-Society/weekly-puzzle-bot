@@ -134,6 +134,7 @@ class Info():
             "wed": "wednesday",
             "fri": "friday"
         }
+
         preset = preset.lower()
 
         try:
@@ -142,9 +143,9 @@ class Info():
             pass
 
         if preset not in self.default_presets:
-            return preset, False
+            return False
         
-        return preset, True
+        return preset
 
     # expects the %d/%m/%Y %H:%M format
     def str_to_datetime(self, string: str) -> datetime.datetime:

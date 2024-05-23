@@ -7,126 +7,158 @@ from discord.ext import commands
 
 
 class Setup(commands.Cog):
-
     def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
         self.exec_id = "Executives"
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
 
-    # command for quick setup of puzzles. user will only have to send the images
-    @commands.command()
-    @commands.has_role("Executives")
-    async def qset(
-        self, ctx: commands.context.Context, preset: str, change_datetime: str = "true"
-    ):
-        user = ctx.author
+    def new_datetime_and_week(self, original_datetime, original_week):
+        new_datetime = self.info_obj.str_to_datetime(original_datetime)
+        new_datetime = new_datetime + datetime.timedelta(days=7)
+        new_datetime = new_datetime.strftime(self.datetime_format)
 
-        def check(m):
-            return m.author == user
+        return (new_datetime, original_week + 1)
 
-        preset, accepted = self.info_obj.check_preset(preset)
-        if not accepted:
-            await ctx.send(
-                f"Please use one of the accepted presets: {', '.join(self.info_obj.default_presets)}"
-            )
-            return
-
-        original_data = self.info_obj.info[preset]
-        puzzle_data = {
-            "release_datetime": original_data["release_datetime"],
-            "week_num": original_data["week_num"],
-            "img_urls": [],
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        # change the date to be a week ahead of the previously stored date unless change_datetime is false
-        if change_datetime.lower() not in ["false", "f"]:
-            release_datetime = self.info_obj.str_to_datetime(
-                puzzle_data["release_datetime"]
-            )
-            release_datetime = release_datetime + datetime.timedelta(days=7)
-            puzzle_data["release_datetime"] = release_datetime.strftime(
-                self.datetime_format
-            )
-
-            # increase the week number to be one higher than the previously stored week
-            puzzle_data["week_num"] = puzzle_data["week_num"] + 1
-
-        # ask for images
+    async def get_image_urls(self, ctx, message_from_author):
         await ctx.send(
             "Please send all images for the puzzle in one message."
             + " Type `.stop` at any time and no changes will be made."
         )
 
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made.")
-                return
-            elif len(msg.attachments):
-                puzzle_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the images in one message.")
-
-        # ask for submission link
-        await ctx.send("Please send the submission link.")
-        msg = await self.bot.wait_for("message", check=check)
+        msg = await self.bot.wait_for("message", check=message_from_author)
 
         if ".stop" == msg.content.lower():
             await ctx.send("Command stopped. No changes have been made.")
-            return
-        else:
-            puzzle_data["submission_link"] = msg.content
+            return []
 
-        # check for interactive link and ask for one if there is
-        await ctx.send("Is there an interactive link? y/n")
+        while not len(msg.attachments):
+            await ctx.send(
+                "Please send all images for the puzzle in one message."
+                + " Type `.stop` at any time and no changes will be made."
+            )
 
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
+            msg = await self.bot.wait_for("message", check=message_from_author)
 
             if ".stop" == msg.content.lower():
                 await ctx.send("Command stopped. No changes have been made.")
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
+                return []
 
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
+        return [image.url for image in msg.attachments]
 
-            link = await self.bot.wait_for("message", check=check)
+    async def get_submission_link(self, ctx, message_from_author):
+        await ctx.send("Please send the submission link.")
 
-            puzzle_data["interactive_link"] = link.content
+        msg = await self.bot.wait_for("message", check=message_from_author)
+
+        if ".stop" == msg.content.lower():
+            await ctx.send("Command stopped. No changes have been made.")
+            return ""
+
+        return msg.content
+
+    async def get_interactive_link(self, ctx, message_from_author):
+        await ctx.send("Is there an interactive link? y/n")
+
+        msg = await self.bot.wait_for("message", check=message_from_author)
+
+        if ".stop" == msg.content.lower():
+            await ctx.send("Command stopped. No changes have been made.")
+            return ""
+
+        while not msg.content.lower() == "y":
+            if "n" == msg.content.lower():
+                return ""
+
+            await ctx.send("Is there an interactive link? y/n")
+
+            msg = await self.bot.wait_for("message", check=message_from_author)
+
+            if ".stop" == msg.content.lower():
+                await ctx.send("Command stopped. No changes have been made.")
+                return ""
+            
+        await ctx.send("Please send the interactive link for the puzzle.")
+
+        msg = await self.bot.wait_for("message", check=message_from_author)
+
+        return msg.content
+
+    # command for quick setup of puzzles. user will only have to send the images
+    @commands.command()
+    @commands.has_role("Executives")
+    async def qset(
+        self, 
+        ctx: commands.context.Context, 
+        preset: str,
+        change_datetime: str = "true"
+    ):
+        def message_from_author(msg):
+            return msg.author == ctx.author
+
+        preset = self.info_obj.check_preset(preset)
+
+        if not preset:
+            accepted_presets = ', '.join(self.info_obj.default_presets)
+            await ctx.send("Please use one of the accepted presets:", accepted_presets)
+            return
+
+        original_data = self.info_obj.info[preset]
+
+        if change_datetime == "true":
+            release_datetime, week_num = self.new_datetime_and_week(
+                original_data["release_datetime"], 
+                original_data["week_num"]
+            )
+        else:
+            release_datetime = original_data["release_datetime"]
+            week_num = original_data["week_num"]
+
+        img_urls = await self.get_image_urls(ctx, message_from_author)
+
+        if img_urls == []:
+            return
+
+        submission_link = await self.get_submission_link(ctx, message_from_author)
+
+        if submission_link == "":
+            return
+
+        interactive_link = await self.get_interactive_link(ctx, message_from_author)
+        
+        puzzle_data = {
+            "release_datetime": release_datetime,
+            "week_num": week_num,
+            "img_urls": img_urls,
+            "submission_link": submission_link,
+            "interactive_link": interactive_link,
+        }
 
         self.info_obj.change_data(preset, puzzle_data)
 
         # show the user the new changes
         text = self.info_obj.get_qtext(ctx, False, preset)
-        images = puzzle_data["img_urls"]
+        
         await ctx.send(
-            f"Done. The following will be released at {puzzle_data['release_datetime']} in <#{original_data['channel_id']}>. "
+            f"Done. The following will be released at {release_datetime} in <#{original_data['channel_id']}>. "
             + f"Remember to do `.start {preset}`"
         )
+        
         await ctx.send(text)
-        for i in range(len(images)):
-            await ctx.send(images[i])
+        
+        for i in range(len(img_urls)):
+            await ctx.send(img_urls[i])
 
     @commands.command()
     @commands.has_role("Executives")
     async def qsettime(
         self, ctx: commands.context.Context, preset: str, date: str, time: str
     ):
-        preset, accepted = self.info_obj.check_preset(preset)
-        if not accepted:
-            await ctx.send(
-                f"Please use one of the accepted presets: {', '.join(self.info_obj.default_presets)}"
-            )
+        preset = self.info_obj.check_preset(preset)
+
+        if not preset:
+            accepted_presets = ', '.join(self.info_obj.default_presets)
+            await ctx.send("Please use one of the accepted presets:", accepted_presets)
             return
 
         new_date = self.info_obj.check_is_date(date)
@@ -156,11 +188,11 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def qsetweek(self, ctx: commands.context.Context, preset: str, week_num: str):
-        preset, accepted = self.info_obj.check_preset(preset)
-        if not accepted:
-            await ctx.send(
-                f"Please use one of the accepted presets: {', '.join(self.default_presets)}"
-            )
+        preset = self.info_obj.check_preset(preset)
+
+        if not preset:
+            accepted_presets = ', '.join(self.info_obj.default_presets)
+            await ctx.send("Please use one of the accepted presets:", accepted_presets)
             return
 
         new_week = 1
