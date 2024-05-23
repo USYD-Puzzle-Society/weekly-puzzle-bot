@@ -31,8 +31,12 @@ class SubcomTasks(commands.Cog):
 
         if os.path.exists(self.tasks_fn):
             with open(self.tasks_fn, "r") as t:
-                temp = json.load(t)
-                for task in temp:
+                try:
+                    tasks = json.load(t)
+                except json.JSONDecodeError:
+                    tasks = []
+                
+                for task in tasks:
                     self.tasks.append(from_dict(task))
         
 
