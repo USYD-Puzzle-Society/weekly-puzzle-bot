@@ -6,6 +6,38 @@
         "heart": ":heart:",
         "cross": ":x:"
     },
+    "monday": {
+        "role_name": "weekly puzzles",
+        "channel_id": 892032997220573204,
+        "release_datetime": "19/02/2024 16:00",
+        "week_num": 1,
+        "img_urls": [
+            "https://cdn.discordapp.com/attachments/1238376065995378708/1243021310288859216/Screenshot_2024-05-21_at_3.23.06_PM.png?ex=664ff54e&is=664ea3ce&hm=504716c9c763fe73c8a698c92f0c0908652f3e28b2dcd2fa4bab637a03f9649a&"
+        ],
+        "submission_link": "https://google.com",
+        "interactive_link": "",
+        "releasing": false
+    },
+    "wednesday": {
+        "role_name": "weekly puzzles",
+        "channel_id": 892032997220573204,
+        "release_datetime": "21/02/2024 16:00",
+        "week_num": 0,
+        "img_urls": [],
+        "submission_link": "",
+        "interactive_link": "",
+        "releasing": false
+    },
+    "friday": {
+        "role_name": "weekly puzzles",
+        "channel_id": 892032997220573204,
+        "release_datetime": "23/02/2024 16:00",
+        "week_num": 0,
+        "img_urls": [],
+        "submission_link": "",
+        "interactive_link": "",
+        "releasing": false
+    },
     "rebuscryptic": {
         "role_name": "weekly puzzles",
         "channel_id": 892032997220573204,
