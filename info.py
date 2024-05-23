@@ -8,7 +8,18 @@ class Info():
     def __init__(self):
         self.info_fn = "info.json" # fn = filename
         self.datetime_format = "%d/%m/%Y %H:%M"
-        self.default_presets = ["monday", "wednesday", "friday"]
+        self.default_puzzle_names = [
+            "emojis",
+            "monday",
+            "wednesday", 
+            "friday", 
+            "rebuscryptic", 
+            "minipuzz", 
+            "crossword", 
+            "wordsearch",
+            "logicpuzz",
+            "ciyk"
+        ]
 
         if os.path.exists(self.info_fn):
             with open(self.info_fn, "r") as fn:
@@ -128,24 +139,24 @@ class Info():
             6: "Sunday"
         }
 
-    def check_preset(self, preset: str):
-        shortened_presets = {
+    def check_puzzle_name(self, puzzle_name: str):
+        shortened_puzzle_names = {
             "mon": "monday",
             "wed": "wednesday",
             "fri": "friday"
         }
 
-        preset = preset.lower()
+        puzzle_name = puzzle_name.lower()
 
         try:
-            preset = shortened_presets[preset]
+            puzzle_name = shortened_puzzle_names[puzzle_name]
         except KeyError:
             pass
 
-        if preset not in self.default_presets:
+        if puzzle_name not in self.default_puzzle_names:
             return False
         
-        return preset
+        return puzzle_name
 
     # expects the %d/%m/%Y %H:%M format
     def str_to_datetime(self, string: str) -> datetime.datetime:
@@ -188,6 +199,105 @@ class Info():
     # this could potential pose problems if a read and write occur at the same time
     # however, this shouldn't be a big issue as the commands that use these functions will only be accessible by a few people
 
+    def get_text(self, ctx: commands.context.Context, mention: bool, puzzle_name: str):
+        get_text = {
+            "monday": self.get_monday_text,
+            "wednesday": self.get_wednesday_text,
+            "friday": self.get_friday_text,
+            "rebuscryptic": self.get_rebuscryptic_text,
+            "minipuzz": self.get_minipuzz_text,
+            "crossword": self.get_crossword_text,
+            "wordsearch": self.get_wordsearch_text,
+            "logicpuzz": self.get_logicpuzz_text,
+            "ciyk": self.get_ciyk_text,
+        }
+
+        return get_text[puzzle_name](ctx, mention)
+
+    def get_monday_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        puzz_info = self.info["monday"]
+        role_name = puzz_info["role_name"]
+        week_num = puzz_info["week_num"]
+
+        if mention: 
+            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            puzz_tag,
+            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            "**LOGIC + CRYPTIC**\n\n" if week_num % 2 == 0 else "**REBUS + CRYPTIC**\n\n",
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._"
+        ]
+
+        if puzz_info["interactive_link"]:
+            lines.append(f"\n\nInteractive version: {puzz_info['interactive_link']}")
+
+        return "".join(lines)
+
+    def get_wednesday_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        puzz_info = self.info["wednesday"]
+        role_name = puzz_info["role_name"]
+        week_num = puzz_info["week_num"]
+
+        if mention: 
+            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            puzz_tag,
+            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            "**MINIPUZZLE**\n\n",
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._"
+        ]
+
+        if puzz_info["interactive_link"]:
+            lines.append(f"\n\nInteractive version: {puzz_info['interactive_link']}")
+
+        return "".join(lines)
+
+    def get_friday_text(self, ctx: commands.context.Context, mention: bool) -> str:
+        with open(self.info_fn, "r") as fn:
+            self.info = json.load(fn)
+
+        puzz_info = self.info["friday"]
+        role_name = puzz_info["role_name"]
+        week_num = puzz_info["week_num"]
+
+        if mention: 
+            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+        else:
+            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+
+        lines = [
+            puzz_tag,
+            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
+            "**PRINTER'S DEVILRY**\n\n",
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._"
+        ]
+
+        if puzz_info["interactive_link"]:
+            lines.append(f"\n\nInteractive version: {puzz_info['interactive_link']}")
+
+        return "".join(lines)
+
     def get_rebuscryptic_text(self, ctx: commands.context.Context, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
@@ -209,47 +319,6 @@ class Info():
             "_You can submit as many times as you want!_\n",
             "_Your highest score will be kept._"
         ]
-
-        return "".join(lines)
-    
-    def get_qtext(self, ctx: commands.context.Context, mention: bool, preset: str) -> str:
-        with open(self.info_fn, "r") as fn:
-            self.info = json.load(fn)
-
-        puzz_info = self.info[preset]
-        role_name = puzz_info["role_name"]
-        week_num = puzz_info["week_num"]
-
-        if mention: 
-            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
-        else:
-            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
-
-        preset_puzzles = {
-            "wednesday": "**MINIPUZZLE**\n\n",
-            "friday": "**PRINTER'S DEVILRY**\n\n"
-        }
-        puzzle_list = ""
-        if preset == "monday":
-            if week_num % 2 == 0:
-                puzzle_list = "**LOGIC + CRYPTIC**\n\n"
-            else:
-                puzzle_list = "**REBUS + CRYPTIC**\n\n"
-        else:
-            puzzle_list = preset_puzzles[preset]
-
-        lines = [
-            puzz_tag,
-            f"**WEEKLY PUZZLE COMPETITION: WEEK {puzz_info['week_num']}**\n",
-            puzzle_list,
-            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
-            f"Submit your answers here: {puzz_info['submission_link']}\n\n",
-            "_You can submit as many times as you want!_\n",
-            "_Your highest score will be kept._"
-        ]
-
-        if puzz_info["interactive_link"]:
-            lines.append(f"\n\nInteractive version: {puzz_info['interactive_link']}")
 
         return "".join(lines)
 
@@ -366,19 +435,6 @@ class Info():
 
         return ciyk_tag + line1 + line2 + line3 + ciyk_info["img_url"]
 
-    def get_text(self, ctx: commands.context.Context, puzz_name: str, mention: bool):
-        get_text = {
-            "rebuscryptic": self.get_rebuscryptic_text,
-            "minipuzz": self.get_minipuzz_text,
-            "crossword": self.get_crossword_text,
-            "wordsearch": self.get_wordsearch_text,
-            "logicpuzz": self.get_logicpuzz_text,
-            "ciyk": self.get_ciyk_text,
-        }
-
-        return get_text[puzz_name](ctx, mention)
-
-    # this method exists as just an easy way to change the data in one method call in setpuzzles/setciyk    
     def change_data(self, puzz_name: str, new_data: "dict[str, any]"):
         puzz_data = ["week_num", "submission_link", 
                      "img_urls", "interactive_link"
@@ -387,7 +443,6 @@ class Info():
         for data in puzz_data:
             self.info[puzz_name][data] = new_data[data]
 
-        # write the new info to the json file so that it is not lost if the bot shuts down
         with open(self.info_fn, "w") as info:
             new_json = json.dumps(self.info, indent=4)
 
@@ -409,7 +464,6 @@ class Info():
 
             info.write(new_json)
 
-    # changes the state of whether a puzzle is releasing
     def change_release(self, puzz_name: str, is_releasing: bool):
         self.info[puzz_name]["releasing"] = is_releasing
 

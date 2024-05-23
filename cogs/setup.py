@@ -14,16 +14,16 @@ class Setup(commands.Cog):
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
 
-    def check_preset(self, ctx: commands.context.Context, preset: str):
-        preset = self.info_obj.check_preset(preset)
-        if not preset:
-            accepted_presets = ', '.join(self.info_obj.default_presets)
-            await ctx.send("Please use one of the accepted presets:", accepted_presets)
+    async def check_puzzle_name(self, ctx: commands.context.Context, puzzle_name: str):
+        puzzle_name = self.info_obj.check_puzzle_name(puzzle_name)
+        if not puzzle_name:
+            accepted_puzzle_names = ', '.join(self.info_obj.default_puzzle_names)
+            await ctx.send(f"Please use one of the accepted puzzle_names: {accepted_puzzle_names}")
             return False
 
-        return preset
+        return puzzle_name
 
-    def check_date(self, ctx: commands.context.Context, date: str):
+    async def check_date(self, ctx: commands.context.Context, date: str):
         date = self.info_obj.check_date(date)
         if not date:
             await ctx.send("Please enter date in the format DD/MM/YYYY")
@@ -31,7 +31,7 @@ class Setup(commands.Cog):
 
         return date
 
-    def check_time(self, ctx: commands.context.Context, time: str):
+    async def check_time(self, ctx: commands.context.Context, time: str):
         time = self.info_obj.check_time(time)
         if not time:
             await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
@@ -126,7 +126,7 @@ class Setup(commands.Cog):
             await ctx.send("Command stopped. No changes have been made.")
             return
 
-        date = self.check_date(msg.content)
+        date = await self.check_date(msg.content)
         
         while not date:
             msg = await self.bot.wait_for("message", check=message_from_author)
@@ -135,7 +135,7 @@ class Setup(commands.Cog):
                 await ctx.send("Command stopped. No changes have been made.")
                 return
 
-            date = self.check_date(msg.content)
+            date = await self.check_date(msg.content)
             
         return date
 
@@ -166,7 +166,7 @@ class Setup(commands.Cog):
             
         return time
 
-    def set_time(self, ctx: commands.context.Context, puzzle_name: str):
+    async def set_time(self, ctx: commands.context.Context, puzzle_name: str):
         def message_from_author(msg):
             return msg.author == ctx.author
 
@@ -197,16 +197,16 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def qset(
-            self, ctx: commands.context.Context, preset: str, 
+            self, ctx: commands.context.Context, puzzle_name: str, 
             change_datetime: str = "true"):
         def message_from_author(msg):
             return msg.author == ctx.author
 
-        preset = self.check_preset(ctx, preset)
-        if not preset:
+        puzzle_name = await self.check_puzzle_name(ctx, puzzle_name)
+        if not puzzle_name:
             return
 
-        original_data = self.info_obj.info[preset]
+        original_data = self.info_obj.info[puzzle_name]
 
         if change_datetime == "true":
             release_datetime, week_num = self.new_datetime_and_week(
@@ -235,14 +235,14 @@ class Setup(commands.Cog):
             "interactive_link": interactive_link,
         }
 
-        self.info_obj.change_data(preset, puzzle_data)
+        self.info_obj.change_data(puzzle_name, puzzle_data)
         
         await ctx.send(
             f"Done. The following will be released at {release_datetime} in <#{original_data['channel_id']}>. "
-            + f"Remember to do `.start {preset}`"
+            + f"Remember to do `.start {puzzle_name}`"
         )
 
-        text = self.info_obj.get_qtext(ctx, False, preset)
+        text = self.info_obj.get_text(ctx, False, puzzle_name)
         await ctx.send(text)
         for i in range(len(img_urls)):
             await ctx.send(img_urls[i])
@@ -250,13 +250,13 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def qsettime(
-            self, ctx: commands.context.Context, preset: str, date: str, 
+            self, ctx: commands.context.Context, puzzle_name: str, date: str, 
             time: str):
-        preset = self.check_preset(ctx, preset)
-        if not preset:
+        puzzle_name = await self.check_puzzle_name(ctx, puzzle_name)
+        if not puzzle_name:
             return
 
-        new_date = self.check_date(ctx, date)
+        new_date = await self.check_date(ctx, date)
         if not new_date:
             return
         day, month, year = new_date
@@ -264,27 +264,27 @@ class Setup(commands.Cog):
         release_date = datetime.date(year, month, day)
         weekday_name = self.info_obj.day_names[release_date.weekday()]
 
-        new_time = self.check_time(ctx, time)
+        new_time = await self.check_time(ctx, time)
         if not new_time:
             return
         hour, minute = new_time
 
         new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time(preset, new_release)
+        self.info_obj.change_time(puzzle_name, new_release)
 
         await ctx.send(
             f"The new release time for the puzzles is "
             + f"{new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + f"Remember to do `.start {preset}`"
+            + f"Remember to do `.start {puzzle_name}`"
         )
 
     @commands.command()
     @commands.has_role("Executives")
     async def qsetweek(
-            self, ctx: commands.context.Context, preset: str,
+            self, ctx: commands.context.Context, puzzle_name: str,
             week_num: str):
-        preset = self.check_preset(ctx, preset)
-        if not preset:
+        puzzle_name = await self.check_puzzle_name(ctx, puzzle_name)
+        if not puzzle_name:
             return
 
         # this will be removed with slash commands
@@ -294,12 +294,12 @@ class Setup(commands.Cog):
             await ctx.send("Please enter the week as a number.")
             return
 
-        self.info_obj.change_week(preset, new_week)
+        self.info_obj.change_week(puzzle_name, new_week)
 
         await ctx.send(
-            f"The new week number for the {preset.capitalize()} puzzle is "
-            + f"{self.info_obj.info[preset]['week_num']}. "
-            + f"Remember to do `.start {preset}`"
+            f"The new week number for the {puzzle_name.capitalize()} puzzle is "
+            + f"{self.info_obj.info[puzzle_name]['week_num']}. "
+            + f"Remember to do `.start {puzzle_name}`"
         )
 
     @commands.command()
@@ -346,7 +346,7 @@ class Setup(commands.Cog):
     @commands.command()
     @commands.has_role("Executives")
     async def setminipuzz(self, ctx: commands.context.Context):
-        await self.qset(ctx, "minipuzzle")
+        await self.qset(ctx, "minipuzz")
 
     @commands.command()
     @commands.has_role("Executives")
