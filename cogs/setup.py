@@ -138,8 +138,6 @@ class Setup(commands.GroupCog, group_name="set"):
         if not puzzle_name:
             return
 
-        previous_datetime = self.info_obj.info[puzzle_name]['release_datetime']
-
         new_date = await self.check_date(interaction, date)
         if not new_date:
             return
@@ -154,6 +152,7 @@ class Setup(commands.GroupCog, group_name="set"):
         hour, minute = new_time
 
         new_release = datetime.datetime(year, month, day, hour, minute)
+        previous_datetime = self.info_obj.info[puzzle_name]['release_datetime']
         self.info_obj.change_time(puzzle_name, new_release)
 
         await interaction.response.send_message(
@@ -176,7 +175,7 @@ class Setup(commands.GroupCog, group_name="set"):
             return
 
         previous_week = self.info_obj.info[puzzle_name]['week_num']
-        self.info_obj.change_week(puzzle_name, new_week)
+        self.info_obj.change_week(puzzle_name, week_num)
 
         await interaction.response.send_message(
             "The previous week number for the puzzle was "
