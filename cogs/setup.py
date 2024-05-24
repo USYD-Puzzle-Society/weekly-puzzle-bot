@@ -114,66 +114,6 @@ class Setup(commands.Cog):
 
         return msg.content
 
-    async def get_date(self, interaction: discord.Interaction, message_from_user: Callable):
-        await interaction.channel.send(
-            "Please enter the new release date for the puzzle in the format DD/MM/YYYY."
-            + "Do `.stop` at any time to exit and no changes will be made."
-        )
-        
-        msg = await self.bot.wait_for("message", check=message_from_user)
-
-        if ".stop" == msg.content.lower():
-            await interaction.channel.send("Command stopped. No changes have been made.")
-            return
-
-        date = await self.check_date(msg.content)
-        
-        while not date:
-            await interaction.channel.send(
-                "Please enter the new release date for the puzzle in the format DD/MM/YYYY."
-                + "Do `.stop` at any time to exit and no changes will be made."
-            )
-
-            msg = await self.bot.wait_for("message", check=message_from_user)
-
-            if ".stop" == msg.content.lower():
-                await interaction.channel.send("Command stopped. No changes have been made.")
-                return
-
-            date = await self.check_date(msg.content)
-            
-        return date
-
-    async def get_time(self, interaction: discord.Interaction, message_from_user: Callable):
-        await interaction.channel.send(
-            "Please enter the new release time for the puzzle in the format HH:MM (24 hour time)."
-            + "Do `.stop` at any time to exit and no changes will be made."
-        )
-
-        msg = await self.bot.wait_for("message", check=check)
-
-        if ".stop" == msg.content.lower():
-            await interaction.channel.send("Command stopped. No changes have been made.")
-            return
-
-        time = self.info_obj.check_time(msg.content)
-
-        while not time:
-            await interaction.channel.send(
-                "Please enter the new release time for the puzzle in the format HH:MM (24 hour time)."
-                + "Do `.stop` at any time to exit and no changes will be made."
-            )
-            
-            msg = await self.bot.wait_for("message", check=message_from_user)
-
-            if ".stop" == msg.content.lower():
-                await interaction.channel.send("Command stopped. No changes have been made.")
-                return
-
-            time = self.info_obj.check_time(msg.content)
-            
-        return time
-
     # command for quick setup of a puzzle. user will only have to send the images
     @discord.app_commands.command(
         name="setpuzzle"
