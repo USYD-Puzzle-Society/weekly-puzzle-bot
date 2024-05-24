@@ -331,9 +331,10 @@ class Info():
         return ciyk_tag + line1 + line2 + line3 + ciyk_info["img_url"]
 
     def change_data(self, puzz_name: str, new_data: "dict[str, any]"):
-        puzz_data = ["week_num", "submission_link", 
-                     "img_urls", "interactive_link"
-                    ]
+        puzz_data = [
+            "week_num", "submission_link", 
+            "img_urls", "interactive_link"
+        ]
 
         for data in puzz_data:
             self.info[puzz_name][data] = new_data[data]
