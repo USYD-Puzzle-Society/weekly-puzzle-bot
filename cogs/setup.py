@@ -72,7 +72,6 @@ class Setup(commands.Cog):
 
         return [image.url for image in msg.attachments]
 
-    # command for quick setup of a puzzle. user will only have to send the images
     @discord.app_commands.command(
         name="setpuzzle"
     )
@@ -127,12 +126,6 @@ class Setup(commands.Cog):
         await interaction.channel.send(text)
         for i in range(len(img_urls)):
             await interaction.channel.send(img_urls[i])
-
-    """
-    Thinking of making it so that this command allows the user to
-    put the release date and time in the command call.
-    Like: `.setminipuzztime 12/08/2022 11:00`
-    """
 
     @discord.app_commands.command(
         name="setrelease"
