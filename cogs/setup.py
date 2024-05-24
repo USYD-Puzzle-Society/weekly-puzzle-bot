@@ -26,7 +26,7 @@ class Setup(commands.Cog):
     async def check_date(self, interaction: discord.Interaction, date: str):
         date = self.info_obj.check_date(date)
         if not date:
-            await interaction.channel.send("Please enter date in the format DD/MM/YYYY")
+            await interaction.response.send_message("Please enter date in the format DD/MM/YYYY")
             return False
 
         return date
@@ -34,7 +34,7 @@ class Setup(commands.Cog):
     async def check_time(self, interaction: discord.Interaction, time: str):
         time = self.info_obj.check_time(time)
         if not time:
-            await interaction.channel.send("Please enter time in the format HH:MM (24 hour time.)")
+            await interaction.response.send_message("Please enter time in the format HH:MM (24 hour time.)")
             return False
         
         return time
@@ -187,15 +187,12 @@ class Setup(commands.Cog):
     @commands.has_role("Executives")
     async def set_time(
             self, interaction: discord.Interaction, puzzle_name: str, date: str, 
-            time: str):
-        await interaction.response.send_message(
-            "The current release date for the puzzle is "
-            + f"{self.info_obj.info[puzzle_name]['release_datetime']}"
-        )
-        
+            time: str): 
         puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
+
+        previous_datetime = self.info_obj.info[puzzle_name]['release_datetime']
 
         new_date = await self.check_date(interaction, date)
         if not new_date:
@@ -213,9 +210,11 @@ class Setup(commands.Cog):
         new_release = datetime.datetime(year, month, day, hour, minute)
         self.info_obj.change_time(puzzle_name, new_release)
 
-        await interaction.channel.send(
-            f"The new release time for the puzzle is "
-            + f"{new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
+        await interaction.response.send_message(
+            "The previous release date for the puzzle was "
+            + f"{previous_datetime}. "
+            + "The new release time for the puzzle is "
+            + f"{self.info_obj.info[puzzle_name]['release_datetime']} ({weekday_name}). "
             + f"Remember to do `.start {puzzle_name}`"
         )
 
@@ -226,20 +225,18 @@ class Setup(commands.Cog):
     async def set_week(
             self, interaction: discord.Interaction, puzzle_name: str,
             week_num: int):
-        await interaction.response.send_message(
-            "The current week number for the puzzle is "
-            + f"{self.info_obj.info[puzzle_name]['week_num']}"
-        )
-
         puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
+        previous_week = self.info_obj.info[puzzle_name]['week_num']
         self.info_obj.change_week(puzzle_name, new_week)
 
         await interaction.response.send_message(
-            f"The new week number for the puzzle is "
-            + f"{self.info_obj.info[puzzle_name]['week_num']}. "
+            "The previous week number for the puzzle was "
+            + f"{previous_week}. "
+            + "The new week number for the puzzle is "
+            + f"{week_num}. "
             + f"Remember to do `.start {puzzle_name}`"
         )
 
