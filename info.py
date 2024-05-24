@@ -9,7 +9,6 @@ class Info():
         self.info_fn = "info.json" # fn = filename
         self.datetime_format = "%d/%m/%Y %H:%M"
         self.default_puzzle_names = [
-            "emojis",
             "monday",
             "wednesday", 
             "friday", 
@@ -24,110 +23,6 @@ class Info():
         if os.path.exists(self.info_fn):
             with open(self.info_fn, "r") as fn:
                 self.info = json.load(fn)
-        else:
-            self.info = {
-                "emojis": {
-                    "jigsaw": ":jigsaw:",
-                    "brain": ":brain:",
-                    "speech": ":speech_balloon:",
-                    "heart": ":heart:",
-                    "cross": ":x:"
-                },
-                "monday": {
-                    "role_name": "weekly puzzles",
-                    "channel_id": 892032997220573204,
-                    "release_datetime": "19/02/2024 16:00",
-                    "week_num": 0,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "wednesday": {
-                    "role_name": "weekly puzzles",
-                    "channel_id": 892032997220573204,
-                    "release_datetime": "21/02/2024 16:00",
-                    "week_num": 0,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "friday": {
-                    "role_name": "weekly puzzles",
-                    "channel_id": 892032997220573204,
-                    "release_datetime": "23/02/2024 16:00",
-                    "week_num": 0,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "rebuscryptic": {
-                    "role_name": "weekly puzzles",
-                    "channel_id": 892032997220573204,
-                    "release_datetime": "08/08/2022 16:00",
-                    "week_num": -1,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "minipuzz": {
-                    "role_name": "weekly puzzles",
-                    "channel_id": 892032997220573204,
-                    "release_datetime": "08/08/2022 16:00",
-                    "week_num": -1,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "crossword": {
-                    "role_name": "crosswords",
-                    "channel_id": 1074683905405358171,
-                    "release_datetime": "08/08/2022 16:00",
-                    "week_num": -1,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "wordsearch": {
-                    "role_name": "word searches",
-                    "channel_id": 1135184991928721448,
-                    "release_datetime": "08/08/2022 16:00",
-                    "week_num": -1,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "logicpuzz": {
-                    "role_name": "logic puzzles",
-                    "channel_id": 1074684130794672138,
-                    "release_datetime": "08/08/2022 16:00",
-                    "week_num": -1,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                },
-                "ciyk": {
-                    "role_name": "weekly games",
-                    "channel_id": 1001742058601590824,
-                    "discuss_id": 1001742642427744326,
-                    "release_datetime": "08/08/2022 16:00",
-                    "week_num": -1,
-                    "img_urls": [],
-                    "submission_link": "",
-                    "interactive_link": "",
-                    "releasing": False
-                }
-            }
-        
-        self.minipuzz_datetime = self.str_to_datetime(self.info["minipuzz"]["release_datetime"])
-        self.ciyk_datetime = self.str_to_datetime(self.info["ciyk"]["release_datetime"])
 
         self.day_names = {
             0: "Monday",
