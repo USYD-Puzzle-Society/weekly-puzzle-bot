@@ -18,7 +18,7 @@ class Setup(commands.Cog):
         puzzle_name = self.info_obj.check_puzzle_name(puzzle_name)
         if not puzzle_name:
             accepted_puzzle_names = ', '.join(self.info_obj.default_puzzle_names)
-            await interaction.channel.send(f"Please use one of the accepted puzzle_names: {accepted_puzzle_names}")
+            await interaction.response.send_message(f"Please use one of the accepted puzzle_names: {accepted_puzzle_names}.")
             return False
 
         return puzzle_name
@@ -122,16 +122,13 @@ class Setup(commands.Cog):
     async def set_puzzle(
             self, interaction: discord.Interaction, puzzle_name: str, 
             change_datetime: bool = True):
-        def message_from_user(msg):
-            return msg.author == interaction.user
+        puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
+        if not puzzle_name:
+            return
 
         await interaction.response.send_message(
             f"Puzzle setup started. The puzzle your are setting has a {puzzle_name} puzzle classification."
         )
-
-        puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
-        if not puzzle_name:
-            return
 
         original_data = self.info_obj.info[puzzle_name]
 
@@ -143,6 +140,9 @@ class Setup(commands.Cog):
         else:
             release_datetime = original_data["release_datetime"]
             week_num = original_data["week_num"]
+
+        def message_from_user(msg):
+            return msg.author == interaction.user
 
         img_urls = await self.get_image_urls(interaction, message_from_user)
         if img_urls == []:
