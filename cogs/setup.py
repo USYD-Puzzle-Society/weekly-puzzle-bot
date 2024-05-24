@@ -291,7 +291,7 @@ class Setup(commands.Cog):
             + f"{self.info_obj.info[puzzle_name]['week_num']}"
         )
 
-        puzzle_name = await self.check_puzzle_name(ctx, puzzle_name)
+        puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
