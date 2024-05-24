@@ -14,45 +14,49 @@ bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
 
 # load all available cogs on startup
 @bot.tree.command(
-    name="startup",
-    guild=guild
+    name="startup"
 )
 @commands.has_role(exec_id)
-async def startup(ctx: commands.context.Context):
+async def startup(interaction: discord.Interaction):
+    await interaction.response.send_message("Loading cogs")
     for filename in os.listdir("cogs/"):
         if filename.endswith(".py"):
             await bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
             print(f"Loaded {filename}")
-    await ctx.channel.send(f"Loaded all cogs")
+    await bot.tree.sync(guild=guild)
+    await interaction.channel.send("Loaded all cogs")
 
 # command to load a cog
 @bot.tree.command(
-    name="load",
-    guild=guild
+    name="load"
 )
 @commands.has_role(exec_id)
-async def load(ctx: commands.context.Context, extension: str):
+async def load(interaction: discord.Interaction, extension: str):
+    await interaction.response.send_message(f"Loading {extension} cog")
     await bot.load_extension(f"{cogs_dir}.{extension}")
-    await ctx.send(f"Loaded {extension} cog")
+    await bot.tree.sync(guild=guild)
+    await interaction.channel.send(f"Loaded {extension} cog")
 
 # command to unload a cog
 @bot.tree.command(
-    name="unload",
-    guild=guild
+    name="unload"
 )
 @commands.has_role(exec_id)
-async def unload(ctx: commands.context.Context, extension: str):
+async def unload(interaction: discord.Interaction, extension: str):
+    await interaction.response.send_message(f"Unloading {extension} cog")
     await bot.unload_extension(f"{cogs_dir}.{extension}")
+    await bot.tree.sync(guild=guild)
     await ctx.send(f"Unloaded {extension} cog")
 
 # command to reload a cog
 @bot.tree.command(
-    name="reload",
-    guild=guild
+    name="reload"
 )
 @commands.has_role(exec_id)
-async def reload(ctx: commands.context.Context, extension: str):
+async def reload(interaction: discord.Interaction, extension: str):
+    await interaction.response.send_message(f"Reloading {extension} cog")
     await bot.reload_extension(f"{cogs_dir}.{extension}")
+    await bot.tree.sync(guild=guild)
     await ctx.send(f"Reloaded {extension} cog")
 
 bot.run(TOKEN)
