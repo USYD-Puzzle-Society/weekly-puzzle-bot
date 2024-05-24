@@ -7,7 +7,7 @@ from info import Info
 from discord.ext import commands
 
 
-class Setup(commands.Cog):
+class Setup(commands.GroupCog, group_name="set"):
     def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
         self.exec_id = "Executives"
@@ -73,7 +73,7 @@ class Setup(commands.Cog):
         return [image.url for image in msg.attachments]
 
     @discord.app_commands.command(
-        name="setpuzzle"
+        name="puzzle"
     )
     @commands.has_role("Executives")
     async def set_puzzle(
@@ -128,7 +128,7 @@ class Setup(commands.Cog):
             await interaction.channel.send(img_urls[i])
 
     @discord.app_commands.command(
-        name="setrelease"
+        name="release"
     )
     @commands.has_role("Executives")
     async def set_time(
@@ -165,7 +165,7 @@ class Setup(commands.Cog):
         )
 
     @discord.app_commands.command(
-        name="setweek"
+        name="week"
     )
     @commands.has_role("Executives")
     async def set_week(
