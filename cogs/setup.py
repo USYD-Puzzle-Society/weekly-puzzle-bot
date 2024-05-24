@@ -72,48 +72,6 @@ class Setup(commands.Cog):
 
         return [image.url for image in msg.attachments]
 
-    async def get_submission_link(self, interaction: discord.Interaction, message_from_user: Callable):
-        await interaction.channel.send("Please send the submission link.")
-
-        msg = await self.bot.wait_for("message", check=message_from_user)
-
-        if ".stop" == msg.content.lower():
-            await interaction.channel.send("Command stopped. No changes have been made.")
-            return ""
-
-        return msg.content
-
-    async def get_interactive_link(self, interaction: discord.Interaction, message_from_user: Callable):
-        await interaction.channel.send("Is there an interactive link? y/n")
-
-        msg = await self.bot.wait_for("message", check=message_from_user)
-
-        if ".stop" == msg.content.lower():
-            await interaction.channel.send("Command stopped. No changes have been made.")
-            return ""
-
-        while not msg.content.lower() == "y":
-            if "n" == msg.content.lower():
-                return ""
-
-            await interaction.channel.send("Is there an interactive link? y/n")
-
-            msg = await self.bot.wait_for("message", check=message_from_user)
-
-            if ".stop" == msg.content.lower():
-                await interaction.channel.send("Command stopped. No changes have been made.")
-                return ""
-            
-        await interaction.channel.send("Please send the interactive link for the puzzle.")
-
-        msg = await self.bot.wait_for("message", check=message_from_user)
-
-        if ".stop" == msg.content.lower():
-            await interaction.channel.send("Command stopped. No changes have been made.")
-            return ""
-
-        return msg.content
-
     # command for quick setup of a puzzle. user will only have to send the images
     @discord.app_commands.command(
         name="setpuzzle"
@@ -121,13 +79,14 @@ class Setup(commands.Cog):
     @commands.has_role("Executives")
     async def set_puzzle(
             self, interaction: discord.Interaction, puzzle_name: str, 
+            submission_link: str, interactive_link: str = "",
             change_datetime: bool = True):
         puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
         await interaction.response.send_message(
-            f"Puzzle setup started. The puzzle your are setting has a {puzzle_name} puzzle classification."
+            f"Puzzle setup started. The puzzle that you are setting has a {puzzle_name} puzzle classification."
         )
 
         original_data = self.info_obj.info[puzzle_name]
@@ -147,12 +106,6 @@ class Setup(commands.Cog):
         img_urls = await self.get_image_urls(interaction, message_from_user)
         if img_urls == []:
             return
-
-        submission_link = await self.get_submission_link(interaction, message_from_user)
-        if submission_link == "":
-            return
-
-        interactive_link = await self.get_interactive_link(interaction, message_from_user)
         
         puzzle_data = {
             "release_datetime": release_datetime,
