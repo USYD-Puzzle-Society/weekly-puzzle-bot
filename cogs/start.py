@@ -10,7 +10,7 @@ class Start(commands.Cog):
     def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
         self.info_obj = info
-        
+        self.datetime_format = "%d/%m/%Y %H:%M"
         self.start_json = "start.json"
 
     """
@@ -44,7 +44,7 @@ class Start(commands.Cog):
             urls = self.info_obj.info[puzz_name]["img_urls"]
 
         str_release = self.info_obj.info[puzz_name]["release_datetime"]
-        release_datetime = self.info_obj.str_to_datetime(str_release)
+        release_datetime = datetime.datetime.strptime(str_release, self.datetime_format)
         channel_id = self.info_obj.info[puzz_name]["channel_id"]
         channel = self.bot.get_channel(channel_id)
 

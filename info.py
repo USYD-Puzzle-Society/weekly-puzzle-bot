@@ -55,15 +55,6 @@ class Info():
         
         return puzzle_name
 
-    # expects the %d/%m/%Y %H:%M format
-    def str_to_datetime(self, string: str) -> datetime.datetime:
-        date, time = string.split()
-
-        day, month, year = date.split("/")
-        hour, minute = time.split(":")
-
-        return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute))
-
     def check_date(self, msg: str):
         try:
             strday, strmonth, stryear = msg.split("/")

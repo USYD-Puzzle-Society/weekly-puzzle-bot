@@ -30,7 +30,7 @@ class Setup(commands.GroupCog, group_name="set"):
         return time
 
     def new_datetime_and_week(self, original_datetime: str, original_week: int):
-        new_datetime = self.info_obj.str_to_datetime(original_datetime)
+        new_datetime = datetime.datetime.strptime(original_datetime, self.datetime_format)
         new_datetime = new_datetime + datetime.timedelta(days=7)
         new_datetime = new_datetime.strftime(self.datetime_format)
 
