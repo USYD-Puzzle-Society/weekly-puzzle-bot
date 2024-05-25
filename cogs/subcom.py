@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from classes.Task import Task
+from classes.task import Task
 import datetime
 import os
 import json
