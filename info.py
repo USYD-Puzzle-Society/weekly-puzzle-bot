@@ -55,32 +55,14 @@ class Info():
         
         return puzzle_name
 
-    def check_date(self, msg: str):
+    async def check_datetime(self, interaction: discord.Interaction, datetime_str: str):
         try:
-            strday, strmonth, stryear = msg.split("/")
-
-            # check if it is a valid date
-            date = datetime.date(int(stryear), int(strmonth), int(strday))
-
-            day, month, year = int(strday), int(strmonth), int(stryear)
-
-            return day, month, year
-        
+            return datetime.datetime.strptime(datetime_str, "%d/%m/%Y %H:%M")
         except ValueError:
-            return False
-
-    def check_time(self, msg: str):
-        try:
-            strhour, strminute = msg.split(":")
-
-            # check if valid time
-            time = datetime.time(int(strhour), int(strminute))
-
-            hour, minute = int(strhour), int(strminute)
-
-            return hour, minute
-
-        except ValueError:
+            await interaction.response.send_message(
+                "Please enter the date in the format DD/MM/YYYY "
+                + "and the time in the format HH:MM (24 hour time)."
+            )
             return False
 
     # each get_text function needs to read from the json file since the info could have been updated

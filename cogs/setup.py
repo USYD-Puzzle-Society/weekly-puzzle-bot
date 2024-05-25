@@ -13,22 +13,6 @@ class Setup(commands.GroupCog, group_name="set"):
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
 
-    async def check_date(self, interaction: discord.Interaction, date: str):
-        date = self.info_obj.check_date(date)
-        if not date:
-            await interaction.response.send_message("Please enter date in the format DD/MM/YYYY")
-            return False
-
-        return date
-
-    async def check_time(self, interaction: discord.Interaction, time: str):
-        time = self.info_obj.check_time(time)
-        if not time:
-            await interaction.response.send_message("Please enter time in the format HH:MM (24 hour time.)")
-            return False
-        
-        return time
-
     def new_datetime_and_week(self, original_datetime: str, original_week: int):
         new_datetime = datetime.datetime.strptime(original_datetime, self.datetime_format)
         new_datetime = new_datetime + datetime.timedelta(days=7)
@@ -127,28 +111,19 @@ class Setup(commands.GroupCog, group_name="set"):
         if not puzzle_name:
             return
 
-        new_date = await self.check_date(interaction, date)
-        if not new_date:
+        new_datetime = await self.info_obj.check_datetime(interaction, " ".join((date, time)))
+        if not new_datetime:
             return
-        day, month, year = new_date
 
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-
-        new_time = await self.check_time(interaction, time)
-        if not new_time:
-            return
-        hour, minute = new_time
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
         previous_datetime = self.info_obj.info[puzzle_name]['release_datetime']
-        self.info_obj.change_time(puzzle_name, new_release)
+        self.info_obj.change_time(puzzle_name, new_datetime)
 
         await interaction.response.send_message(
             "The previous release date for the puzzle was "
             + f"{previous_datetime}. "
             + "The new release time for the puzzle is "
-            + f"{self.info_obj.info[puzzle_name]['release_datetime']} ({weekday_name}). "
+            + f"{self.info_obj.info[puzzle_name]['release_datetime']} "
+            + f"({self.info_obj.day_names[new_datetime.weekday()]}). "
             + f"Remember to do `.start {puzzle_name}`"
         )
 
