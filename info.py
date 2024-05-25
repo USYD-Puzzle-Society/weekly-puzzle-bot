@@ -34,7 +34,7 @@ class Info():
             6: "Sunday"
         }
 
-    def check_puzzle_name(self, puzzle_name: str):
+    async def check_puzzle_name(self, interaction: discord.Interaction, puzzle_name: str):
         shortened_puzzle_names = {
             "mon": "monday",
             "wed": "wednesday",
@@ -49,6 +49,8 @@ class Info():
             pass
 
         if puzzle_name not in self.default_puzzle_names:
+            accepted_puzzle_names = ', '.join(self.default_puzzle_names)
+            await interaction.response.send_message(f"Please use one of the accepted puzzle_names: {accepted_puzzle_names}.")
             return False
         
         return puzzle_name
@@ -94,7 +96,7 @@ class Info():
     # this could potential pose problems if a read and write occur at the same time
     # however, this shouldn't be a big issue as the commands that use these functions will only be accessible by a few people
 
-    def get_text(self, ctx: commands.context.Context, mention: bool, puzzle_name: str):
+    def get_text(self, interaction: discord.Interaction, mention: bool, puzzle_name: str):
         get_text = {
             "monday": self.get_monday_text,
             "wednesday": self.get_wednesday_text,
@@ -107,9 +109,9 @@ class Info():
             "ciyk": self.get_ciyk_text,
         }
 
-        return get_text[puzzle_name](ctx, mention)
+        return get_text[puzzle_name](interaction, mention)
 
-    def get_monday_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_monday_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
@@ -118,9 +120,9 @@ class Info():
         week_num = puzz_info["week_num"]
 
         if mention: 
-            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            puzz_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            puzz_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             puzz_tag,
@@ -137,7 +139,7 @@ class Info():
 
         return "".join(lines)
 
-    def get_wednesday_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_wednesday_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
@@ -146,9 +148,9 @@ class Info():
         week_num = puzz_info["week_num"]
 
         if mention: 
-            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            puzz_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            puzz_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             puzz_tag,
@@ -165,7 +167,7 @@ class Info():
 
         return "".join(lines)
 
-    def get_friday_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_friday_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
@@ -174,9 +176,9 @@ class Info():
         week_num = puzz_info["week_num"]
 
         if mention: 
-            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            puzz_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            puzz_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             puzz_tag,
@@ -193,7 +195,7 @@ class Info():
 
         return "".join(lines)
 
-    def get_rebuscryptic_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_rebuscryptic_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
@@ -201,9 +203,9 @@ class Info():
         role_name = puzz_info["role_name"]
 
         if mention:
-            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            puzz_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            puzz_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             puzz_tag,
@@ -218,7 +220,7 @@ class Info():
         return "".join(lines)
 
     # mention lets the function know whether the role should be tagged
-    def get_minipuzz_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_minipuzz_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
         
@@ -226,9 +228,9 @@ class Info():
         role_name = puzz_info["role_name"]
 
         if mention:
-            puzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            puzz_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            puzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            puzz_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             puzz_tag,
@@ -246,7 +248,7 @@ class Info():
 
         return "".join(lines)
     
-    def get_crossword_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_crossword_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
         
@@ -254,9 +256,9 @@ class Info():
         role_name = crossword_info["role_name"]
 
         if mention:
-            crossword_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            crossword_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            crossword_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            crossword_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             crossword_tag,
@@ -269,7 +271,7 @@ class Info():
 
         return "".join(lines)
     
-    def get_wordsearch_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_wordsearch_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
@@ -277,9 +279,9 @@ class Info():
         role_name = wordsearch_info["role_name"]
 
         if mention:
-            wordsearch_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            wordsearch_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            wordsearch_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            wordsearch_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             wordsearch_tag,
@@ -288,7 +290,7 @@ class Info():
 
         return "".join(lines)
     
-    def get_logicpuzz_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_logicpuzz_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
@@ -296,9 +298,9 @@ class Info():
         role_name = logicpuzz_info["role_name"]
 
         if mention:
-            logicpuzz_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            logicpuzz_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            logicpuzz_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            logicpuzz_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         lines = [
             logicpuzz_tag,
@@ -311,7 +313,7 @@ class Info():
 
         return "".join(lines)
 
-    def get_ciyk_text(self, ctx: commands.context.Context, mention: bool) -> str:
+    def get_ciyk_text(self, interaction: discord.Interaction, mention: bool) -> str:
         with open(self.info_fn, "r") as fn:
             self.info = json.load(fn)
 
@@ -320,9 +322,9 @@ class Info():
         role_name = ciyk_info["role_name"]
 
         if mention:
-            ciyk_tag = f"{discord.utils.get(ctx.guild.roles, name=role_name).mention}\n\n"
+            ciyk_tag = f"{discord.utils.get(interaction.guild.roles, name=role_name).mention}\n\n"
         else:
-            ciyk_tag = f"@/{discord.utils.get(ctx.guild.roles, name=role_name)}\n\n"
+            ciyk_tag = f"@/{discord.utils.get(interaction.guild.roles, name=role_name)}\n\n"
 
         line1 = f'**COMMENT IF YOU KNOW: WEEK {ciyk_info["week_num"]}**\n\n'
         line2 = f'If you think you know the pattern, comment an answer that follows it in <#{ciyk_info["discuss_id"]}>\n'

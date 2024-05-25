@@ -18,13 +18,12 @@ bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
 )
 @commands.has_role(exec_id)
 async def startup(interaction: discord.Interaction):
-    await interaction.response.defer()
     for filename in os.listdir("cogs/"):
         if filename.endswith(".py"):
             await bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
             print(f"Loaded {filename}")
+    await interaction.response.send_message("Loaded all cogs")
     await bot.tree.sync(guild=guild)
-    await interaction.followup.send("Loaded all cogs")
 
 # command to load a cog
 @bot.tree.command(
@@ -32,10 +31,9 @@ async def startup(interaction: discord.Interaction):
 )
 @commands.has_role(exec_id)
 async def load(interaction: discord.Interaction, extension: str):
-    await interaction.response.defer()
     await bot.load_extension(f"{cogs_dir}.{extension}")
+    await interaction.response.send_message(f"Loaded {extension} cog")
     await bot.tree.sync(guild=guild)
-    await interaction.followup.send(f"Loaded {extension} cog")
 
 # command to unload a cog
 @bot.tree.command(
@@ -43,10 +41,9 @@ async def load(interaction: discord.Interaction, extension: str):
 )
 @commands.has_role(exec_id)
 async def unload(interaction: discord.Interaction, extension: str):
-    await interaction.response.defer()
     await bot.unload_extension(f"{cogs_dir}.{extension}")
+    await interaction.response.send_message(f"Unloaded {extension} cog")
     await bot.tree.sync(guild=guild)
-    await interaction.followup.send(f"Unloaded {extension} cog")
 
 # command to reload a cog
 @bot.tree.command(
@@ -54,9 +51,8 @@ async def unload(interaction: discord.Interaction, extension: str):
 )
 @commands.has_role(exec_id)
 async def reload(interaction: discord.Interaction, extension: str):
-    await interaction.response.defer()
     await bot.reload_extension(f"{cogs_dir}.{extension}")
+    await interaction.response.send_message(f"Reloaded {extension} cog")
     await bot.tree.sync(guild=guild)
-    await interaction.followup.send(f"Reloaded {extension} cog")
 
 bot.run(TOKEN)

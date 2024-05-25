@@ -10,18 +10,8 @@ from discord.ext import commands
 class Setup(commands.GroupCog, group_name="set"):
     def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
-        self.exec_id = "Executives"
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
-
-    async def check_puzzle_name(self, interaction: discord.Interaction, puzzle_name: str):
-        puzzle_name = self.info_obj.check_puzzle_name(puzzle_name)
-        if not puzzle_name:
-            accepted_puzzle_names = ', '.join(self.info_obj.default_puzzle_names)
-            await interaction.response.send_message(f"Please use one of the accepted puzzle_names: {accepted_puzzle_names}.")
-            return False
-
-        return puzzle_name
 
     async def check_date(self, interaction: discord.Interaction, date: str):
         date = self.info_obj.check_date(date)
@@ -80,7 +70,7 @@ class Setup(commands.GroupCog, group_name="set"):
             self, interaction: discord.Interaction, puzzle_name: str, 
             submission_link: str, interactive_link: str = "",
             change_datetime: bool = True):
-        puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
+        puzzle_name = await self.info_obj.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
@@ -115,14 +105,13 @@ class Setup(commands.GroupCog, group_name="set"):
         }
 
         self.info_obj.change_data(puzzle_name, puzzle_data)
+        text = self.info_obj.get_text(interaction, False, puzzle_name)
         
         await interaction.channel.send(
             f"Done. The following will be released at {release_datetime} in "
             + f"<#{original_data['channel_id']}>. "
             + f"Remember to do `.start {puzzle_name}`"
         )
-
-        text = self.info_obj.get_text(interaction, False, puzzle_name)
         await interaction.channel.send(text)
         for i in range(len(img_urls)):
             await interaction.channel.send(img_urls[i])
@@ -134,7 +123,7 @@ class Setup(commands.GroupCog, group_name="set"):
     async def set_time(
             self, interaction: discord.Interaction, puzzle_name: str, date: str, 
             time: str): 
-        puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
+        puzzle_name = await self.info_obj.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
@@ -170,7 +159,7 @@ class Setup(commands.GroupCog, group_name="set"):
     async def set_week(
             self, interaction: discord.Interaction, puzzle_name: str,
             week_num: int):
-        puzzle_name = await self.check_puzzle_name(interaction, puzzle_name)
+        puzzle_name = await self.info_obj.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
