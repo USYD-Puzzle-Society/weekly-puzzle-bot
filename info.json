@@ -1,4 +1,5 @@
 {
+    "info_path": "info.json",
     "datetime_format": "%d/%m/%Y %H:%M",
     "day_names": {
         "0": "Monday",
@@ -12,7 +13,7 @@
     "puzzles": {
         "monday": {
             "type": "weekly",
-            "role": "weekly puzzles",
+            "role_name": "weekly puzzles",
             "release_channel": 892032997220573204,
             "release_time": "19/02/2024 16:00",
             "week": 0,
@@ -23,7 +24,7 @@
         },
         "wednesday": {
             "type": "weekly",
-            "role": "weekly puzzles",
+            "role_name": "weekly puzzles",
             "release_channel": 892032997220573204,
             "release_time": "21/02/2024 16:00",
             "week": 0,
@@ -34,7 +35,7 @@
         },
         "friday": {
             "type": "weekly",
-            "role": "weekly puzzles",
+            "role_name": "weekly puzzles",
             "release_channel": 892032997220573204,
             "release_time": "23/02/2024 16:00",
             "week": 0,
@@ -45,7 +46,7 @@
         },
         "rebus_cryptic": {
             "type": "weekly",
-            "role": "weekly puzzles",
+            "role_name": "weekly puzzles",
             "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
@@ -55,7 +56,7 @@
         },
         "mini_puzzle": {
             "type": "weekly",
-            "role": "weekly puzzles",
+            "role_name": "weekly puzzles",
             "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
@@ -66,7 +67,7 @@
         },
         "crossword": {
             "type": "chill",
-            "role": "crosswords",
+            "role_name": "crosswords",
             "release_channel": 1074683905405358171,
             "release_time": "08/08/2022 12:00",
             "week": 0,
@@ -76,7 +77,7 @@
         },
         "word_search": {
             "type": "chill",
-            "role": "word searches",
+            "role_name": "word searches",
             "release_channel": 1074684130794672138,
             "release_time": "08/08/2022 12:00",
             "week": 0,
@@ -86,7 +87,7 @@
         },
         "logic_puzzle": {
             "type": "chill",
-            "role": "logic puzzles",
+            "role_name": "logic puzzles",
             "release_channel": 1074684130794672138,
             "release_time": "08/08/2022 12:00",
             "week": 0,
@@ -96,7 +97,7 @@
         },
         "ciyk": {
             "type": "discussion",
-            "role": "weekly games",
+            "role_name": "weekly games",
             "release_channel": 1001742058601590824,
             "discussion_channel": 1001742642427744326,
             "release_time": "08/08/2022 12:00",
