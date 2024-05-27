@@ -1,5 +1,4 @@
 {
-    "info_path": "info.json",
     "datetime_format": "%d/%m/%Y %H:%M",
     "day_names": {
         "0": "Monday",
@@ -18,8 +17,8 @@
             "release_time": "19/02/2024 16:00",
             "week": 0,
             "image_urls": [],
-            "submission_link": "",
             "display_name": "LOGIC + CRYPTIC",
+            "submission_link": "",
             "interactive_link": ""
         },
         "wednesday": {
@@ -29,8 +28,8 @@
             "release_time": "21/02/2024 16:00",
             "week": 0,
             "image_urls": [],
-            "submission_link": "",
             "display_name": "MINI PUZZLE",
+            "submission_link": "",
             "interactive_link": ""
         },
         "friday": {
@@ -40,8 +39,8 @@
             "release_time": "23/02/2024 16:00",
             "week": 0,
             "image_urls": [],
-            "submission_link": "",
             "display_name": "PRINTER'S DEVILRY",
+            "submission_link": "",
             "interactive_link": ""
         },
         "rebus_cryptic": {
@@ -52,7 +51,8 @@
             "week": 0,
             "image_urls": [],
             "display_name": "REBUS + CRYPTIC",
-            "submission_link": ""
+            "submission_link": "",
+            "interactive_link": ""
         },
         "mini_puzzle": {
             "type": "weekly",
@@ -61,8 +61,8 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "submission_link": "",
             "display_name": "MINI PUZZLE",
+            "submission_link": "",
             "interactive_link": ""
         },
         "crossword": {
@@ -96,14 +96,14 @@
             "interactive_link": ""
         },
         "ciyk": {
-            "type": "discussion",
+            "type": "dicussion",
             "role_name": "weekly games",
             "release_channel": 1001742058601590824,
-            "discussion_channel": 1001742642427744326,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "CIYK"
+            "display_name": "CIYK",
+            "discussion_channel": 1001742642427744326
         }
     }
 }
