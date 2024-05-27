@@ -1,86 +1,109 @@
 {
-    "emojis": {
-        "jigsaw": ":jigsaw:",
-        "brain": ":brain:",
-        "speech": ":speech_balloon:",
-        "heart": ":heart:",
-        "cross": ":x:"
+    "datetime_format": "%d/%m/%Y %H:%M",
+    "day_names": {
+        "0": "Monday",
+        "1": "Tuesday",
+        "2": "Wednesday",
+        "3": "Thursday",
+        "4": "Friday",
+        "5": "Saturday",
+        "6": "Sunday"
     },
-    "monday": {
-        "role_name": "weekly puzzles",
-        "channel_id": 892032997220573204,
-        "release_datetime": "19/02/2024 16:00",
-        "week_num": 0,
-        "img_urls": [],
-        "submission_link": "",
-        "interactive_link": "",
-        "releasing": false
-    },
-    "wednesday": {
-        "role_name": "weekly puzzles",
-        "channel_id": 892032997220573204,
-        "release_datetime": "21/02/2024 16:00",
-        "week_num": 0,
-        "img_urls": [],
-        "submission_link": "",
-        "interactive_link": "",
-        "releasing": false
-    },
-    "friday": {
-        "role_name": "weekly puzzles",
-        "channel_id": 892032997220573204,
-        "release_datetime": "23/02/2024 16:00",
-        "week_num": 0,
-        "img_urls": [],
-        "submission_link": "",
-        "interactive_link": "",
-        "releasing": false
-    },
-    "rebuscryptic": {
-        "role_name": "weekly puzzles",
-        "channel_id": 892032997220573204,
-        "release_datetime": "08/08/2022 12:00",
-        "week_num": -1,
-        "img_urls": [],
-        "submission_link": "",
-        "releasing": false
-    },
-    "minipuzz": {
-        "role_name": "weekly puzzles",
-        "channel_id": 892032997220573204,
-        "release_datetime": "08/08/2022 12:00",
-        "week_num": -1,
-        "img_urls": [],
-        "submission_link": "",
-        "interactive_link": "",
-        "releasing": false
-    },
-    "crossword": {
-        "role_name": "crosswords",
-        "channel_id": 1074683905405358171,
-        "release_datetime": "08/08/2022 12:00",
-        "week_num": -1,
-        "img_urls": [],
-        "submission_link": "",
-        "releasing": false
-    },
-    "sudoku": {
-        "role_name": "sudokus",
-        "channel_id": 1074684130794672138,
-        "release_datetime": "08/08/2022 12:00",
-        "week_num": -1,
-        "img_urls": [],
-        "submission_link": "",
-        "releasing": false
-    },
-    "ciyk": {
-        "role_name": "weekly games",
-        "channel_id": 1001742058601590824,
-        "discuss_id": 1001742642427744326,
-        "release_datetime": "08/08/2022 12:00",
-        "week_num": -1,
-        "img_urls": [],
-        "submission_link": "",
-        "releasing": false
+    "puzzles": {
+        "monday": {
+            "type": "weekly",
+            "role": "weekly puzzles",
+            "release_channel": 892032997220573204,
+            "release_time": "19/02/2024 16:00",
+            "week": 0,
+            "image_urls": [],
+            "submission_link": "",
+            "display_name": "LOGIC + CRYPTIC",
+            "interactive_link": ""
+        },
+        "wednesday": {
+            "type": "weekly",
+            "role": "weekly puzzles",
+            "release_channel": 892032997220573204,
+            "release_time": "21/02/2024 16:00",
+            "week": 0,
+            "image_urls": [],
+            "submission_link": "",
+            "display_name": "MINI PUZZLE",
+            "interactive_link": ""
+        },
+        "friday": {
+            "type": "weekly",
+            "role": "weekly puzzles",
+            "release_channel": 892032997220573204,
+            "release_time": "23/02/2024 16:00",
+            "week": 0,
+            "image_urls": [],
+            "submission_link": "",
+            "display_name": "PRINTER'S DEVILRY",
+            "interactive_link": ""
+        },
+        "rebus_cryptic": {
+            "type": "weekly",
+            "role": "weekly puzzles",
+            "release_channel": 892032997220573204,
+            "release_time": "08/08/2022 12:00",
+            "week": 0,
+            "image_urls": [],
+            "display_name": "REBUS + CRYPTIC",
+            "submission_link": ""
+        },
+        "mini_puzzle": {
+            "type": "weekly",
+            "role": "weekly puzzles",
+            "release_channel": 892032997220573204,
+            "release_time": "08/08/2022 12:00",
+            "week": 0,
+            "image_urls": [],
+            "submission_link": "",
+            "display_name": "MINI PUZZLE",
+            "interactive_link": ""
+        },
+        "crossword": {
+            "type": "chill",
+            "role": "crosswords",
+            "release_channel": 1074683905405358171,
+            "release_time": "08/08/2022 12:00",
+            "week": 0,
+            "image_urls": [],
+            "display_name": "CROSSWORD",
+            "submission_link": ""
+        },
+        "word_search": {
+            "type": "chill",
+            "role": "word searches",
+            "release_channel": 1074684130794672138,
+            "release_time": "08/08/2022 12:00",
+            "week": 0,
+            "image_urls": [],
+            "display_name": "WORD SEARCH",
+            "submission_link": ""
+        },
+        "logic_puzzle": {
+            "type": "chill",
+            "role": "logic puzzles",
+            "release_channel": 1074684130794672138,
+            "release_time": "08/08/2022 12:00",
+            "week": 0,
+            "image_urls": [],
+            "display_name": "LOGIC PUZZLE",
+            "submission_link": ""
+        },
+        "ciyk": {
+            "type": "discussion",
+            "role": "weekly games",
+            "release_channel": 1001742058601590824,
+            "discussion_channel": 1001742642427744326,
+            "release_time": "08/08/2022 12:00",
+            "week": 0,
+            "image_urls": [],
+            "display_name": "CIYK",
+            "submission_link": ""
+        }
     }
 }
