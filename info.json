@@ -73,7 +73,7 @@
             "week": 0,
             "image_urls": [],
             "display_name": "CROSSWORD",
-            "submission_link": ""
+            "interactive_link": ""
         },
         "word_search": {
             "type": "chill",
@@ -83,7 +83,7 @@
             "week": 0,
             "image_urls": [],
             "display_name": "WORD SEARCH",
-            "submission_link": ""
+            "interactive_link": ""
         },
         "logic_puzzle": {
             "type": "chill",
@@ -93,7 +93,7 @@
             "week": 0,
             "image_urls": [],
             "display_name": "LOGIC PUZZLE",
-            "submission_link": ""
+            "interactive_link": ""
         },
         "ciyk": {
             "type": "discussion",
@@ -103,8 +103,7 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "CIYK",
-            "submission_link": ""
+            "display_name": "CIYK"
         }
     }
 }
