@@ -18,9 +18,9 @@ bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
 )
 @commands.has_role(exec_id)
 async def startup(interaction: discord.Interaction):
-    for filename in os.listdir("cogs/"):
+    for filename in os.listdir("cogs/optional"):
         if filename.endswith(".py"):
-            await bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
+            await bot.load_extension(f"{cogs_dir}.optional.{filename[:-3]}")
             print(f"Loaded {filename}")
     await interaction.response.send_message("Loaded all cogs")
     await bot.tree.sync(guild=guild)
@@ -31,7 +31,7 @@ async def startup(interaction: discord.Interaction):
 )
 @commands.has_role(exec_id)
 async def load(interaction: discord.Interaction, extension: str):
-    await bot.load_extension(f"{cogs_dir}.{extension}")
+    await bot.load_extension(f"{cogs_dir}.optional.{extension}")
     await interaction.response.send_message(f"Loaded {extension} cog")
     await bot.tree.sync(guild=guild)
 
@@ -41,7 +41,7 @@ async def load(interaction: discord.Interaction, extension: str):
 )
 @commands.has_role(exec_id)
 async def unload(interaction: discord.Interaction, extension: str):
-    await bot.unload_extension(f"{cogs_dir}.{extension}")
+    await bot.unload_extension(f"{cogs_dir}.optional.{extension}")
     await interaction.response.send_message(f"Unloaded {extension} cog")
     await bot.tree.sync(guild=guild)
 
@@ -51,8 +51,15 @@ async def unload(interaction: discord.Interaction, extension: str):
 )
 @commands.has_role(exec_id)
 async def reload(interaction: discord.Interaction, extension: str):
-    await bot.reload_extension(f"{cogs_dir}.{extension}")
+    await bot.reload_extension(f"{cogs_dir}.optional.{extension}")
     await interaction.response.send_message(f"Reloaded {extension} cog")
     await bot.tree.sync(guild=guild)
+
+@bot.event
+async def on_ready():
+    for filename in os.listdir("cogs/required"):
+        if filename.endswith(".py"):
+            await bot.load_extension(f"{cogs_dir}.required.{filename[:-3]}")
+            print(f"Loaded {filename}")
 
 bot.run(TOKEN)
