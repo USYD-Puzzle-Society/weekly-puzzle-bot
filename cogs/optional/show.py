@@ -2,11 +2,10 @@ import os
 import json
 import discord
 import datetime
-from info import Info
 from discord.ext import commands
 
 class Show(commands.GroupCog, group_name="show"):
-    def __init__(self, bot: commands.Bot, info: Info):
+    def __init__(self, bot: commands.Bot, info):
         self.bot = bot
         self.info_obj = info
 
@@ -32,5 +31,5 @@ class Show(commands.GroupCog, group_name="show"):
             await interaction.channel.send(puzzle_info["img_urls"][i])
 
 async def setup(bot: commands.Bot):
-    info = Info()
+    info = bot.get_cog("Info")
     await bot.add_cog(Show(bot, info), guild=discord.Object(1153319575048437833))

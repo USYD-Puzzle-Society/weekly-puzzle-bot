@@ -3,11 +3,10 @@ import json
 import asyncio
 import discord
 import datetime
-from info import Info
 from discord.ext import commands
 
 class Start(commands.Cog):
-    def __init__(self, bot: commands.Bot, info: Info):
+    def __init__(self, bot: commands.Bot, info):
         self.bot = bot
         self.info_obj = info
         self.datetime_format = "%d/%m/%Y %H:%M"
@@ -121,5 +120,5 @@ class Start(commands.Cog):
                 sj.write(new_json)
 
 async def setup(bot: commands.Bot):
-    info = Info()
+    info = bot.get_cog("Info")
     await bot.add_cog(Start(bot, info))

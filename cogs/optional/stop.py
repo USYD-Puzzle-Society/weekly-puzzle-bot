@@ -1,9 +1,8 @@
 import json
-from info import Info
 from discord.ext import commands
 
 class Stop(commands.Cog):
-    def __init__(self, bot: commands.Bot, info: Info):
+    def __init__(self, bot: commands.Bot, info):
         self.bot = bot
         self.info_obj = info
         self.start_json = "start.json"
@@ -41,5 +40,5 @@ class Stop(commands.Cog):
             await ctx.send(f"There is no announcement release with the ID {release_id}")
 
 async def setup(bot: commands.Bot):
-    info = Info()
+    info = bot.get_cog("Info")
     await bot.add_cog(Stop(bot, info))
