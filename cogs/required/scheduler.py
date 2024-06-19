@@ -2,10 +2,10 @@ from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
-class Scheduler(commands.Cog, AsyncIOScheduler):
+class PuzzleScheduler(commands.Cog):
     def __init__(self, bot: commands.Bot, info):
-        super().__init__()
-        self.start()
+        self.scheduler = AsyncIOScheduler()
+        self.scheduler.start()
         self.bot = bot
         self.info = info
 
@@ -17,8 +17,8 @@ class Scheduler(commands.Cog, AsyncIOScheduler):
             await channel.send(puzzle.image_urls[i])
 
     def schedule_puzzle(self, puzzle_name, datetime):
-        self.add_job(self.start_puzzle, "date", run_date=datetime, args=[puzzle_name])
+        self.scheduler.add_job(self.start_puzzle, "date", run_date=datetime, args=[puzzle_name])
     
 async def setup(bot: commands.Bot):
     info = bot.get_cog("Info")
-    await bot.add_cog(Scheduler(bot, info))
+    await bot.add_cog(PuzzleScheduler(bot, info))
