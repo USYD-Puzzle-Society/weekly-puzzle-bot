@@ -57,7 +57,7 @@ async def reload(interaction: discord.Interaction, extension: str):
 
 @bot.event
 async def on_ready():
-    for filename in os.listdir("cogs/required"):
+    for filename in sorted(os.listdir("cogs/required")):
         if filename.endswith(".py"):
             await bot.load_extension(f"{cogs_dir}.required.{filename[:-3]}")
             print(f"Loaded {filename}")

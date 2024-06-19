@@ -32,7 +32,8 @@ class Info(commands.Cog):
 
     async def check_time(self, interaction: discord.Interaction, datetime_str: str):
         try:
-            return datetime.datetime.strptime(datetime_str, self.datetime_format)
+            _test = datetime.datetime.strptime(datetime_str, self.datetime_format)
+            return datetime_str
         except ValueError:
             await interaction.response.send_message(
                 "Please enter the date in the format DD/MM/YYYY "

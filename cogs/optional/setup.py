@@ -7,8 +7,9 @@ from discord.ext import commands
 
 
 class Setup(commands.GroupCog, group_name="set"):
-    def __init__(self, bot: commands.Bot, info):
+    def __init__(self, bot: commands.Bot, puzzle_scheduler, info):
         self.bot = bot
+        self.puzzle_scheduler = puzzle_scheduler
         self.info = info
         self.datetime_format = "%d/%m/%Y %H:%M"
 
@@ -52,7 +53,7 @@ class Setup(commands.GroupCog, group_name="set"):
     async def set_puzzle(
             self, interaction: discord.Interaction, puzzle_name: str, 
             submission_link: str, interactive_link: str = "",
-            update_time: bool = True):
+            update_time: bool = False):
         puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
@@ -81,8 +82,12 @@ class Setup(commands.GroupCog, group_name="set"):
         puzzle.image_urls = img_urls
         puzzle.submission_link = submission_link
         puzzle.interactive_link = interactive_link
-
         self.info.save()
+
+        # if the time changed, reschedule the puzzle with the new time
+        if update_time:
+            self.puzzle_scheduler.reschedule_puzzle(puzzle_name)
+
         text = puzzle.get_text(interaction, False)
         
         await interaction.channel.send(
@@ -121,6 +126,7 @@ class Setup(commands.GroupCog, group_name="set"):
 
         puzzle.release_time = new_time
         self.info.save()
+        self.puzzle_scheduler.reschedule_puzzle(puzzle_name)
 
     @discord.app_commands.command(
         name="week"
@@ -148,5 +154,6 @@ class Setup(commands.GroupCog, group_name="set"):
 
 
 async def setup(bot: commands.Bot):
+    puzzle_scheduler = bot.get_cog("PuzzleScheduler")
     info = bot.get_cog("Info")
-    await bot.add_cog(Setup(bot, info), guild=discord.Object(1153319575048437833))
+    await bot.add_cog(Setup(bot, puzzle_scheduler, info), guild=discord.Object(1153319575048437833))
