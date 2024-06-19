@@ -28,7 +28,7 @@ class Setup(commands.GroupCog, group_name="set"):
 
         msg = await self.bot.wait_for("message", check=message_from_user)
 
-        if ".stop" == msg.content.lower():
+        if "exit" == msg.content.lower():
             await interaction.channel.send("Command stopped. No changes have been made.")
             return []
 
