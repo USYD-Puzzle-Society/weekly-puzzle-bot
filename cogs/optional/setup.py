@@ -110,17 +110,17 @@ class Setup(commands.GroupCog, group_name="set"):
             return
 
         puzzle = self.info.puzzles[puzzle_name]
-        previous_time = puzzle.release_time
-        puzzle.release_time = new_time
-        self.info.save()
 
         await interaction.response.send_message(
             "The previous release date for the puzzle was "
-            + f"{previous_time}. "
-            + "The new release time for the puzzle is "
             + f"{puzzle.release_time}. "
+            + "The new release time for the puzzle is "
+            + f"{new_time}. "
             + f"Remember to do `.start {puzzle_name}`"
         )
+
+        puzzle.release_time = new_time
+        self.info.save()
 
     @discord.app_commands.command(
         name="week"
@@ -134,17 +134,17 @@ class Setup(commands.GroupCog, group_name="set"):
             return
 
         puzzle = self.info.puzzles[puzzle_name]
-        previous_week = puzzle.week
-        puzzle.week = week
-        self.info.save()
-
+        
         await interaction.response.send_message(
             "The previous week number for the puzzle was "
-            + f"{previous_week}. "
-            + "The new week number for the puzzle is "
             + f"{puzzle.week}. "
+            + "The new week number for the puzzle is "
+            + f"{week}. "
             + f"Remember to do `.start {puzzle_name}`"
         )
+
+        puzzle.week = week
+        self.info.save()
 
 
 async def setup(bot: commands.Bot):

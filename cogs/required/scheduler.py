@@ -19,4 +19,4 @@ class Scheduler(commands.Cog, AsyncIOScheduler):
     
 async def setup(bot: commands.Bot):
     info = bot.get_cog("Info")
-    await bot.add_cog(Scheduler(bot, info), guild=discord.Object(1153319575048437833))
+    await bot.add_cog(Scheduler(bot, info))
