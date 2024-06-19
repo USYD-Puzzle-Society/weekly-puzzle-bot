@@ -39,26 +39,6 @@ class Info(commands.Cog):
             )
             return False
 
-    def save(self):
-        puzzle_data = self.puzzles
-
-        for key in puzzle_data.keys():
-            puzzle_data[key] = self.puzzles[key].__dict__
-            for puzzle_key in puzzle_data[key].keys():
-                if isinstance(puzzle_data[key][puzzle_key], datetime.datetime):
-                    puzzle_data[key][puzzle_key] = datetime.datetime.strftime(puzzle_data[key][puzzle_key], self.datetime_format)
-
-        data = {
-            "datetime_format": self.datetime_format,
-            "day_names": self.day_names,
-            "puzzles": puzzle_data
-        }
-
-        json_data = json.dumps(data, indent=4)
-
-        with open(self.info_path, "w") as file:
-            file.write(json_data)
-
     def load(self):
         if os.path.exists(self.info_path):
             with open(self.info_path, "r") as file:
@@ -80,6 +60,26 @@ class Info(commands.Cog):
             puzzles[key].pop("type")
             puzzle = puzzle_class(**puzzles[key])
             self.puzzles[key] = puzzle
+
+    def save(self):
+        puzzle_data = self.puzzles
+
+        for key in puzzle_data.keys():
+            puzzle_data[key] = self.puzzles[key].__dict__
+            for puzzle_key in puzzle_data[key].keys():
+                if isinstance(puzzle_data[key][puzzle_key], datetime.datetime):
+                    puzzle_data[key][puzzle_key] = datetime.datetime.strftime(puzzle_data[key][puzzle_key], self.datetime_format)
+
+        data = {
+            "datetime_format": self.datetime_format,
+            "day_names": self.day_names,
+            "puzzles": puzzle_data
+        }
+
+        json_data = json.dumps(data, indent=4)
+
+        with open(self.info_path, "w") as file:
+            file.write(json_data)
 
 
 async def setup(bot: commands.Bot):
