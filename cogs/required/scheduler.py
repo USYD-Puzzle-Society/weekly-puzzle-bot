@@ -13,6 +13,8 @@ class Scheduler(commands.Cog, AsyncIOScheduler):
         puzzle = self.info.puzzles[puzzle_name]
         channel = self.bot.get_channel(puzzle.release_channel)
         channel.send(puzzle.get_text())
+        for i in range(len(puzzle.image_urls)):
+            await channel.send(puzzle.image_urls[i])
 
     def schedule_puzzle(self, puzzle_name, datetime):
         self.add_job(self.start_puzzle, "date", run_date=datetime, args=[puzzle_name])
