@@ -8,27 +8,7 @@ import classes.puzzle
 class Info(commands.Cog):
     def __init__(self):
         self.info_path = "info.json"
-
-        if os.path.exists(self.info_path):
-            with open(self.info_path, "r") as file:
-                json_data = json.load(file)
-        
-        self.datetime_format = json_data["datetime_format"]
-        self.day_names = json_data["day_names"]
-        self.puzzles = {}
-
-        puzzle_classes = {
-            "discussion": classes.puzzle.DiscussionPuzzle,
-            "chill": classes.puzzle.ChillPuzzle,
-            "weekly": classes.puzzle.WeeklyPuzzle
-        }
-
-        puzzles = json_data["puzzles"]
-        for key in puzzles.keys():
-            puzzle_class = puzzle_classes[puzzles[key]["type"]]
-            puzzles[key].pop("type")
-            puzzle = puzzle_class(**puzzles[key])
-            self.puzzles[key] = puzzle
+        self.load()
 
     async def check_puzzle_name(self, interaction: discord.Interaction, puzzle_name: str):
         puzzle_aliases = {
@@ -78,6 +58,28 @@ class Info(commands.Cog):
 
         with open(self.info_path, "w") as file:
             file.write(json_data)
+
+    def load(self):
+        if os.path.exists(self.info_path):
+            with open(self.info_path, "r") as file:
+                json_data = json.load(file)
+        
+        self.datetime_format = json_data["datetime_format"]
+        self.day_names = json_data["day_names"]
+        self.puzzles = {}
+
+        puzzle_classes = {
+            "discussion": classes.puzzle.DiscussionPuzzle,
+            "chill": classes.puzzle.ChillPuzzle,
+            "weekly": classes.puzzle.WeeklyPuzzle
+        }
+
+        puzzles = json_data["puzzles"]
+        for key in puzzles.keys():
+            puzzle_class = puzzle_classes[puzzles[key]["type"]]
+            puzzles[key].pop("type")
+            puzzle = puzzle_class(**puzzles[key])
+            self.puzzles[key] = puzzle
 
 
 async def setup(bot: commands.Bot):
