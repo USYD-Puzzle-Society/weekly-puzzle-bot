@@ -52,7 +52,7 @@ class Setup(commands.GroupCog, group_name="set"):
     async def set_puzzle(
             self, interaction: discord.Interaction, puzzle_name: str, 
             submission_link: str, interactive_link: str = "",
-            change_time: bool = True):
+            update_time: bool = True):
         puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
@@ -63,7 +63,7 @@ class Setup(commands.GroupCog, group_name="set"):
 
         puzzle = self.info.puzzles[puzzle_name]
 
-        if change_time:
+        if update_time:
             release_time, week = self.new_time_and_week(puzzle)
         else:
             release_time = puzzle.release_time
