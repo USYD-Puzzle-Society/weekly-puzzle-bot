@@ -6,8 +6,6 @@ with open(".token", "r") as token_file:
     TOKEN = token_file.readline().strip()
 
 guild = discord.Object(1153319575048437833)
-exec_id = "Executives"
-cogs_dir = "cogs"
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
@@ -16,11 +14,11 @@ bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
 @bot.tree.command(
     name="startup"
 )
-@commands.has_role(exec_id)
+@commands.has_role("Executives")
 async def startup(interaction: discord.Interaction):
     for filename in os.listdir("cogs/optional"):
         if filename.endswith(".py"):
-            await bot.load_extension(f"{cogs_dir}.optional.{filename[:-3]}")
+            await bot.load_extension(f"cogs.optional.{filename[:-3]}")
             print(f"Loaded {filename}")
     await interaction.response.send_message("Loaded all cogs")
     await bot.tree.sync(guild=guild)
@@ -29,9 +27,9 @@ async def startup(interaction: discord.Interaction):
 @bot.tree.command(
     name="load"
 )
-@commands.has_role(exec_id)
+@commands.has_role("Executives")
 async def load(interaction: discord.Interaction, extension: str):
-    await bot.load_extension(f"{cogs_dir}.optional.{extension}")
+    await bot.load_extension(f"cogs.optional.{extension}")
     await interaction.response.send_message(f"Loaded {extension} cog")
     await bot.tree.sync(guild=guild)
 
@@ -39,9 +37,9 @@ async def load(interaction: discord.Interaction, extension: str):
 @bot.tree.command(
     name="unload"
 )
-@commands.has_role(exec_id)
+@commands.has_role("Executives")
 async def unload(interaction: discord.Interaction, extension: str):
-    await bot.unload_extension(f"{cogs_dir}.optional.{extension}")
+    await bot.unload_extension(f"cogs.optional.{extension}")
     await interaction.response.send_message(f"Unloaded {extension} cog")
     await bot.tree.sync(guild=guild)
 
@@ -49,9 +47,9 @@ async def unload(interaction: discord.Interaction, extension: str):
 @bot.tree.command(
     name="reload"
 )
-@commands.has_role(exec_id)
+@commands.has_role("Executives")
 async def reload(interaction: discord.Interaction, extension: str):
-    await bot.reload_extension(f"{cogs_dir}.optional.{extension}")
+    await bot.reload_extension(f"cogs.optional.{extension}")
     await interaction.response.send_message(f"Reloaded {extension} cog")
     await bot.tree.sync(guild=guild)
 
@@ -59,7 +57,7 @@ async def reload(interaction: discord.Interaction, extension: str):
 async def on_ready():
     for filename in sorted(os.listdir("cogs/required")):
         if filename.endswith(".py"):
-            await bot.load_extension(f"{cogs_dir}.required.{filename[:-3]}")
+            await bot.load_extension(f"cogs.required.{filename[:-3]}")
             print(f"Loaded {filename}")
 
 bot.run(TOKEN)

@@ -4,6 +4,7 @@ import discord
 import datetime
 from discord.ext import commands
 
+
 class Show(commands.GroupCog, group_name="show"):
     def __init__(self, bot: commands.Bot, info):
         self.bot = bot
@@ -29,6 +30,7 @@ class Show(commands.GroupCog, group_name="show"):
         await interaction.channel.send(text)
         for i in range(len(puzzle_info["img_urls"])):
             await interaction.channel.send(puzzle_info["img_urls"][i])
+
 
 async def setup(bot: commands.Bot):
     info = bot.get_cog("Info")
