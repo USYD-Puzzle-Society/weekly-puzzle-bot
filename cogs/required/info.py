@@ -5,6 +5,7 @@ import datetime
 from discord.ext import commands
 import classes.puzzle
 
+
 class Info(commands.Cog):
     def __init__(self):
         self.info_path = "info.json"
