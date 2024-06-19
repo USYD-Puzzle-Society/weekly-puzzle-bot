@@ -23,7 +23,7 @@ class Setup(commands.GroupCog, group_name="set"):
     async def get_image_urls(self, interaction: discord.Interaction, message_from_user: Callable):
         await interaction.channel.send(
             "Please send all the images for the puzzle in one message."
-            + " Type `.stop` at any time and no changes will be made."
+            + " Type `exit` at any time to stop."
         )
 
         msg = await self.bot.wait_for("message", check=message_from_user)
@@ -35,12 +35,12 @@ class Setup(commands.GroupCog, group_name="set"):
         while not len(msg.attachments):
             await interaction.channel.send(
                 "Please send all the images for the puzzle in one message."
-                + " Type `.stop` at any time and no changes will be made."
+                + " Type `exit` at any time to stop."
             )
 
             msg = await self.bot.wait_for("message", check=message_from_user)
 
-            if ".stop" == msg.content.lower():
+            if "exit" == msg.content.lower():
                 await interaction.channel.send("Command stopped. No changes have been made.")
                 return []
 
