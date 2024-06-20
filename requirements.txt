@@ -1,4 +1,5 @@
 discord
+apscheduler
 requests
 bs4
 numpy
