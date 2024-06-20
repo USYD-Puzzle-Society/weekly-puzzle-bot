@@ -70,6 +70,7 @@ class Setup(commands.GroupCog, group_name="set"):
         await interaction.channel.send(
             f"Done. The following will be released at {puzzle.release_time} in "
             + f"<#{puzzle.release_channel}>."
+            + f"<#{puzzle.release_channel}>. It will mention the role `{role_name}`."
         )
         await interaction.channel.send(text)
         for i in range(len(image_urls)):
