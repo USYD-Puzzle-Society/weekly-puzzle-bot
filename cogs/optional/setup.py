@@ -13,13 +13,6 @@ class Setup(commands.GroupCog, group_name="set"):
         self.info = info
         self.datetime_format = "%d/%m/%Y %H:%M"
 
-    def new_time_and_week(self, puzzle):
-        new_datetime = datetime.datetime.strptime(puzzle.release_time, self.datetime_format)
-        new_datetime = new_datetime + datetime.timedelta(days=7)
-        new_datetime = new_datetime.strftime(self.datetime_format)
-
-        return (new_datetime, puzzle.week + 1)
-
     async def get_image_urls(self, interaction: discord.Interaction, message_from_user: Callable):
         await interaction.channel.send(
             "Please send all the images for the puzzle in one message."
@@ -52,8 +45,7 @@ class Setup(commands.GroupCog, group_name="set"):
     @commands.has_role("Executives")
     async def set_puzzle(
             self, interaction: discord.Interaction, puzzle_name: str, 
-            submission_link: str, interactive_link: str = "",
-            update_time: bool = False):
+            submission_link: str, interactive_link: str = ""):
         puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
@@ -64,12 +56,6 @@ class Setup(commands.GroupCog, group_name="set"):
 
         puzzle = self.info.puzzles[puzzle_name]
 
-        if update_time:
-            release_time, week = self.new_time_and_week(puzzle)
-        else:
-            release_time = puzzle.release_time
-            week_num = puzzle.week
-
         def message_from_user(msg):
             return msg.author == interaction.user
 
@@ -77,16 +63,10 @@ class Setup(commands.GroupCog, group_name="set"):
         if img_urls == []:
             return
         
-        puzzle.release_time = release_time
-        puzzle.week = week
         puzzle.image_urls = img_urls
         puzzle.submission_link = submission_link
         puzzle.interactive_link = interactive_link
         self.info.save()
-
-        # if the time changed, reschedule the puzzle with the new time
-        if update_time:
-            self.puzzle_scheduler.reschedule_puzzle(puzzle_name)
 
         text = puzzle.get_text(interaction, False)
         
