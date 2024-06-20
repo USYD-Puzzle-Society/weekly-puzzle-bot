@@ -15,7 +15,7 @@ class PuzzleScheduler(commands.Cog):
     async def start_puzzle(self, puzzle_name):
         puzzle = self.info.puzzles[puzzle_name]
         channel = self.bot.get_channel(puzzle.release_channel)
-        channel.send(puzzle.get_text())
+        await channel.send(puzzle.get_text(channel.guild, False))
         for i in range(len(puzzle.image_urls)):
             await channel.send(puzzle.image_urls[i])
 
