@@ -21,7 +21,7 @@ class BasePuzzle:
 
 class DiscussionPuzzle(BasePuzzle):
     def __init__(self, role_name: str, release_channel: int, discussion_channel: int, release_time: str, week: int, image_urls: list, display_name: str):
-        self.type = "dicussion"
+        self.type = "discussion"
         super().__init__(role_name, release_channel, release_time, week, image_urls, display_name)
         self.discussion_channel = discussion_channel
 
