@@ -11,7 +11,7 @@ class Show(commands.GroupCog, group_name="show"):
         name="puzzle"
     )
     @commands.has_role("Executives")
-    async def show(self, interaction: discord.Interaction, puzzle_name: str):
+    async def show_puzzle(self, interaction: discord.Interaction, puzzle_name: str):
         puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
@@ -21,7 +21,7 @@ class Show(commands.GroupCog, group_name="show"):
 
         await interaction.response.send_message(
             f"The following will be released at {puzzle.release_time} in "
-            + f"<#{puzzle.release_channel}>."
+            + f"<#{puzzle.release_channel}>. It will mention the role `{puzzle.role_name}`."
         )
         await interaction.channel.send(text)
         for i in range(len(puzzle.image_urls)):
