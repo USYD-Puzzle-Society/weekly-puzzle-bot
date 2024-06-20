@@ -100,7 +100,7 @@ class Setup(commands.GroupCog, group_name="set"):
             await interaction.channel.send(img_urls[i])
 
     @discord.app_commands.command(
-        name="release"
+        name="time"
     )
     @commands.has_role("Executives")
     async def set_time(
@@ -117,11 +117,10 @@ class Setup(commands.GroupCog, group_name="set"):
         puzzle = self.info.puzzles[puzzle_name]
 
         await interaction.response.send_message(
-            "The previous release date for the puzzle was "
+            "The previous release time for the puzzle was "
             + f"{puzzle.release_time}. "
             + "The new release time for the puzzle is "
-            + f"{new_time}. "
-            + f"Remember to do `.start {puzzle_name}`"
+            + f"{new_time}."
         )
 
         puzzle.release_time = new_time
