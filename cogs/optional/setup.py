@@ -1,8 +1,5 @@
-import os
-import json
-import discord
-import datetime
 from typing import Callable
+import discord
 from discord.ext import commands
 
 
