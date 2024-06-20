@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
-import cogs.required.info
+from cogs.required.info import Info
 
 
 class Show(commands.GroupCog, group_name="show"):
-    def __init__(self, bot: commands.Bot, info: info.Info):
+    def __init__(self, bot: commands.Bot, info: Info):
         self.bot = bot
         self.info = info
 

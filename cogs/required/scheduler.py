@@ -2,11 +2,11 @@ import datetime
 from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.base import JobLookupError
-import cogs.required.info
+from cogs.required.info import Info
 
 
 class PuzzleScheduler(commands.Cog):
-    def __init__(self, bot: commands.Bot, info: info.Info):
+    def __init__(self, bot: commands.Bot, info: Info):
         self.scheduler = AsyncIOScheduler()
         self.bot = bot
         self.info = info
