@@ -113,7 +113,7 @@ class Setup(commands.GroupCog, group_name="set"):
     async def set_week(
             self, interaction: discord.Interaction, puzzle_name: str,
             week: int):
-        puzzle_name = await self.info_obj.check_puzzle_name(interaction, puzzle_name)
+        puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
