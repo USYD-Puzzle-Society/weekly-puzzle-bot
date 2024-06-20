@@ -6,78 +6,38 @@ class Help(commands.Cog):
         self.bot = bot
 
         self.help_commands = [
-            ".help setup\n\n",
-            ".help show\n\n",
-            ".help start\n\n",
-            ".help stop\n\n",
-            ".help reactions"
+            "/help setup\n\n",
+            "/help show\n\n",
+            "/help reactions"
         ]
         self.help_commands_desc = [
             "Commands for setting up info for puzzle announcements\n\n",
-            "Commands for showing the current puzzle announcement text\n\n",
-            "Commands for starting the release for puzzle announcements\n\n",
-            "Commands for stopping puzzle announcement release\n\n",
+            "Commands for showing the puzzle announcements\n\n",
             "Different reaction commands"
         ]
 
         self.help_setup = [
-            ".setrc\n\n",
-            ".setrctime\n\n"
-            ".setminipuzz\n\n",
-            ".setminipuzztime\n\n",
-            ".setcrossword\n\n",
-            ".setcrosswordtime\n\n",
-            ".setsudoku\n\n",
-            ".setsudokutime\n\n"
-            ".setciyk\n\n",
-            ".setciyktime\n\n"
+            "/role <puzzle_name> <role_name>\n\n",
+            "/channel <puzzle_name> <channel_id>\n\n\n",
+            "/time <puzzle_name> <date> <time>\n\n\n",
+            "/week <puzzle_name> <week>\n\n\n",
+            "/images <puzzle_name>\n\n\n",
+            "/links <puzzle_name> <submission_link> <interactive_link>\n\n"
         ]
         self.help_setup_desc = [
-            "Sets up rebus and cryptic.\n\n",
-            "Sets up the release time for the rebus and cryptic\n\n",
-            "Sets up the minipuzzle\n\n",
-            "Changes the release time of the minipuzzle.\n\n",
-            "Sets up the crossword\n\n",
-            "Sets up the release time for the crossword\n\n",
-            "Sets up the sudoku\n\n",
-            "Sets up the release time for the sudoku\n\n",
-            "Sets up the CIYK announcement.\n\n",
-            "Changes the release time of CIYK.\n\n",
+            "Sets the role for the specified puzzle.\n\n",
+            "Sets the release channel for the specified puzzle.\n\n",
+            "Sets the release time for the specified puzzle.\n\n",
+            "Sets the week number for the specified puzzle.\n\n",
+            "Sets the image URLs for the specified puzzle.\n\n",
+            "Sets the submission and interactive links for the specified puzzle.\n\n",
         ]
         
         self.help_show = [
-            "showrc\n\n",
-            ".showminipuzz\n\n",
-            ".showcrossword\n\n",
-            ".showsudoku\n\n",
-            ".showciyk"
+            "/show puzzle <puzzle_name>\n\n",
         ]
         self.help_show_desc = [
-            "Shows time and content of the release for rebus and cryptic\n\n",
-            "Shows time and content of the release for the puzzles.\n\n",
-            "Shows time and content of the release for crossword\n\n",
-            "Shows time and content of the release for sudoku\n\n",
-            "Shows time and content of the release for CIYK"
-        ]
-        
-        self.help_start = [
-            ".start puzz\n\n\n",
-            ".start crossword\n\n\n",
-            ".start sudoku\n\n\n",
-            ".start ciyk"
-        ]
-        self.help_start_desc = [
-            "Starts the release for the puzzles. This command must be used in order for the puzzles to be released.\n\n",
-            "Starts the release for crossword. This command must be used in order for the crossword to be released.\n\n",
-            "Starts the release for sudoku. This command must be used in order for the sudoku to be released.\n\n",
-            "Starts the release for CIYK. This command must be used in order for CIYK to be released."
-        ]
-        
-        self.help_stop = [
-            ".stoppuzz [id]"
-        ]
-        self.help_stop_desc = [
-            "Stops the announcement with the given ID from releasing."
+            "Shows the release time, content, and images of the specified puzzle. It will also show the role and the release channel.\n\n",
         ]
 
         self.help_reactions = [
@@ -120,92 +80,52 @@ class Help(commands.Cog):
         ]
 
     def get_commands_embed(self) -> discord.Embed:
-        embed_msg = discord.Embed(title="Command Categories", color=discord.Colour.greyple())
-
-        embed_msg.add_field(name="Category", value="".join(self.help_commands), inline=True)
-        embed_msg.add_field(name="Description", value="".join(self.help_commands_desc), inline=True)
-
-        return embed_msg
+        embed = discord.Embed(title="Command Categories", color=discord.Colour.greyple())
+        embed.add_field(name="Category", value="".join(self.help_commands), inline=True)
+        embed.add_field(name="Description", value="".join(self.help_commands_desc), inline=True)
+        return embed
 
     def get_setup_embed(self) -> discord.Embed:
-        embed_msg = discord.Embed(title="Setup", color=discord.Colour.blue())
-
-        embed_msg.add_field(name="Command", value="".join(self.help_setup), inline=True)
-        embed_msg.add_field(name="Description", value="".join(self.help_setup_desc), inline=True)
-
-        return embed_msg
+        embed = discord.Embed(title="Setup", color=discord.Colour.blue())
+        embed.add_field(name="Command", value="".join(self.help_setup), inline=True)
+        embed.add_field(name="Description", value="".join(self.help_setup_desc), inline=True)
+        return embed
     
     def get_show_embed(self) -> discord.Embed:
-        embed_msg = discord.Embed(title="Show", color=discord.Colour.dark_gold())
-
-        embed_msg.add_field(name="Command", value="".join(self.help_show), inline=True)
-        embed_msg.add_field(name="Description", value="".join(self.help_show_desc), inline=True)
-
-        return embed_msg
-    
-    def get_start_embed(self) -> discord.Embed:
-        embed_msg = discord.Embed(title="Start", color=discord.Colour.green())
-
-        embed_msg.add_field(name="Command", value="".join(self.help_start), inline=True)
-        embed_msg.add_field(name="Description", value="".join(self.help_start_desc), inline=True)
-
-        return embed_msg
-
-    def get_stop_embed(self) -> discord.Embed:
-        embed_msg = discord.Embed(title="Stop", color=discord.Colour.red())
-
-        embed_msg.add_field(name="Command", value="".join(self.help_stop), inline=True)
-        embed_msg.add_field(name="Description", value="".join(self.help_stop_desc), inline=True)
-
-        return embed_msg
+        embed = discord.Embed(title="Show", color=discord.Colour.dark_gold())
+        embed.add_field(name="Command", value="".join(self.help_show), inline=True)
+        embed.add_field(name="Description", value="".join(self.help_show_desc), inline=True)
+        return embed
 
     def get_reactions_embed(self) -> discord.Embed:
-        embed_msg = discord.Embed(title="Reactions", color=discord.Colour.teal())
+        embed = discord.Embed(title="Reactions", color=discord.Colour.teal())
+        embed.add_field(name="Command", value="".join(self.help_reactions), inline=True)
+        embed.add_field(name="Description", value="".join(self.help_reactions_desc), inline=True)
+        return embed
 
-        embed_msg.add_field(name="Command", value="".join(self.help_reactions), inline=True)
-        embed_msg.add_field(name="Description", value="".join(self.help_reactions_desc), inline=True)
-
-        return embed_msg
-
-    @commands.command()
-    async def help(self, ctx: commands.context.Context):
-        user_roles = ctx.author.roles
-
-        is_exec = False
-        for role in user_roles:
-            if "Executives" == role.name:
-                is_exec = True
-                break
-        
-        if not is_exec:
-            embed_msg = self.get_reactions_embed()
-            await ctx.send(embed=embed_msg)
-
+    @discord.app_commands.command(
+        name="help"
+    )
+    async def help(self, interaction: discord.Interaction, command: str = None):
+        if not any(role.name == "Executives" for role in interaction.user.roles):
+            await interaction.response.send_message(embed=self.get_reactions_embed())
             return
-        
-        else:
-            arguments = ctx.message.content.split()[1:]
 
-            get_embeds = {
-                "setup": self.get_setup_embed,
-                "show": self.get_show_embed,
-                "start": self.get_start_embed,
-                "stop": self.get_stop_embed,
-                "reactions": self.get_reactions_embed
-            }
+        if not command:
+            await interaction.response.send_message(embed=self.get_commands_embed())
+            return
 
-            if 0 == len(arguments):
-                embed_msg = self.get_commands_embed()
+        embeds = {
+            "setup": self.get_setup_embed,
+            "show": self.get_show_embed,
+            "reactions": self.get_reactions_embed
+        }
 
-                await ctx.send(embed=embed_msg)
-            else:
-                argument = arguments[0]
+        if not command in embeds:
+            await interaction.response.send_message(f"{command.lower().capitalize()} is not a valid command category.")
+            return
 
-                try:
-                    embed_msg = get_embeds[argument.lower()]()
-                    await ctx.send(embed=embed_msg)
-                except KeyError:
-                    await ctx.send(f"{argument} is not a valid command category.")
+        await interaction.response.send_message(embed=embeds[command.lower()]())
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Help(bot))
+    await bot.add_cog(Help(bot), guild=discord.Object(1153319575048437833))
