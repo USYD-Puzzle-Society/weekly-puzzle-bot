@@ -105,7 +105,7 @@ class Help(commands.Cog):
 
     @discord.app_commands.command(
         name="help",
-        description="Displays the available commands and their descriptions. Optionally, you can specify a command category to get more detailed information."
+        description="Displays the available commands. Specify a command to get more detailed information."
     )
     async def help(self, interaction: discord.Interaction, command: str = None):
         if not any(role.name == "Executives" for role in interaction.user.roles):
