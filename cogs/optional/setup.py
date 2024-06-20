@@ -39,7 +39,8 @@ class Setup(commands.GroupCog, group_name="set"):
         return [image.url for image in msg.attachments]
 
     @discord.app_commands.command(
-        name="role"
+        name="role",
+        description="Sets the role for the specified puzzle."
     )
     @commands.has_role("Executives")
     async def set_role(
@@ -62,7 +63,8 @@ class Setup(commands.GroupCog, group_name="set"):
         self.info.save()
 
     @discord.app_commands.command(
-        name="channel"
+        name="channel",
+        description="Sets the release channel for the specified puzzle."
     )
     @commands.has_role("Executives")
     async def set_channel(
@@ -85,7 +87,8 @@ class Setup(commands.GroupCog, group_name="set"):
         self.info.save()
 
     @discord.app_commands.command(
-        name="time"
+        name="time",
+        description="Sets the release time for the specified puzzle."
     )
     @commands.has_role("Executives")
     async def set_time(
@@ -113,7 +116,8 @@ class Setup(commands.GroupCog, group_name="set"):
         self.puzzle_scheduler.reschedule_puzzle(puzzle_name)
 
     @discord.app_commands.command(
-        name="week"
+        name="week",
+        description="Sets the week number for the specified puzzle."
     )
     @commands.has_role("Executives")
     async def set_week(
@@ -136,7 +140,8 @@ class Setup(commands.GroupCog, group_name="set"):
         self.info.save()
 
     @discord.app_commands.command(
-        name="images"
+        name="images",
+        description="Sets the image URLs for the specified puzzle."
     )
     @commands.has_role("Executives")
     async def set_images(self, interaction: discord.Interaction, puzzle_name: str):
@@ -165,7 +170,8 @@ class Setup(commands.GroupCog, group_name="set"):
         self.info.save()
 
     @discord.app_commands.command(
-        name="links"
+        name="links",
+        description="Sets the submission and interactive links for the specified puzzle."
     )
     @commands.has_role("Executives")
     async def set_links(

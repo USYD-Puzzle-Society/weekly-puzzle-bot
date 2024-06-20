@@ -8,7 +8,8 @@ class Show(commands.GroupCog, group_name="show"):
         self.info = info
 
     @discord.app_commands.command(
-        name="puzzle"
+        name="puzzle",
+        description="Shows the release time, content, and images of the specified puzzle."
     )
     @commands.has_role("Executives")
     async def show_puzzle(self, interaction: discord.Interaction, puzzle_name: str):

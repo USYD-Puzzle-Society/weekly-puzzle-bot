@@ -10,7 +10,8 @@ bot = commands.Bot(command_prefix=".", help_command=None, intents=discord.Intent
 
 # load all available cogs on startup
 @bot.tree.command(
-    name="startup"
+    name="startup",
+    description="Loads all available cogs on startup."
 )
 @commands.has_role("Executives")
 async def startup(interaction: discord.Interaction):
@@ -23,7 +24,8 @@ async def startup(interaction: discord.Interaction):
 
 # command to load a cog
 @bot.tree.command(
-    name="load"
+    name="load",
+    description="Loads a specified cog."
 )
 @commands.has_role("Executives")
 async def load(interaction: discord.Interaction, extension: str):
@@ -33,7 +35,8 @@ async def load(interaction: discord.Interaction, extension: str):
 
 # command to unload a cog
 @bot.tree.command(
-    name="unload"
+    name="unload",
+    description="Unloads a specified cog."
 )
 @commands.has_role("Executives")
 async def unload(interaction: discord.Interaction, extension: str):
@@ -43,7 +46,8 @@ async def unload(interaction: discord.Interaction, extension: str):
 
 # command to reload a cog
 @bot.tree.command(
-    name="reload"
+    name="reload",
+    description="Reloads a specified cog."
 )
 @commands.has_role("Executives")
 async def reload(interaction: discord.Interaction, extension: str):
