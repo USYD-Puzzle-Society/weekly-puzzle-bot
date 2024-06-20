@@ -59,11 +59,11 @@ class Setup(commands.GroupCog, group_name="set"):
         def message_from_user(msg):
             return msg.author == interaction.user
 
-        img_urls = await self.get_image_urls(interaction, message_from_user)
-        if img_urls == []:
+        image_urls = await self.get_image_urls(interaction, message_from_user)
+        if image_urls == []:
             return
         
-        puzzle.image_urls = img_urls
+        puzzle.image_urls = image_urls
         puzzle.submission_link = submission_link
         puzzle.interactive_link = interactive_link
         self.info.save()
@@ -76,8 +76,8 @@ class Setup(commands.GroupCog, group_name="set"):
             + f"Remember to do `.start {puzzle_name}`"
         )
         await interaction.channel.send(text)
-        for i in range(len(img_urls)):
-            await interaction.channel.send(img_urls[i])
+        for i in range(len(image_urls)):
+            await interaction.channel.send(image_urls[i])
 
     @discord.app_commands.command(
         name="time"
