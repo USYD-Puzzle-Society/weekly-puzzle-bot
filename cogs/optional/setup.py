@@ -123,8 +123,7 @@ class Setup(commands.GroupCog, group_name="set"):
             "The previous week number for the puzzle was "
             + f"{puzzle.week}. "
             + "The new week number for the puzzle is "
-            + f"{week}. "
-            + f"Remember to do `.start {puzzle_name}`"
+            + f"{week}."
         )
 
         puzzle.week = week
