@@ -72,8 +72,7 @@ class Setup(commands.GroupCog, group_name="set"):
         
         await interaction.channel.send(
             f"Done. The following will be released at {puzzle.release_time} in "
-            + f"<#{puzzle.release_channel}>. "
-            + f"Remember to do `.start {puzzle_name}`"
+            + f"<#{puzzle.release_channel}>."
         )
         await interaction.channel.send(text)
         for i in range(len(image_urls)):
