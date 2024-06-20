@@ -1,7 +1,7 @@
 import os
 import json
-import discord
 import datetime
+import discord
 from discord.ext import commands
 import classes.puzzle
 
