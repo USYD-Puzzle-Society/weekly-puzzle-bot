@@ -6,7 +6,7 @@ with open(".token", "r") as token_file:
     TOKEN = token_file.readline().strip()
 
 guild = discord.Object(1153319575048437833)
-bot = commands.Bot(help_command=None, intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=".", help_command=None, intents=discord.Intents.all())
 
 # load all available cogs on startup
 @bot.tree.command(
