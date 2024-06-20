@@ -6,9 +6,7 @@ with open(".token", "r") as token_file:
     TOKEN = token_file.readline().strip()
 
 guild = discord.Object(1153319575048437833)
-intents = discord.Intents.all()
-
-bot = commands.Bot(command_prefix=".", help_command=None, intents=intents)
+bot = commands.Bot(help_command=None, intents=discord.Intents.all())
 
 # load all available cogs on startup
 @bot.tree.command(
@@ -53,6 +51,7 @@ async def reload(interaction: discord.Interaction, extension: str):
     await interaction.response.send_message(f"Reloaded {extension} cog")
     await bot.tree.sync(guild=guild)
 
+# command to load required cogs, the order is important
 @bot.event
 async def on_ready():
     for filename in sorted(os.listdir("cogs/required")):
