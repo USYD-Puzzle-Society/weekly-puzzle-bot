@@ -10,11 +10,11 @@ class BasePuzzle:
         self.image_urls = images
         self.display_name = display_name
 
-    def get_text(self, interaction: discord.Interaction, mention: bool):
+    def get_text(self, guild: discord.Guild, mention: bool):
         if mention:
-            tag = f"{discord.utils.get(interaction.guild.roles, name=self.role_name).mention}\n\n"
+            tag = f"{discord.utils.get(guild.roles, name=self.role_name).mention}\n\n"
         else:
-            tag = f"{discord.utils.get(interaction.guild.roles, name=self.role_name)}\n\n"
+            tag = f"{discord.utils.get(guild.roles, name=self.role_name)}\n\n"
 
         return tag
 
@@ -25,9 +25,9 @@ class DiscussionPuzzle(BasePuzzle):
         super().__init__(role_name, release_channel, release_time, week, image_urls, display_name)
         self.discussion_channel = discussion_channel
 
-    def get_text(self, interaction: discord.Interaction, mention: bool):
+    def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
-            super().get_text(interaction, mention),
+            super().get_text(guild, mention),
             f"**COMMENT IF YOU KNOW: WEEK {self.week}**\n\n",
             f"If you think you know the pattern, comment an answer that follows it in <#{self.discussion_channel}>\n",
             f"We'll react with a :heart: if you're right and a :x: if you're wrong!\n\n"
@@ -42,9 +42,9 @@ class ChillPuzzle(BasePuzzle):
         super().__init__(role_name, release_channel, release_time, week, image_urls, display_name)
         self.interactive_link = interactive_link
 
-    def get_text(self, interaction: discord.Interaction, mention: bool):
+    def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
-            super().get_text(interaction, mention),
+            super().get_text(guild, mention),
             f"**{self.display_name}: WEEK {self.week}**"
         ]
 
@@ -61,9 +61,9 @@ class WeeklyPuzzle(BasePuzzle):
         self.submission_link = submission_link
         self.interactive_link = interactive_link
 
-    def get_text(self, interaction: discord.Interaction, mention: bool):
+    def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
-            super().get_text(interaction, mention),
+            super().get_text(guild, mention),
             f"**WEEKLY PUZZLE COMPETITION: WEEK {self.week}**\n",
             f"**{self.display_name}**\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
