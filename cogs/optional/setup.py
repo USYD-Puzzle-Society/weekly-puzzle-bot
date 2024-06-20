@@ -79,6 +79,28 @@ class Setup(commands.GroupCog, group_name="set"):
             await interaction.channel.send(image_urls[i])
 
     @discord.app_commands.command(
+        name="channel"
+    )
+    async def set_channel(
+            self, interaction: discord.Interaction, puzzle_name: str, 
+            channel_id: str):
+        puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
+        if not puzzle_name:
+            return
+
+        puzzle = self.info.puzzles[puzzle_name]
+
+        await interaction.response.send_message(
+            "The previous release channel for the puzzle was "
+            + f"<#{puzzle.release_channel}>. "
+            + "The new release channel for the puzzle is "
+            + f"<#{channel_id}>."
+        )
+
+        puzzle.release_channel = int(channel_id)
+        self.info.save()
+
+    @discord.app_commands.command(
         name="time"
     )
     @commands.has_role("Executives")
