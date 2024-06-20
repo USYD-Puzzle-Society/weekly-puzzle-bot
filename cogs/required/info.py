@@ -64,7 +64,7 @@ class Info(commands.Cog):
             self.puzzles[key] = puzzle
 
     def save(self):
-        puzzle_data = self.puzzles
+        puzzle_data = self.puzzles.copy()
 
         for key in puzzle_data.keys():
             puzzle_data[key] = self.puzzles[key].__dict__
