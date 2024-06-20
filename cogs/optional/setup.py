@@ -1,9 +1,11 @@
 import discord
 from discord.ext import commands
+import cogs.required.scheduler
+import cogs.required.info
 
 
 class Setup(commands.GroupCog, group_name="set"):
-    def __init__(self, bot: commands.Bot, puzzle_scheduler, info):
+    def __init__(self, bot: commands.Bot, puzzle_scheduler: scheduler.PuzzleScheduler, info: info.Info):
         self.bot = bot
         self.puzzle_scheduler = puzzle_scheduler
         self.info = info

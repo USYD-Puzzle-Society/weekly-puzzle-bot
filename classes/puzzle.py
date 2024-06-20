@@ -32,7 +32,6 @@ class DiscussionPuzzle(BasePuzzle):
             f"If you think you know the pattern, comment an answer that follows it in <#{self.discussion_channel}>\n",
             f"We'll react with a :heart: if you're right and a :x: if you're wrong!\n\n"
         ]
-
         return " ".join(lines)
 
 
