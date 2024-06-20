@@ -68,7 +68,7 @@ class Setup(commands.GroupCog, group_name="set"):
         puzzle.interactive_link = interactive_link
         self.info.save()
 
-        text = puzzle.get_text(interaction, False)
+        text = puzzle.get_text(interaction.guild, False)
         
         await interaction.channel.send(
             f"Done. The following will be released at {puzzle.release_time} in "
