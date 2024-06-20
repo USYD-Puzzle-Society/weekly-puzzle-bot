@@ -76,6 +76,28 @@ class Setup(commands.GroupCog, group_name="set"):
             await interaction.channel.send(image_urls[i])
 
     @discord.app_commands.command(
+        name="role"
+    )
+    async def set_role(
+            self, interaction: discord.Interaction, puzzle_name: str,
+            role_name: str):
+        puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
+        if not puzzle_name:
+            return
+        
+        puzzle = self.info.puzzles[puzzle_name]
+
+        await interaction.response.send_message(
+            "The previous role for the puzzle was "
+            + f"`{puzzle.role_name}`. "
+            + "The new role for the puzzle is "
+            + f"`{role_name}`."
+        )
+
+        puzzle.role_name = role_name
+        self.info.save()
+
+    @discord.app_commands.command(
         name="channel"
     )
     async def set_channel(
