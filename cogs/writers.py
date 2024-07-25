@@ -23,7 +23,11 @@ class Writers(commands.GroupCog):
         self, interaction: discord.Interaction, puzzle_link: str, thread_title: str
     ):
         await interaction.response.defer(ephemeral=True)
-        writer = self.writers[interaction.user.id]
+        try:
+            writer = self.writers[interaction.user.id]
+        except KeyError:
+            await interaction.followup.send("You are not a writer!")
+            return
 
         puzz_thread = await interaction.channel.create_thread(
             name=thread_title,
@@ -42,6 +46,33 @@ class Writers(commands.GroupCog):
 
         await puzz_thread.send(thread_msg)
         await interaction.followup.send("Thread created!")
+
+    @app_commands.command(
+        name="testsolve",
+        description="Mark the puzzle in the thread as testsolved (by you!)",
+    )
+    async def testsolve(self, interaction: discord.Interaction, undo: bool = False):
+        await interaction.response.defer(ephemeral=True)
+        try:
+            testsolver = self.writers[interaction.user.id]
+        except KeyError:
+            await interaction.followup.send("You are not a writer!")
+            return
+
+        msg = [
+            m async for m in interaction.channel.history(limit=1, oldest_first=True)
+        ][0]
+        spl_msg = msg.content.split("\n")
+        for i, line in enumerate(spl_msg):
+            if testsolver in line:
+                if undo:
+                    spl_msg[i] = f"{testsolver}: :x:"
+                else:
+                    spl_msg[i] = f"{testsolver}: :white_check_mark:"
+
+        new_msg = "\n".join(spl_msg)
+        await msg.edit(content=new_msg)
+        await interaction.followup.send("Testsolve status marked!")
 
 
 async def setup(bot: commands.Bot):
