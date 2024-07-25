@@ -40,7 +40,7 @@ class Writers(commands.GroupCog):
         )
 
         thread_msg = f"Puzzle: <{puzzle_link}>\n\n"
-        thread_msg += f"{writer}: {self.emojis["writer"]}\n"
+        thread_msg += f"{writer}: {self.emojis['writer']}\n"
 
         for w_id, w in sorted(list(self.writers.items()), key=lambda x: x[1]):
             if w_id == interaction.user.id:
@@ -74,13 +74,15 @@ class Writers(commands.GroupCog):
                 # there should only be two words separated by a space in lines with testsolvers' names
                 _, status = line.split()
                 if status == self.emoji["writer"]:
-                    await interaction.followup.send("You can't testsolve your own puzzle bro...")
+                    await interaction.followup.send(
+                        "You can't testsolve your own puzzle bro..."
+                    )
                     return
 
                 if undo:
-                    spl_msg[i] = f"{testsolver}: {self.emojis["cross"]}"
+                    spl_msg[i] = f"{testsolver}: {self.emojis['cross']}"
                 else:
-                    spl_msg[i] = f"{testsolver}: {self.emojis["tick"]}"
+                    spl_msg[i] = f"{testsolver}: {self.emojis['tick']}"
 
         new_msg = "\n".join(spl_msg)
         await msg.edit(content=new_msg)
