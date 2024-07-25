@@ -14,6 +14,11 @@ class Writers(commands.GroupCog):
             # 549152699589984256: "Maria"
         }
         self.writers_role = "Executives"
+        self.emojis = {
+            "writer": ":writing_hand",
+            "tick": ":white_check_mark",
+            "cross": ":x:",
+        }
 
     @app_commands.command(
         name="puzzthread",
@@ -35,7 +40,7 @@ class Writers(commands.GroupCog):
         )
 
         thread_msg = f"Puzzle: <{puzzle_link}>\n\n"
-        thread_msg += f"{writer}: :writing_hand:\n"
+        thread_msg += f"{writer}: {self.emojis["writer"]}\n"
 
         for w_id, w in sorted(list(self.writers.items()), key=lambda x: x[1]):
             if w_id == interaction.user.id:
@@ -56,7 +61,7 @@ class Writers(commands.GroupCog):
         try:
             testsolver = self.writers[interaction.user.id]
         except KeyError:
-            await interaction.followup.send("You are not a writer!")
+            await interaction.followup.send("You are not a testsolver!")
             return
 
         msg = [
@@ -65,10 +70,17 @@ class Writers(commands.GroupCog):
         spl_msg = msg.content.split("\n")
         for i, line in enumerate(spl_msg):
             if testsolver in line:
+                # check writer status
+                # there should only be two words separated by a space in lines with testsolvers' names
+                _, status = line.split()
+                if status == self.emoji["writer"]:
+                    await interaction.followup.send("You can't testsolve your own puzzle bro...")
+                    return
+
                 if undo:
-                    spl_msg[i] = f"{testsolver}: :x:"
+                    spl_msg[i] = f"{testsolver}: {self.emojis["cross"]}"
                 else:
-                    spl_msg[i] = f"{testsolver}: :white_check_mark:"
+                    spl_msg[i] = f"{testsolver}: {self.emojis["tick"]}"
 
         new_msg = "\n".join(spl_msg)
         await msg.edit(content=new_msg)
