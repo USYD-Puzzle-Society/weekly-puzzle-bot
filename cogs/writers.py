@@ -18,7 +18,7 @@ class Writers(commands.GroupCog):
         self.writers_role = "Writer Warriors"
         self.emojis = {
             "writer": ":writing_hand:",
-            "tick": ":white_check_mark",
+            "tick": ":white_check_mark:",
             "cross": ":x:",
         }
 
