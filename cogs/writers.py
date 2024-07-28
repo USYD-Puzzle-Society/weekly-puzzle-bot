@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
+WRITERS_ROLE_ID = "Writer Warriors"
+
 
 class Writers(commands.GroupCog):
     def __init__(self, bot: commands.Bot):
@@ -13,7 +15,7 @@ class Writers(commands.GroupCog):
             200214169612582913: "Stefan",
             # 549152699589984256: "Maria"
         }
-        self.writers_role = "Executives"
+        self.writers_role = "Writer Warriors"
         self.emojis = {
             "writer": ":writing_hand",
             "tick": ":white_check_mark",
@@ -24,6 +26,7 @@ class Writers(commands.GroupCog):
         name="puzzthread",
         description="Create a thread based on a puzzle after providing the link.",
     )
+    @commands.has_role(WRITERS_ROLE_ID)
     async def puzzthread(
         self, interaction: discord.Interaction, puzzle_link: str, thread_title: str
     ):
@@ -56,6 +59,7 @@ class Writers(commands.GroupCog):
         name="testsolve",
         description="Mark the puzzle in the thread as testsolved (by you!)",
     )
+    @commands.has_role(WRITERS_ROLE_ID)
     async def testsolve(self, interaction: discord.Interaction, undo: bool = False):
         await interaction.response.defer(ephemeral=True)
         try:
