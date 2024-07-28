@@ -77,7 +77,7 @@ class Writers(commands.GroupCog):
                 # check writer status
                 # there should only be two words separated by a space in lines with testsolvers' names
                 _, status = line.split()
-                if status == self.emoji["writer"]:
+                if status == self.emojis["writer"]:
                     await interaction.followup.send(
                         "You can't testsolve your own puzzle bro..."
                     )
