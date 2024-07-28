@@ -13,11 +13,11 @@ class Writers(commands.GroupCog):
             419463237394759683: "Jayden",
             528058352274636810: "Simon",
             200214169612582913: "Stefan",
-            # 549152699589984256: "Maria"
+            # 549152699589984256: "Maria",
         }
         self.writers_role = "Writer Warriors"
         self.emojis = {
-            "writer": ":writing_hand",
+            "writer": ":writing_hand:",
             "tick": ":white_check_mark",
             "cross": ":x:",
         }
