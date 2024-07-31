@@ -1,45 +1,51 @@
+import os
 import json
-from info import Info
+import discord
+from discord import app_commands
 from discord.ext import commands
 
-class Stop(commands.Cog):
-    def __init__(self, bot: commands.Bot, info: Info):
+EXEC_ROLE_NAME = "Executives"
+
+
+class Stop(commands.GroupCog):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.info_obj = info
-        self.start_json = "start.json"
 
-    @commands.command()
-    async def stop(self, ctx, release_id):
-        with open(self.start_json, "r") as sj:
-            currently_releasing = json.load(sj)
-        
-        try:
-            release = currently_releasing[release_id]
-            release_text = release["text"]
-            release_urls = None
-            
-            if "urls" in release:
-                release_urls = release["urls"]
+        self.start_fp = "start.json"
 
-            release_datetime = release["datetime"]
-            release_channel = release["channel"]
-             
-            del currently_releasing[release_id]
-            new_json = json.dumps(currently_releasing, indent=4)
+    @app_commands.command(
+        name="release", description="Stop the release for the given WPC puzzle."
+    )
+    @commands.has_role(EXEC_ROLE_NAME)
+    async def stop(self, interaction: discord.Interaction, release_id: int):
+        await interaction.response.defer()
 
-            with open(self.start_json, "w") as sj:
-                sj.write(new_json)
+        # get the info from info.json
+        if os.path.exists(self.start_fp):
+            with open(self.start_fp, "r") as f:
+                starting_puzzles = json.load(f)
+        # error checking
+        else:
+            await interaction.followup.send(
+                "No puzzles have been scheduled for release. Use `/start [wpc/jff]` to start a release."
+            )
+            return
 
-            await ctx.send(f"Done. The below will no longer release at {release_datetime} in <#{release_channel}>.")
-            await ctx.send(release_text)
-            if release_urls:
-                for i in range(len(release_urls)):
-                    await ctx.send(release_urls[i])
+        if str(release_id) not in starting_puzzles:
+            await interaction.followup.send(
+                f"A puzzle with the release ID {release_id} has not been scheduled."
+            )
+            return
 
-        except KeyError as ke:
-            print(ke)
-            await ctx.send(f"There is no announcement release with the ID {release_id}")
+        del starting_puzzles[str(release_id)]
+
+        with open(self.start_fp, "w") as sj:
+            sj.write(json.dumps(starting_puzzles, indent=4))
+
+        await interaction.followup.send(
+            f"Puzzle with release ID {release_id} has been stopped."
+        )
+
 
 async def setup(bot: commands.Bot):
-    info = Info()
-    await bot.add_cog(Stop(bot, info))
+    await bot.add_cog(Stop(bot))
