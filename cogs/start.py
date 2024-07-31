@@ -3,123 +3,211 @@ import json
 import asyncio
 import discord
 import datetime
-from info import Info
+from discord import app_commands
 from discord.ext import commands
 
-class Start(commands.Cog):
-    def __init__(self, bot: commands.Bot, info: Info):
+from typing import Literal
+
+EXEC_ROLE_NAME = "Executives"
+
+
+class Start(commands.GroupCog):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.info_obj = info
-        
-        self.start_json = "start.json"
 
-    """
-    Terminology is a bit confusing but for just the scope of this command,
-    'puzz' refers to all the types of puzzles. i.e puzzles, second best and ciyk
-    """
-    @commands.command()
-    @commands.has_role("Executives")
-    async def start(self, ctx: commands.context.Context, puzz_name: str):
-        puzz_name = puzz_name.lower()
+        self.info_fp = "info.json"
+        self.start_fp = "start.json"
 
-        # get the current time
-        now = datetime.datetime.now()
+    # assumes given string format is %d/%m/%Y %H:%M
+    def str_to_datetime(self, datetime_str: str) -> datetime.datetime:
+        date, time = datetime_str.split()
 
-        # the release id is used to identify this specific puzzle release
-        # if the user wants to stop this release from happening, then the id is used
-        release_id = str(now.microsecond)
+        day, month, year = date.split("/")
+        hour, minute = time.split(":")
 
-        if "rc" == puzz_name:
-            puzz_name = "rebuscryptic"
-                    
-        # get the puzzle info
-        if puzz_name in self.info_obj.default_presets:
-            text = self.info_obj.get_qtext(ctx, True, puzz_name)
-            no_mention_text = self.info_obj.get_qtext(ctx, False, puzz_name)
+        return datetime.datetime(
+            int(year), int(month), int(day), int(hour), int(minute)
+        )
+
+    @app_commands.command(
+        name="wpc", description="Start the release for the respective WPC puzzle."
+    )
+    @commands.has_role(EXEC_ROLE_NAME)
+    async def start_wpc(
+        self,
+        interaction: discord.Interaction,
+        release_day: Literal["Monday", "Wednesday", "Friday"],
+    ):
+        await interaction.response.defer()
+
+        # get the info from info.json
+        if os.path.exists(self.info_fp):
+            with open(self.info_fp, "r") as f:
+                info = json.load(f)
+        # error checking
         else:
-            text = self.info_obj.get_text(ctx, puzz_name, True)
-            no_mention_text = self.info_obj.get_text(ctx, puzz_name, False)
-        
-        if "ciyk" != puzz_name:
-            urls = self.info_obj.info[puzz_name]["img_urls"]
-
-        str_release = self.info_obj.info[puzz_name]["release_datetime"]
-        release_datetime = self.info_obj.str_to_datetime(str_release)
-        channel_id = self.info_obj.info[puzz_name]["channel_id"]
-        channel = self.bot.get_channel(channel_id)
-
-        # get wait time
-        wait_time = (release_datetime - now).total_seconds()
-
-        if 0 > wait_time:
-            await ctx.send(
-                "The current time is later than the release time. " +
-                "Please change the release time before starting the release."
+            await interaction.followup.send(
+                "No puzzles have been setup. Use `/setup wpc` to set the puzzles."
             )
             return
 
-        if os.path.exists(self.start_json):
-            with open(self.start_json, "r") as sj:
+        try:
+            puzz_data = info[f"{release_day}WPC"]
+        except KeyError:
+            await interaction.followup.send(
+                "No puzzles have been setup. Use `/setup wpc` to set the puzzles."
+            )
+            return
+
+        if puzz_data["releasing"]:
+            await interaction.followup.send(
+                f"The release for {release_day} has already been started."
+            )
+            return
+
+        # get current time
+        now = datetime.datetime.now()
+        release_time = self.str_to_datetime(puzz_data["release_datetime"])
+        release_id = str(now.microsecond)
+
+        wait_time = (release_time - now).total_seconds()
+
+        if wait_time < 0:
+            await interaction.followup.send(
+                "The current time is later than the release time. "
+                + "Please change the release time before starting the release."
+            )
+            return
+
+        if os.path.exists(self.start_fp):
+            with open(self.start_fp, "r") as sj:
                 currently_releasing = json.load(sj)
         else:
             currently_releasing = {}
-        
-        if "ciyk" != puzz_name:
-            currently_releasing[release_id] = {
-                "text": text,
-                "urls": urls,
-                "datetime": str_release,
-                "channel": channel_id
-            }
-        else:
-            currently_releasing[release_id] = {
-                "text": text,
-                "datetime": str_release,
-                "channel": channel_id
-            }
 
-        # add the release to the json file
-        with open(self.start_json, "w") as sj:
-            new_json = json.dumps(currently_releasing, indent=4)
+        currently_releasing[release_id] = puzz_data
+        with open(self.start_fp, "w") as sj:
+            sj.write(json.dumps(currently_releasing, indent=4))
 
-            sj.write(new_json)
-
-        await ctx.send(
-            f"Starting! The following will be released at {str_release} in <#{channel_id}>. " +
-            f"The ID for this release is {release_id}. Do `.stop {release_id}` to stop this release."
+        # show user what will be released
+        await interaction.followup.send(
+            f"Starting! The following will be released at {puzz_data['release_datetime']} in <#{puzz_data['channel_id']}>. "
+            + f"The ID for this release is {release_id}. Do `/stop {release_id}` to stop this release."
         )
-        await ctx.send(no_mention_text)
-        if "ciyk" != puzz_name:
-            for i in range(len(urls)):
-                await ctx.send(urls[i])
+        wpc_role = interaction.guild.get_role(puzz_data["role_id"])
+        wpc_text = puzz_data["release_text"]
+        await interaction.channel.send(f"@/{wpc_role}" + wpc_text)
 
-        # sleep until release time
-        await asyncio.sleep(wait_time+1)
+        for img in puzz_data["img_urls"]:
+            await interaction.channel.send(img)
 
-        # check if the release was stopped
-        with open(self.start_json, "r") as sj:
+        await asyncio.sleep(wait_time + 1)
+
+        # check if release was stopped
+        with open(self.start_fp, "r") as sj:
             currently_releasing = json.load(sj)
 
-        if release_id not in currently_releasing:
-            print(release_id)
-            return
+            if release_id not in currently_releasing:
+                return
+
+        # otherwise release the puzzles
+        wpc_channel = interaction.guild.get_channel(puzz_data["channel_id"])
+        await wpc_channel.send(f"{wpc_role.mention}" + wpc_text)
+        for img in puzz_data["img_urls"]:
+            await wpc_channel.send(img)
+
+        del currently_releasing[release_id]
+        new_json = json.dumps(currently_releasing, indent=4)
+        with open(self.start_fp, "w") as sj:
+            sj.write(new_json)
+
+    @app_commands.command(
+        name="jff", description="Start the release for the respective JFF puzzle."
+    )
+    @commands.has_role(EXEC_ROLE_NAME)
+    async def start_jff(self, interaction: discord.Interaction, release_day: str):
+        await interaction.response.defer()
+
+        # get the info from info.json
+        if os.path.exists(self.info_fp):
+            with open(self.info_fp, "r") as f:
+                info = json.load(f)
+        # error checking
         else:
-            await channel.send(text)
-            if "ciyk" != puzz_name:
-                for i in range(len(urls)):
-                    await channel.send(urls[i])
+            await interaction.followup.send(
+                "No puzzles have been setup. Use `/setup jff` to set the puzzles."
+            )
+            return
 
-            # remove from the json file
-            with open(self.start_json, "r") as sj:
+        try:
+            puzz_data = info[f"{release_day}JFF"]
+        except KeyError:
+            await interaction.followup.send(
+                "No puzzles have been setup. Use `/setup jff` to set the puzzles."
+            )
+            return
+
+        if puzz_data["releasing"]:
+            await interaction.followup.send(
+                f"The release for {release_day} has already been started."
+            )
+            return
+
+        # get current time
+        now = datetime.datetime.now()
+        release_time = self.str_to_datetime(puzz_data["release_datetime"])
+        release_id = str(now.microsecond)
+
+        wait_time = (release_time - now).total_seconds()
+
+        if wait_time < 0:
+            await interaction.followup.send(
+                "The current time is later than the release time. "
+                + "Please change the release time before starting the release."
+            )
+            return
+
+        if os.path.exists(self.start_fp):
+            with open(self.start_fp, "r") as sj:
                 currently_releasing = json.load(sj)
+        else:
+            currently_releasing = {}
 
-            del currently_releasing[release_id]
+        currently_releasing[release_id] = puzz_data
+        with open(self.start_fp, "w") as sj:
+            sj.write(json.dumps(currently_releasing, indent=4))
 
-            new_json = json.dumps(currently_releasing, indent=4)
+        # show user what will be released
+        await interaction.followup.send(
+            f"Starting! The following will be released at {puzz_data['release_datetime']} in <#{puzz_data['channel_id']}>. "
+            + f"The ID for this release is {release_id}. Do `/stop {release_id}` to stop this release."
+        )
+        jff_text = puzz_data["release_text"]
+        await interaction.channel.send(jff_text)
 
-            with open(self.start_json, "w") as sj:
-                sj.write(new_json)
+        for img in puzz_data["img_urls"]:
+            await interaction.channel.send(img)
+
+        await asyncio.sleep(wait_time + 1)
+
+        # check if release was stopped
+        with open(self.start_fp, "r") as sj:
+            currently_releasing = json.load(sj)
+
+            if release_id not in currently_releasing:
+                return
+
+        # otherwise release the puzzles
+        jff_channel = interaction.guild.get_channel(puzz_data["channel_id"])
+        await jff_channel.send(jff_text)
+        for img in puzz_data["img_urls"]:
+            await jff_channel.send(img)
+
+        del currently_releasing[release_id]
+        new_json = json.dumps(currently_releasing, indent=4)
+        with open(self.start_fp, "w") as sj:
+            sj.write(new_json)
+
 
 async def setup(bot: commands.Bot):
-    info = Info()
-    await bot.add_cog(Start(bot, info))
+    await bot.add_cog(Start(bot))
