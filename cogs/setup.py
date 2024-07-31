@@ -1,1094 +1,318 @@
+import datetime
+import discord
+from discord.ext import commands
+from discord import app_commands
+
 import os
 import json
-import discord
-import datetime
-from info import Info
-from discord.ext import commands
+
+from typing import Literal
+
+EXEC_ROLE_NAME = "Executives"
 
 
-class Setup(commands.Cog):
-
-    def __init__(self, bot: commands.Bot, info: Info):
+class Setup(commands.GroupCog):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.exec_id = "Executives"
-        self.info_obj = info
+        self.info_fp = "info.json"
         self.datetime_format = "%d/%m/%Y %H:%M"
 
-    # command for quick setup of puzzles. user will only have to send the images
-    @commands.command()
-    @commands.has_role("Executives")
-    async def qset(
-        self, ctx: commands.context.Context, preset: str, change_datetime: str = "true"
+        self.day_to_wpc_puzzles = {
+            "Monday": "\- 𝗥𝗘𝗕𝗨𝗦 -",
+            "Wednesday": "\- 𝗖𝗥𝗬𝗣𝗧𝗜𝗖 + 𝗟𝗢𝗚𝗜𝗖 -",
+            "Friday": "\- 𝗠𝗜𝗡𝗜𝗣𝗨𝗭𝗭𝗟𝗘 -",
+        }
+
+        self.day_to_jff_puzzles = {
+            "Monday": "\- 𝗥𝗘𝗕𝗨𝗦/𝗖𝗥𝗬𝗣𝗧𝗜𝗖 -",
+            "Friday": "\- 𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗/𝗙𝗥𝗘𝗘 -",
+        }
+
+        # technically inefficient way of doing this
+        # but practically the semester only has 13 weeks
+        # so this is faster to write
+        self.bold_numbers = {
+            1: "𝟭",
+            2: "𝟮",
+            3: "𝟯",
+            4: "𝟰",
+            5: "𝟱",
+            6: "𝟲",
+            7: "𝟳",
+            8: "𝟴",
+            9: "𝟵",
+            10: "𝟭𝟬",
+            11: "𝟭𝟭",
+            12: "𝟭𝟮",
+            13: "𝟭𝟯",
+        }
+
+        self.wpc_channel_id = 892032997220573204
+        self.wpc_role_id = 892266410397548574
+
+        self.jff_channel_id = 1266395033385435209
+
+    def check_valid_time(self, release_time: str):
+        release_hour, release_minute = release_time.split(":")
+        release_hour, release_minute = int(release_hour), int(release_minute)
+
+        if release_hour > 23 or release_hour < 0:
+            return False
+        if release_minute > 59 or release_minute < 0:
+            return False
+
+        return release_hour, release_minute
+
+    # function to get the date that is the next occurrence of the
+    # specified day. e.g if given dayname="Monday", function will return
+    # the date of the next Monday
+    def get_next_closest_day(
+        self, dayname: str, release_hour: int, release_minute
+    ) -> datetime.datetime:
+        # the integer values of days as specified by datetime module
+        day_ints = {
+            "Monday": 0,
+            "Tuesday": 1,
+            "Wednesday": 2,
+            "Thursday": 3,
+            "Friday": 4,
+            "Saturday": 5,
+            "Sunday": 6,
+        }
+
+        now = datetime.datetime.now()
+        # at most have to iterate through the next 8 days (including current day)
+        for i in range(8):
+            delta_date = now + datetime.timedelta(i)
+            if delta_date.weekday() == day_ints[dayname]:
+                return datetime.datetime(
+                    delta_date.year,
+                    delta_date.month,
+                    delta_date.day,
+                    release_hour,
+                    release_minute,
+                )
+
+    def get_wpc_text(
+        self,
+        dayname: str,
+        week_num: int,
+        submission_link: str,
+        interactive_link: str,
     ):
-        user = ctx.author
+        lines = [
+            f"\n\n𝗪𝗘𝗘𝗞𝗟𝗬 𝗣𝗨𝗭𝗭𝗟𝗘 𝗖𝗢𝗠𝗣𝗘𝗧𝗜𝗧𝗜𝗢𝗡: 𝗪𝗘𝗘𝗞 {self.bold_numbers[week_num]}\n",
+            f"{self.day_to_wpc_puzzles[dayname]}\n\n",
+            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            f"Submit your answers here: {submission_link}\n\n",
+            "_You can submit as many times as you want!_\n",
+            "_Your highest score will be kept._",
+        ]
 
-        def check(m):
-            return m.author == user
+        if interactive_link:
+            lines.append(f"\n\nInteractive Version: {interactive_link}")
 
-        preset, accepted = self.info_obj.check_preset(preset)
-        if not accepted:
-            await ctx.send(
-                f"Please use one of the accepted presets: {', '.join(self.info_obj.default_presets)}"
-            )
-            return
+        return "".join(lines)
 
-        original_data = self.info_obj.info[preset]
-        puzzle_data = {
-            "release_datetime": original_data["release_datetime"],
-            "week_num": original_data["week_num"],
-            "img_urls": [],
-            "submission_link": "",
-            "interactive_link": "",
-        }
+    def get_jff_text(self, dayname: str, week_num: int, interactive_link: str):
+        lines = [
+            f"𝗝𝗨𝗦𝗧-𝗙𝗢𝗥-𝗙𝗨𝗡 𝗣𝗨𝗭𝗭𝗟𝗘𝗦: 𝗪𝗘𝗘𝗞 {self.bold_numbers[week_num]}\n",
+            f"{self.day_to_jff_puzzles[dayname]}",
+        ]
 
-        # change the date to be a week ahead of the previously stored date unless change_datetime is false
-        if change_datetime.lower() not in ["false", "f"]:
-            release_datetime = self.info_obj.str_to_datetime(
-                puzzle_data["release_datetime"]
-            )
-            release_datetime = release_datetime + datetime.timedelta(days=7)
-            puzzle_data["release_datetime"] = release_datetime.strftime(
-                self.datetime_format
-            )
+        if interactive_link:
+            lines.append(f"\n\nInteractive Version: {interactive_link}")
 
-            # increase the week number to be one higher than the previously stored week
-            puzzle_data["week_num"] = puzzle_data["week_num"] + 1
+        return "".join(lines)
 
-        # ask for images
-        await ctx.send(
-            "Please send all images for the puzzle in one message."
-            + " Type `.stop` at any time and no changes will be made."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made.")
-                return
-            elif len(msg.attachments):
-                puzzle_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the images in one message.")
-
-        # ask for submission link
-        await ctx.send("Please send the submission link.")
-        msg = await self.bot.wait_for("message", check=check)
-
-        if ".stop" == msg.content.lower():
-            await ctx.send("Command stopped. No changes have been made.")
-            return
-        else:
-            puzzle_data["submission_link"] = msg.content
-
-        # check for interactive link and ask for one if there is
-        await ctx.send("Is there an interactive link? y/n")
-
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send("Command stopped. No changes have been made.")
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
-
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
-
-            link = await self.bot.wait_for("message", check=check)
-
-            puzzle_data["interactive_link"] = link.content
-
-        self.info_obj.change_data(preset, puzzle_data)
-
-        # show the user the new changes
-        text = self.info_obj.get_qtext(ctx, False, preset)
-        images = puzzle_data["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {puzzle_data['release_datetime']} in <#{original_data['channel_id']}>. "
-            + f"Remember to do `.start {preset}`"
-        )
-        await ctx.send(text)
-        for i in range(len(images)):
-            await ctx.send(images[i])
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def qsettime(
-        self, ctx: commands.context.Context, preset: str, date: str, time: str
+    def write_release_info(
+        self,
+        dayname: str,
+        release_text: str,
+        release_datetime: str,
+        img_urls: list[str],
+        category: Literal["WPC", "JFF"],
     ):
-        preset, accepted = self.info_obj.check_preset(preset)
-        if not accepted:
-            await ctx.send(
-                f"Please use one of the accepted presets: {', '.join(self.info_obj.default_presets)}"
-            )
-            return
+        if os.path.exists(self.info_fp):
+            with open(self.info_fp, "r") as f:
+                info = json.load(f)
 
-        new_date = self.info_obj.check_is_date(date)
-        if not new_date:
-            await ctx.send("Please enter date in the format DD/MM/YYYY")
-            return
+        puzz_data = {
+            "release_text": release_text,
+            "release_datetime": release_datetime,
+            "img_urls": img_urls,
+            "channel_id": "",
+            "role_id": "",
+            "releasing": False,
+        }
+
+        if category == "WPC":
+            puzz_data["channel_id"] = self.wpc_channel_id
+            puzz_data["role_id"] = self.wpc_role_id
         else:
-            day, month, year = new_date
+            puzz_data["channel_id"] = self.jff_channel_id
 
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
+        info[f"{dayname}{category}"] = puzz_data
 
-        new_time = self.info_obj.check_is_time(time)
-        if not new_time:
-            await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
-            return
-        else:
-            hour, minute = new_time
+        with open(self.info_fp, "w") as f:
+            new_info = json.dumps(info, indent=4)
+            f.write(new_info)
 
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time(preset, new_release)
-        await ctx.send(
-            f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + f"Remember to do `.start {preset}`"
-        )
+    @app_commands.command(
+        name="wpc",
+        description="Set the info for the WPC release. Year of release is assumed to be the current year.",
+    )
+    @commands.has_role(EXEC_ROLE_NAME)
+    async def set_wpc(
+        self,
+        interaction: discord.Interaction,
+        image: discord.Attachment,
+        release_day: Literal["Monday", "Wednesday", "Friday"],
+        week_num: int,
+        submission_link: str,
+        interactive_link: str = "",
+        image2: discord.Attachment = None,
+        release_time: str = "16:00",
+    ):
+        await interaction.response.defer()
 
-    @commands.command()
-    @commands.has_role("Executives")
-    async def qsetweek(self, ctx: commands.context.Context, preset: str, week_num: str):
-        preset, accepted = self.info_obj.check_preset(preset)
-        if not accepted:
-            await ctx.send(
-                f"Please use one of the accepted presets: {', '.join(self.default_presets)}"
+        valid_time = self.check_valid_time(release_time)
+        if not valid_time:
+            await interaction.followup.send(
+                "Please enter a valid time in the format HH:MM. Note that the release time is in 24 hour format."
             )
             return
 
-        new_week = 1
-        try:
-            new_week = int(week_num)
+        release_hour, release_minute = valid_time
 
-            self.info_obj.change_week(preset, new_week)
-            await ctx.send(
-                f"The new week number for the {preset.capitalize()} puzzle is {self.info_obj.info[preset]['week_num']}. "
-                + f"Remember to do `.start {preset}`"
-            )
-        except ValueError:
-            await ctx.send("Please enter the week as a number.")
-            return
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setrctime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f"The current release time for the rebus and cryptic is {self.info_obj.info['rebuscryptic']['release_datetime']}"
-        )
-        await ctx.send(
-            "Please enter the new release date for the rebus and cryptic in the format DD/MM/YYYY."
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the rebus and cryptic."
+        release_datetime = self.get_next_closest_day(
+            release_day, release_hour, release_minute
         )
 
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the rebus and cryptic."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is now {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the puzzles in the format HH:MM (24 hour time)."
+        release_text = self.get_wpc_text(
+            release_day, week_num, submission_link, interactive_link
         )
 
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the rebus and cryptic."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("rebuscryptic", new_release)
-        await ctx.send(
-            f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start rc`"
+        await interaction.followup.send(
+            f"Done! The following will be sent at {release_datetime.strftime(self.datetime_format)}\n\n"
+            + f"@/{interaction.guild.get_role(self.wpc_role_id)}"
+            + release_text
         )
 
-    """
-    Thinking of making it so that this command allows the user to
-    put the release date and time in the command call.
-    Like: `.setminipuzztime 12/08/2022 11:00`
-    """
+        images = [image.url]
+        if image2:
+            images.append(image2.url)
+        for img in images:
+            await interaction.channel.send(img)
 
-    # commands to set the release time for the puzzles/ciyk
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setminipuzztime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        # show current release time for puzzles
-        await ctx.send(
-            f'The current release time for the minipuzz is {self.info_obj.info["minipuzz"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the minipuzz in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the minipuzz."
+        self.write_release_info(
+            release_day,
+            release_text,
+            release_datetime.strftime(self.datetime_format),
+            images,
+            "WPC",
         )
 
-        # exit when valid date is given or .stop is typed
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the puzzles."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is now {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the puzzles in the format HH:MM (24 hour time)."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the puzzles."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM (24 hour time.)")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("minipuzz", new_release)
-        await ctx.send(
-            f"The new release time for the puzzles is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start minipuzz`"
-        )
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setcrosswordtime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for the crossword is {self.info_obj.info["crossword"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the crossword in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the crossword."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the crossword."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the crossword in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release of the crossword."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("crossword", new_release)
-        await ctx.send(
-            f"The new release time for the crossword is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start crossword`"
-        )
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setwordsearchtime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for the word search is {self.info_obj.info["wordsearch"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the sudoku in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the word search."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the word search."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the logic puzzle in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release of the word search."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("wordsearch", new_release)
-        await ctx.send(
-            f"The new release time for the word search is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start wordsearch`"
-        )
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setlogicpuzztime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for the logic puzzle is {self.info_obj.info["logicpuzz"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for the sudoku in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of the logic puzzle."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of the logic puzzle."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f"The new release date is {release_date.strftime('%d/%m/%Y')} ({weekday_name})"
-        )
-        await ctx.send(
-            f"Please enter the new release time for the logic puzzle in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release of the logic puzzle."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("logicpuzz", new_release)
-        await ctx.send(
-            f"The new release time for the logic puzzle is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start logicpuzz`"
-        )
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setciyktime(self, ctx: commands.context.Context):
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            f'The current release time for CIYK is {self.info_obj.info["ciyk"]["release_datetime"]}.'
-        )
-        await ctx.send(
-            "Please enter the new release date for CIYK in the format DD/MM/YYYY. "
-            + "Do `.stop` at any time to exit and no changes will be made to the release time of CIYK."
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the release time of CIYK."
-                )
-                return
-
-            date = self.info_obj.check_is_date(msg.content)
-            if not date:
-                await ctx.send("Please enter the date in the format DD/MM/YYYY")
-            else:
-                day, month, year = date
-                break
-
-        release_date = datetime.date(year, month, day)
-        weekday_name = self.info_obj.day_names[release_date.weekday()]
-        await ctx.send(
-            f'The new release date is {release_date.strftime("%d/%m/%Y")} ({weekday_name})'
-        )
-        await ctx.send(
-            f"Please enter the new release time for CIYK in the format HH:MM (24 hour time)"
-        )
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been amde to the release of CIYK."
-                )
-                return
-
-            time = self.info_obj.check_is_time(msg.content)
-            if not time:
-                await ctx.send("Please enter time in the format HH:MM")
-            else:
-                hour, minute = time
-                break
-
-        new_release = datetime.datetime(year, month, day, hour, minute)
-        self.info_obj.change_time("ciyk", new_release)
-        await ctx.send(
-            f"The new release time for CIYK is {new_release.strftime(self.info_obj.datetime_format)} ({weekday_name}). "
-            + "Remember to do `.start ciyk`"
-        )
-
-    # command to set info of rebuscryptic
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setrc(self, ctx: commands.context.Context):
-        rc_info = self.info_obj.info["rebuscryptic"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting the information for the rebus and cryptic."
-            + "Type `.stop` at any time and no changes will be made to the current rebus and cryptic info."
-        )
-        await ctx.send(
-            "Please send the images for the rebus and cryptic in one message."
-        )
-
-        new_data = {
-            "img_urls": [],
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the rebus and cryptic."
-                )
-                return
-            elif len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send(
-                    "Please send the images for the minipuzz in one message."
-                )
-
-        await ctx.send("Please enter the week number.")
-
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the rebus and cryptic."
-                )
-                return
-
-            try:
-                week_num = int(msg.content)
-                new_data["week_num"] = week_num
-
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # no check will be done to see if the link is a real link
-        await ctx.send("Please send the submission link for the rebus and cryptic.")
-        msg = await self.bot.wait_for("message", check=check)
-
-        if ".stop" == msg.content.lower():
-            await ctx.send(
-                "Command stopped. No changes have been made to the minipuzz info."
+        await interaction.channel.send(f"Remember to do `/start wpc {release_day}`")
+
+    @app_commands.command(
+        name="jff",
+        description="Set the info for the WPC release. Year of release is assumed to be the current year.",
+    )
+    @commands.has_role(EXEC_ROLE_NAME)
+    async def set_jff(
+        self,
+        interaction: discord.Interaction,
+        image: discord.Attachment,
+        release_day: Literal["Monday", "Friday"],
+        week_num: int,
+        interactive_link: str = "",
+        image2: discord.Attachment = None,
+        release_time: str = "16:00",
+    ):
+        await interaction.response.defer()
+
+        valid_time = self.check_valid_time(release_time)
+        if not valid_time:
+            await interaction.followup.send(
+                "Please enter a valid time in the format HH:MM. Note that the release time is in 24 hour format."
             )
             return
-        else:
-            new_data["submission_link"] = msg.content
 
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("rebuscryptic", new_data)
+        release_hour, release_minute = valid_time
 
-        # show the user the new changes
-        rc_text = self.info_obj.get_rebuscryptic_text(ctx, False)
-        rc_images = rc_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {rc_info['release_datetime']} in <#{rc_info['channel_id']}>"
-            + "Remember to do `.start rc`"
-        )
-        await ctx.send(rc_text)
-        for i in range(len(rc_images)):
-            await ctx.send(rc_images[i])
-
-    # commands to set the announcement info for puzzles/ciyk
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setminipuzz(self, ctx: commands.context.Context):
-        puzz_info = self.info_obj.info["minipuzz"]
-        # get the user that is using the command
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting the information for the minipuzz."
-            + "Type `.stop` at any time and no changes will be made to the current minipuzz info."
-        )
-        # first ask for the images for the puzzles
-        await ctx.send("Please send the images for the minipuzz in one message.")
-
-        new_data = {
-            "img_urls": [],
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
-
-        # enter loop that only breaks when user stops command or sends the puzzle images
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send(
-                    "Please send the images for the minipuzz in one message."
-                )
-
-        await ctx.send("Please enter the week number.")
-
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-
-            try:
-                week_num = int(msg.content)
-                new_data["week_num"] = week_num
-
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # no check will be done to see if the link is a real link
-        await ctx.send("Please send the submission link for the puzzles.")
-        msg = await self.bot.wait_for("message", check=check)
-
-        if ".stop" == msg.content.lower():
-            await ctx.send(
-                "Command stopped. No changes have been made to the minipuzz info."
-            )
-            return
-        else:
-            new_data["submission_link"] = msg.content
-
-        # add interactive link if there is one
-        await ctx.send("Is there an interactive link? y/n")
-
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
-
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
-
-            link = await self.bot.wait_for("message", check=check)
-
-            new_data["interactive_link"] = link.content
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("minipuzz", new_data)
-
-        # show the user the new changes
-        puzz_text = self.info_obj.get_minipuzz_text(ctx, False)
-        puzz_images = puzz_info["img_urls"]
-        await ctx.send(
-            f'Done. The following will be released at {puzz_info["release_datetime"]} in <#{puzz_info["channel_id"]}>. '
-            + "Remember to do `.start minipuzz`"
-        )
-        await ctx.send(puzz_text)
-        for i in range(len(puzz_images)):
-            await ctx.send(puzz_images[i])
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setcrossword(self, ctx: commands.context.Context):
-        crossword_info = self.info_obj.info["crossword"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for the crossword. Do `stop` at anytime and no changes will be made to the crossword."
+        release_datetime = self.get_next_closest_day(
+            release_day, release_hour, release_minute
         )
 
-        new_data = {
-            "img_urls": "",
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
+        release_text = self.get_jff_text(release_day, week_num, interactive_link)
 
-        await ctx.send("Please send the images for the crossword.")
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the crossword."
-                )
-                return
-
-            if len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the image for the crossword.")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the crossword."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # add interactive link if there is one
-        await ctx.send("Is there an interactive link? y/n")
-
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
-
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
-
-            link = await self.bot.wait_for("message", check=check)
-
-            new_data["interactive_link"] = link.content
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("crossword", new_data)
-
-        # show the user the new changes
-        crossword_text = self.info_obj.get_crossword_text(ctx, False)
-        crossword_images = crossword_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {crossword_info['release_datetime']} in <#{crossword_info['channel_id']}>. "
-            + "Remember to do `.start crossword`"
-        )
-        await ctx.send(crossword_text)
-        for i in range(len(crossword_images)):
-            await ctx.send(crossword_images[i])
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setwordsearch(self, ctx: commands.context.Context):
-        wordsearch_info = self.info_obj.info["wordsearch"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for the word search. Do `.stop` at anytime and no changes will be made to the word search."
+        await interaction.followup.send(
+            f"Done! The following will be sent at {release_datetime.strftime(self.datetime_format)}\n\n"
+            + release_text
         )
 
-        new_data = {
-            "img_urls": "",
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
+        images = [image.url]
+        if image2:
+            images.append(image2.url)
+        for img in images:
+            await interaction.channel.send(img)
 
-        await ctx.send("Please send the images for the word search.")
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the word search."
-                )
-                return
-
-            if len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the image for the logic puzzle.")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the logic puzzle."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("wordsearch", new_data)
-
-        # show the user the new changes
-        wordsearch_text = self.info_obj.get_wordsearch_text(ctx, False)
-        wordsearch_images = wordsearch_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {wordsearch_info['release_datetime']} in <#{wordsearch_info['channel_id']}>. "
-            + "Remember to do `.start wordsearch`"
-        )
-        await ctx.send(wordsearch_text)
-        for i in range(len(wordsearch_images)):
-            await ctx.send(wordsearch_images[i])
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setlogicpuzz(self, ctx: commands.context.Context):
-        logicpuzz_info = self.info_obj.info["logicpuzz"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for the logic puzzle. Do `.stop` at anytime and no changes will be made to the logic puzzle."
+        self.write_release_info(
+            release_day,
+            release_text,
+            release_datetime.strftime(self.datetime_format),
+            images,
+            "JFF",
         )
 
-        new_data = {
-            "img_urls": "",
-            "week_num": -1,
-            "submission_link": "",
-            "interactive_link": "",
-        }
+        await interaction.channel.send(f"Remember to do `/start jff {release_day}`")
 
-        await ctx.send("Please send the images for the logic puzzle.")
+    # @app_commands.command(name="edit", description="Edit puzzle information.")
+    # @commands.has_role(EXEC_ROLE_NAME)
+    # async def edit_puzzle(
+    #     self,
+    #     interaction: discord.Interaction,
+    #     puzzle_type: Literal["WPC", "JFF"],
+    #     current_release_day: Literal[
+    #         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    #     ],
+    #     new_image: discord.Attachment = None,
+    #     new_image2: discord.Attachment = None,
+    #     new_release_day: Literal[
+    #         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    #     ] = None,
+    #     new_release_time: str = None,
+    #     new_submission_link: str = None,
+    #     new_interactive_link: str = None,
+    # ):
+    #     await interaction.response.defer()
 
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
+    #     if os.path.exists(self.info_fp):
+    #         with open(self.info_fp, "r") as f:
+    #             info = json.load(f)
+    #     else:
+    #         await interaction.followup.send(
+    #             f"No puzzles have been setup. Use `/setup {puzzle_type}`."
+    #         )
+    #         return
 
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the logic puzzle."
-                )
-                return
+    #     try:
+    #         puzz_data = info[f"{current_release_day}{puzzle_type}"]
+    #     except KeyError:
+    #         await interaction.followup.send(
+    #             f"The {current_release_day} {puzzle_type} has not been setup. Use `/setup {puzzle_type}`"
+    #         )
+    #         return
 
-            if len(msg.attachments):
-                new_data["img_urls"] = [image.url for image in msg.attachments]
-                break
-            else:
-                await ctx.send("Please send the image for the logic puzzle.")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the logic puzzle."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # add interactive link if there is one
-        await ctx.send("Is there an interactive link? y/n")
-
-        confirmation = False
-        while not confirmation:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes have been made to the minipuzz info."
-                )
-                return
-            elif "y" == msg.content.lower():
-                confirmation = "y"
-            elif "n" == msg.content.lower():
-                confirmation = "n"
-
-        if "y" == confirmation:
-            await ctx.send("Please send the interactive link for the puzzle.")
-
-            link = await self.bot.wait_for("message", check=check)
-
-            new_data["interactive_link"] = link.content
-
-        # if this point is reached, then the new data will be saved
-        self.info_obj.change_data("logicpuzz", new_data)
-
-        # show the user the new changes
-        logicpuzz_text = self.info_obj.get_logicpuzz_text(ctx, False)
-        logicpuzz_images = logicpuzz_info["img_urls"]
-        await ctx.send(
-            f"Done. The following will be released at {logicpuzz_info['release_datetime']} in <#{logicpuzz_info['channel_id']}>. "
-            + "Remember to do `.start logicpuzz`"
-        )
-        await ctx.send(logicpuzz_text)
-        for i in range(len(logicpuzz_images)):
-            await ctx.send(logicpuzz_images[i])
-
-    @commands.command()
-    @commands.has_role("Executives")
-    async def setciyk(self, ctx: commands.context.Context):
-        ciyk_info = self.info_obj.info["ciyk"]
-        user = ctx.author
-
-        def check(m):
-            return m.author == user
-
-        await ctx.send(
-            "Now setting info for CIYK. Do `.stop` at any time and no changes will be made to the CIYK announcement."
-        )
-
-        new_data = {"img_url": "", "week_num": -1, "submission_link": ""}
-
-        # get image for ciyk
-        await ctx.send("Please send the image for CIYK.")
-
-        while True:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the CIYK announcement."
-                )
-                return
-
-            if len(msg.attachments):
-                new_data["img_url"] = msg.attachments[0].url
-                break
-            else:
-                await ctx.send("Please send the image for CIYK")
-
-        # get week number
-        await ctx.send("Please enter the week number.")
-        is_number = False
-        while not is_number:
-            msg = await self.bot.wait_for("message", check=check)
-
-            if ".stop" == msg.content.lower():
-                await ctx.send(
-                    "Command stopped. No changes will be made to the CIYK announcement."
-                )
-                return
-
-            try:
-                new_week = int(msg.content)
-                new_data["week_num"] = new_week
-                is_number = True
-            except ValueError:
-                await ctx.send("Please enter a number.")
-
-        # store new data
-        self.info_obj.change_data("ciyk", new_data)
-
-        ciyk_text = self.info_obj.get_ciyk_text(ctx, False)
-        await ctx.send(
-            f"Done. The following will be released at {ciyk_info['release_datetime']} in <#{ciyk_info['channel_id']}>"
-            + "Remember to do `.start ciyk`"
-        )
-        await ctx.send(ciyk_text)
+    #     new_img_urls = []
+    #     if new_image:
+    #         new_img_urls.append(new_image.url)
+    #     if new_image2:
+    #         new_img_urls.append(new_image2.url)
+    #     if new_img_urls:
+    #         puzz_data["img_urls"] = new_img_urls
 
 
 async def setup(bot: commands.Bot):
-    info = Info()
-    await bot.add_cog(Setup(bot, info))
+    await bot.add_cog(Setup(bot))
