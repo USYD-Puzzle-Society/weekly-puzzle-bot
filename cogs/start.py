@@ -125,7 +125,9 @@ class Start(commands.GroupCog):
         name="jff", description="Start the release for the respective JFF puzzle."
     )
     @commands.has_role(EXEC_ROLE_NAME)
-    async def start_jff(self, interaction: discord.Interaction, release_day: str):
+    async def start_jff(
+        self, interaction: discord.Interaction, release_day: Literal["Monday", "Friday"]
+    ):
         await interaction.response.defer()
 
         # get the info from info.json
