@@ -32,4 +32,4 @@ class Show(commands.GroupCog, group_name="show"):
 
 async def setup(bot: commands.Bot):
     info = bot.get_cog("Info")
-    await bot.add_cog(Show(bot, info), guild=discord.Object(1153319575048437833))
+    await bot.add_cog(Show(bot, info))
