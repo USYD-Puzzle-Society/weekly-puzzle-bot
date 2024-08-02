@@ -19,7 +19,7 @@ async def startup(interaction: discord.Interaction):
             await bot.load_extension(f"cogs.optional.{filename[:-3]}")
             print(f"Loaded {filename}")
     await interaction.response.send_message("Loaded all cogs")
-    await bot.tree.sync(guild=guild)
+    await bot.tree.sync()
 
 # command to load a cog
 @bot.tree.command(
@@ -30,7 +30,7 @@ async def startup(interaction: discord.Interaction):
 async def load(interaction: discord.Interaction, extension: str):
     await bot.load_extension(f"cogs.optional.{extension}")
     await interaction.response.send_message(f"Loaded {extension} cog")
-    await bot.tree.sync(guild=guild)
+    await bot.tree.sync()
 
 # command to unload a cog
 @bot.tree.command(
@@ -41,7 +41,7 @@ async def load(interaction: discord.Interaction, extension: str):
 async def unload(interaction: discord.Interaction, extension: str):
     await bot.unload_extension(f"cogs.optional.{extension}")
     await interaction.response.send_message(f"Unloaded {extension} cog")
-    await bot.tree.sync(guild=guild)
+    await bot.tree.sync()
 
 # command to reload a cog
 @bot.tree.command(
@@ -52,7 +52,7 @@ async def unload(interaction: discord.Interaction, extension: str):
 async def reload(interaction: discord.Interaction, extension: str):
     await bot.reload_extension(f"cogs.optional.{extension}")
     await interaction.response.send_message(f"Reloaded {extension} cog")
-    await bot.tree.sync(guild=guild)
+    await bot.tree.sync()
 
 # command to load required cogs, the order is important
 @bot.event
