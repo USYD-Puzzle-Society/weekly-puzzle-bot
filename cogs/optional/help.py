@@ -129,4 +129,4 @@ class Help(commands.Cog):
         await interaction.response.send_message(embed=embeds[command.lower()]())
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Help(bot))
+    await bot.add_cog(Help(bot), guild=discord.Object(1153319575048437833))
