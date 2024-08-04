@@ -1,3 +1,4 @@
+from typing import Literal
 import discord
 from discord.ext import commands
 from cogs.required.scheduler import PuzzleScheduler
@@ -9,7 +10,6 @@ class Setup(commands.GroupCog, group_name="set"):
         self.bot = bot
         self.puzzle_scheduler = puzzle_scheduler
         self.info = info
-        self.datetime_format = "%d/%m/%Y %H:%M"
 
     async def get_image_urls(self, interaction: discord.Interaction):
         def message_from_user(msg):
@@ -39,6 +39,58 @@ class Setup(commands.GroupCog, group_name="set"):
                 return []
 
         return [image.url for image in msg.attachments]
+
+    @discord.app_commands.command(
+        name="wpc",
+        description="Sets the Weekly Puzzle Competition puzzle."
+    )
+    @commands.has_role("Executives")
+    async def set_wpc(self, 
+            interaction: discord.Interaction, release_day: Literal["Monday", "Wednesday", "Friday"], 
+            week: int, submission_link: str,
+            interactive_link: str = ""):
+        release_day = release_day.lower()
+        puzzle = self.info.puzzles["wpc_" + release_day]
+        puzzle.release_time = self.info.next_monday(puzzle.release_time) if release_day == "monday" else self.info.next_wednesday(puzzle.release_time) if release_day == "wednesday" else self.info.next_friday(puzzle.release_time)
+        puzzle.week = week
+        puzzle.submission_link = submission_link
+        puzzle.interactive_link = interactive_link
+
+        image_urls = await self.get_image_urls(interaction)
+        if image_urls == []:
+            return
+        puzzle.image_urls = image_urls
+
+        await interaction.channel.send("Done! The puzzle will be released at " + puzzle.release_time + " in <#" + str(puzzle.release_channel) + ">.")
+
+        self.info.save()
+        self.puzzle_scheduler.reschedule_puzzle("wpc_" + release_day)
+
+    @discord.app_commands.command(
+        name="jff",
+        description="Sets the Just For Fun puzzle."
+    )
+    @commands.has_role("Executives")
+    async def set_jff(
+            self, interaction: discord.Interaction, release_day: Literal["Monday", "Friday"], 
+            week: int, submission_link: str, 
+            interactive_link: str = ""):
+        release_day = release_day.lower()
+        puzzle = self.info.puzzles["jff_" + release_day]
+        puzzle.release_time = self.info.next_monday(puzzle.release_time) if release_day == "monday" else self.info.next_friday(puzzle.release_time)
+        puzzle.week = week
+        puzzle.submission_link = submission_link
+        puzzle.interactive_link = interactive_link
+
+        image_urls = await self.get_image_urls(interaction)
+        if image_urls == []:
+            return
+        puzzle.image_urls = image_urls
+
+        await interaction.channel.send("Done! The puzzle will be released at " + puzzle.release_time + " in <#" + str(puzzle.release_channel) + ">.")
+
+        self.info.save()
+        self.puzzle_scheduler.reschedule_puzzle("jff_" + release_day)
 
     @discord.app_commands.command(
         name="role",

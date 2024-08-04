@@ -41,6 +41,27 @@ class Info(commands.Cog):
             )
             return False
 
+    def next_monday(self, release_time: str) -> str:
+        release_time = datetime.datetime.strptime(release_time, self.datetime_format)
+        today = datetime.datetime.now()
+        days_ahead = 0 - today.weekday() + 7
+        next_monday = datetime.datetime.combine(today.date(), release_time.time()) + datetime.timedelta(days=days_ahead)
+        return datetime.datetime.strftime(next_monday, self.datetime_format)
+
+    def next_wednesday(self, release_time: str) -> str:
+        release_time = datetime.datetime.strptime(release_time, self.datetime_format)
+        today = datetime.datetime.now()
+        days_ahead = 2 - today.weekday() + 7
+        next_wednesday = datetime.datetime.combine(today.date(), release_time.time()) + datetime.timedelta(days=days_ahead)
+        return datetime.datetime.strftime(next_wednesday, self.datetime_format)
+    
+    def next_friday(self, release_time: str) -> str:
+        release_time = datetime.datetime.strptime(release_time, self.datetime_format)
+        today = datetime.datetime.now()
+        days_ahead = 4 - today.weekday() + 7
+        next_friday = datetime.datetime.combine(today.date(), release_time.time()) + datetime.timedelta(days=days_ahead)
+        return datetime.datetime.strftime(next_friday, self.datetime_format)
+
     def load(self):
         if os.path.exists(self.info_path):
             with open(self.info_path, "r") as file:
@@ -53,7 +74,8 @@ class Info(commands.Cog):
         puzzle_classes = {
             "discussion": classes.puzzle.DiscussionPuzzle,
             "chill": classes.puzzle.ChillPuzzle,
-            "weekly": classes.puzzle.WeeklyPuzzle
+            "weekly": classes.puzzle.WeeklyPuzzle,
+            "jff": classes.puzzle.JFFPuzzle
         }
 
         puzzles = json_data["puzzles"]
