@@ -52,7 +52,9 @@ class Writers(commands.GroupCog):
 
         thread_msg += f"\n{discord.utils.get(interaction.guild.roles, name=self.writers_role).mention}"
 
-        await puzz_thread.send(thread_msg)
+        sent_msg = await puzz_thread.send(thread_msg)
+        await sent_msg.pin()
+
         await interaction.followup.send("Thread created!")
 
     @app_commands.command(
