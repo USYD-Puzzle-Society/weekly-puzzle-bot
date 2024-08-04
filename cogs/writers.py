@@ -62,6 +62,13 @@ class Writers(commands.GroupCog):
     @commands.has_role(WRITERS_ROLE_ID)
     async def testsolve(self, interaction: discord.Interaction, undo: bool = False):
         await interaction.response.defer(ephemeral=True)
+
+        if interaction.channel.type != discord.ChannelType.private_thread:
+            await interaction.followup.send(
+                "Please use this command in a puzzle thread."
+            )
+            return
+
         try:
             testsolver = self.writers[interaction.user.id]
         except KeyError:
@@ -89,8 +96,13 @@ class Writers(commands.GroupCog):
                     spl_msg[i] = f"{testsolver}: {self.emojis['tick']}"
 
         new_msg = "\n".join(spl_msg)
-        await msg.edit(content=new_msg)
-        await interaction.followup.send("Testsolve status marked!")
+        try:
+            await msg.edit(content=new_msg)
+            await interaction.followup.send("Testsolve status marked!")
+        except discord.errors.Forbidden:
+            await interaction.followup.send(
+                "Please use this command in a puzzle thread."
+            )
 
 
 async def setup(bot: commands.Bot):
