@@ -162,7 +162,7 @@ class Setup(commands.GroupCog):
         def message_from_user(msg):
             return msg.author == interaction.user
 
-        await interaction.channel.send(
+        await interaction.followup.send(
             "Please send all the images for the puzzle in one message."
             + " Type `exit` at any time to stop."
         )
@@ -170,13 +170,13 @@ class Setup(commands.GroupCog):
         msg = await self.bot.wait_for("message", check=message_from_user)
 
         if "exit" == msg.content.lower():
-            await interaction.followup.send(
+            await interaction.channel.send(
                 "Command stopped. No changes have been made."
             )
             return []
 
         while not len(msg.attachments):
-            await interaction.followup.send(
+            await interaction.channel.send(
                 "Please send all the images for the puzzle in one message."
                 + " Type `exit` at any time to stop."
             )
@@ -184,7 +184,7 @@ class Setup(commands.GroupCog):
             msg = await self.bot.wait_for("message", check=message_from_user)
 
             if "exit" == msg.content.lower():
-                await interaction.followup.send(
+                await interaction.channel.send(
                     "Command stopped. No changes have been made."
                 )
                 return []
@@ -226,11 +226,13 @@ class Setup(commands.GroupCog):
 
         image_urls = await self.get_image_urls(interaction)
 
-        await interaction.followup.send(
+        await interaction.channel.send(
             f"Done! The following will be sent at {release_datetime.strftime(self.datetime_format)}\n\n"
             + f"@/{interaction.guild.get_role(self.wpc_role_id)}"
             + release_text
         )
+        for img in image_urls:
+            await interaction.channel.send(img)
 
         self.write_release_info(
             release_day,
@@ -274,10 +276,12 @@ class Setup(commands.GroupCog):
 
         image_urls = await self.get_image_urls(interaction)
 
-        await interaction.followup.send(
+        await interaction.channel.send(
             f"Done! The following will be sent at {release_datetime.strftime(self.datetime_format)}\n\n"
             + release_text
         )
+        for img in image_urls:
+            await interaction.channel.send(img)
 
         self.write_release_info(
             release_day,
