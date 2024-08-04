@@ -158,6 +158,39 @@ class Setup(commands.GroupCog):
             new_info = json.dumps(info, indent=4)
             f.write(new_info)
 
+    async def get_image_urls(self, interaction: discord.Interaction):
+        def message_from_user(msg):
+            return msg.author == interaction.user
+
+        await interaction.response.send_message(
+            "Please send all the images for the puzzle in one message."
+            + " Type `exit` at any time to stop."
+        )
+
+        msg = await self.bot.wait_for("message", check=message_from_user)
+
+        if "exit" == msg.content.lower():
+            await interaction.channel.send(
+                "Command stopped. No changes have been made."
+            )
+            return []
+
+        while not len(msg.attachments):
+            await interaction.channel.send(
+                "Please send all the images for the puzzle in one message."
+                + " Type `exit` at any time to stop."
+            )
+
+            msg = await self.bot.wait_for("message", check=message_from_user)
+
+            if "exit" == msg.content.lower():
+                await interaction.channel.send(
+                    "Command stopped. No changes have been made."
+                )
+                return []
+
+        return [image.url for image in msg.attachments]
+
     @app_commands.command(
         name="wpc",
         description="Set the info for the WPC release. Year of release is assumed to be the current year.",
@@ -166,12 +199,10 @@ class Setup(commands.GroupCog):
     async def set_wpc(
         self,
         interaction: discord.Interaction,
-        image: discord.Attachment,
         release_day: Literal["Monday", "Wednesday", "Friday"],
         week_num: int,
         submission_link: str,
         interactive_link: str = "",
-        image2: discord.Attachment = None,
         release_time: str = "16:00",
     ):
         await interaction.response.defer()
@@ -193,23 +224,19 @@ class Setup(commands.GroupCog):
             release_day, week_num, submission_link, interactive_link
         )
 
+        image_urls = await self.get_image_urls(interaction)
+
         await interaction.followup.send(
             f"Done! The following will be sent at {release_datetime.strftime(self.datetime_format)}\n\n"
             + f"@/{interaction.guild.get_role(self.wpc_role_id)}"
             + release_text
         )
 
-        images = [image.url]
-        if image2:
-            images.append(image2.url)
-        for img in images:
-            await interaction.channel.send(img)
-
         self.write_release_info(
             release_day,
             release_text,
             release_datetime.strftime(self.datetime_format),
-            images,
+            image_urls,
             "WPC",
         )
 
