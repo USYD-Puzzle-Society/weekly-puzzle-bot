@@ -250,11 +250,9 @@ class Setup(commands.GroupCog):
     async def set_jff(
         self,
         interaction: discord.Interaction,
-        image: discord.Attachment,
         release_day: Literal["Monday", "Friday"],
         week_num: int,
         interactive_link: str = "",
-        image2: discord.Attachment = None,
         release_time: str = "16:00",
     ):
         await interaction.response.defer()
@@ -274,22 +272,18 @@ class Setup(commands.GroupCog):
 
         release_text = self.get_jff_text(release_day, week_num, interactive_link)
 
+        image_urls = await self.get_image_urls(interaction)
+
         await interaction.followup.send(
             f"Done! The following will be sent at {release_datetime.strftime(self.datetime_format)}\n\n"
             + release_text
         )
 
-        images = [image.url]
-        if image2:
-            images.append(image2.url)
-        for img in images:
-            await interaction.channel.send(img)
-
         self.write_release_info(
             release_day,
             release_text,
             release_datetime.strftime(self.datetime_format),
-            images,
+            image_urls,
             "JFF",
         )
 
