@@ -21,10 +21,15 @@ class Show(commands.GroupCog, group_name="show"):
         puzzle = self.info.puzzles[puzzle_name]
         text = puzzle.get_text(interaction.guild, False)
 
-        await interaction.response.send_message(
-            f"The following will be released at {puzzle.release_time} in "
-            + f"<#{puzzle.release_channel}>. It will mention the role `{puzzle.role_name}`."
-        )
+        if puzzle.type == "jff":
+            msg = (f"The following will be released at {puzzle.release_time} in "
+                + f"<#{puzzle.release_channel}>.")
+        else:
+            msg = (f"The following will be released at {puzzle.release_time} in "
+                + f"<#{puzzle.release_channel}>." 
+                + f" It will mention the role `{puzzle.role_name}`.")
+
+        await interaction.response.send_message(msg)
         await interaction.channel.send(text)
         for i in range(len(puzzle.image_urls)):
             await interaction.channel.send(puzzle.image_urls[i])

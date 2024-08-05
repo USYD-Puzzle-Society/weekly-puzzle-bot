@@ -82,7 +82,7 @@ class WeeklyPuzzle(BasePuzzle):
         lines = [
             self.get_tag(guild, mention),
             f"**WEEKLY PUZZLE COMPETITION: WEEK {self.week}**\n",
-            f"**\- {self.display_name} -**\n\n",
+            f"**\\- {self.display_name} -**\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {self.submission_link}\n\n",
             "_You can submit as many times as you want!_\n",
@@ -104,7 +104,7 @@ class JFFPuzzle(BasePuzzle):
 
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
-            f"**JUST-FOR-FUN: WEEK {self.week}**",
-            f"**\- {self.display_name} -**\n\n"
+            f"**JUST-FOR-FUN: WEEK {self.week}**\n",
+            f"**\\- {self.display_name} -**\n\n"
         ]
         return " ".join(lines)
