@@ -13,8 +13,8 @@
         "wpc_monday": {
             "type": "weekly",
             "release_channel": 892032997220573204,
-            "release_time": "19/02/2024 16:00",
-            "week": 0,
+            "release_time": "05/08/2024 16:00",
+            "week": 2,
             "image_urls": [],
             "display_name": "REBUS",
             "role_name": "weekly puzzles",
@@ -24,8 +24,8 @@
         "wpc_wednesday": {
             "type": "weekly",
             "release_channel": 892032997220573204,
-            "release_time": "21/02/2024 16:00",
-            "week": 0,
+            "release_time": "07/08/2024 16:00",
+            "week": 2,
             "image_urls": [],
             "display_name": "CRYPTIC + LOGIC",
             "role_name": "weekly puzzles",
@@ -35,8 +35,8 @@
         "wpc_friday": {
             "type": "weekly",
             "release_channel": 892032997220573204,
-            "release_time": "23/02/2024 16:00",
-            "week": 0,
+            "release_time": "09/08/2024 16:00",
+            "week": 2,
             "image_urls": [],
             "display_name": "MINIPUZZLE",
             "role_name": "weekly puzzles",
@@ -46,8 +46,8 @@
         "jff_monday": {
             "type": "jff",
             "release_channel": 892032997220573204,
-            "release_time": "19/02/2024 16:00",
-            "week": 0,
+            "release_time": "05/08/2024 16:00",
+            "week": 2,
             "image_urls": [],
             "display_name": "REBUS/CRYPTIC",
             "submission_link": "",
@@ -55,14 +55,12 @@
         },
         "jff_friday": {
             "type": "jff",
-            "release_channel": 1267534110172254228,
+            "release_channel": 892032997220573204,
             "release_time": "09/08/2024 16:00",
             "week": 2,
-            "image_urls": [
-                "https://cdn.discordapp.com/attachments/1267016354582495253/1269559108839805011/finn.jpeg?ex=66b0808e&is=66af2f0e&hm=be8986ddf31e1344a77c038d9c493328f9f1db5462e340a4364decd698addcb2&"
-            ],
+            "image_urls": [],
             "display_name": "CROSSWORD/FREE",
-            "submission_link": "https://google.com",
+            "submission_link": "",
             "interactive_link": ""
         },
         "rebus_cryptic": {
@@ -89,7 +87,7 @@
         },
         "crossword": {
             "type": "chill",
-            "release_channel": 1074683905405358171,
+            "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
@@ -99,7 +97,7 @@
         },
         "word_search": {
             "type": "chill",
-            "release_channel": 1074684130794672138,
+            "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
@@ -109,7 +107,7 @@
         },
         "logic_puzzle": {
             "type": "chill",
-            "release_channel": 1074684130794672138,
+            "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
@@ -119,7 +117,7 @@
         },
         "ciyk": {
             "type": "discussion",
-            "release_channel": 1001742058601590824,
+            "release_channel": 1001742642427744326,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
