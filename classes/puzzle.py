@@ -9,6 +9,22 @@ class BasePuzzle:
     week: int
     image_urls: list
     display_name: str
+    bold_numbers = {
+        0: "𝟬",
+        1: "𝟭",
+        2: "𝟮",
+        3: "𝟯",
+        4: "𝟰",
+        5: "𝟱",
+        6: "𝟲",
+        7: "𝟳",
+        8: "𝟴",
+        9: "𝟵",
+        10: "𝟭𝟬",
+        11: "𝟭𝟭",
+        12: "𝟭𝟮",
+        13: "𝟭𝟯",
+    }
 
 
 @dataclass
@@ -28,7 +44,7 @@ class DiscussionPuzzle(BasePuzzle):
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             self.get_tag(guild, mention),
-            f"𝗖𝗢𝗠𝗠𝗘𝗡𝗧 𝗜𝗙 𝗬𝗢𝗨 𝗞𝗡𝗢𝗪: 𝗪𝗘𝗘𝗞 {self.week}\n\n",
+            f"𝗖𝗢𝗠𝗠𝗘𝗡𝗧 𝗜𝗙 𝗬𝗢𝗨 𝗞𝗡𝗢𝗪: 𝗪𝗘𝗘𝗞 {self.bold_numbers[self.week]}\n\n",
             f"If you think you know the pattern, comment an answer that follows it in <#{self.discussion_channel}>\n",
             f"We'll react with a :heart: if you're right and a :x: if you're wrong!\n\n"
         ]
@@ -52,7 +68,7 @@ class ChillPuzzle(BasePuzzle):
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             self.get_tag(guild, mention),
-            f"{self.display_name}: 𝗪𝗘𝗘𝗞 {self.week}"
+            f"{self.display_name}: 𝗪𝗘𝗘𝗞 {self.bold_numbers[self.week]}"
         ]
 
         if self.interactive_link:
@@ -79,7 +95,7 @@ class WeeklyPuzzle(BasePuzzle):
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             self.get_tag(guild, mention),
-            f"𝗪𝗘𝗘𝗞𝗟𝗬 𝗣𝗨𝗭𝗭𝗟𝗘 𝗖𝗢𝗠𝗣𝗘𝗧𝗜𝗧𝗜𝗢𝗡: 𝗪𝗘𝗘𝗞 {self.week}\n",
+            f"𝗪𝗘𝗘𝗞𝗟𝗬 𝗣𝗨𝗭𝗭𝗟𝗘 𝗖𝗢𝗠𝗣𝗘𝗧𝗜𝗧𝗜𝗢𝗡: 𝗪𝗘𝗘𝗞 {self.bold_numbers[self.week]}\n",
             f"\\- {self.display_name} -\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {self.submission_link}\n\n",
@@ -101,7 +117,7 @@ class JFFPuzzle(BasePuzzle):
 
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
-            f"𝗝𝗨𝗦𝗧-𝗙𝗢𝗥-𝗙𝗨𝗡: 𝗪𝗘𝗘𝗞 {self.week}\n",
+            f"𝗝𝗨𝗦𝗧-𝗙𝗢𝗥-𝗙𝗨𝗡: 𝗪𝗘𝗘𝗞 {self.bold_numbers[self.week]}\n",
             f"\\- {self.display_name} -\n\n"
         ]
         return " ".join(lines)
