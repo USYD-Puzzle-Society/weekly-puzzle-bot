@@ -28,7 +28,7 @@ class DiscussionPuzzle(BasePuzzle):
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             self.get_tag(guild, mention),
-            f"**COMMENT IF YOU KNOW: WEEK {self.week}**\n\n",
+            f"𝐂𝐎𝐌𝐌𝐄𝐍𝐓 𝐈𝐅 𝐘𝐎𝐔 𝐊𝐍𝐎𝐖: 𝐖𝐄𝐄𝐊 {self.week}\n\n",
             f"If you think you know the pattern, comment an answer that follows it in <#{self.discussion_channel}>\n",
             f"We'll react with a :heart: if you're right and a :x: if you're wrong!\n\n"
         ]
@@ -52,7 +52,7 @@ class ChillPuzzle(BasePuzzle):
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             self.get_tag(guild, mention),
-            f"**{self.display_name}: WEEK {self.week}**"
+            f"{self.display_name}: 𝐖𝐄𝐄𝐊 {self.week}"
         ]
 
         if self.interactive_link:
@@ -79,8 +79,8 @@ class WeeklyPuzzle(BasePuzzle):
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             self.get_tag(guild, mention),
-            f"**WEEKLY PUZZLE COMPETITION: WEEK {self.week}**\n",
-            f"**\\- {self.display_name} -**\n\n",
+            f"𝐖𝐄𝐄𝐊𝐋𝐘 𝐏𝐔𝐙𝐙𝐋𝐄 𝐂𝐎𝐌𝐏𝐄𝐓𝐈𝐓𝐈𝐎𝐍: 𝐖𝐄𝐄𝐊 {self.week}\n",
+            f"\\- {self.display_name} -\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {self.submission_link}\n\n",
             "_You can submit as many times as you want!_\n",
@@ -101,7 +101,7 @@ class JFFPuzzle(BasePuzzle):
 
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
-            f"**JUST-FOR-FUN: WEEK {self.week}**\n",
-            f"**\\- {self.display_name} -**\n\n"
+            f"𝐉𝐔𝐒𝐓-𝐅𝐎𝐑-𝐅𝐔𝐍: 𝐖𝐄𝐄𝐊 {self.week}\n",
+            f"\\- {self.display_name} -\n\n"
         ]
         return " ".join(lines)
