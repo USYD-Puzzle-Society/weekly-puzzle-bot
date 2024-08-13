@@ -51,7 +51,14 @@ class Setup(commands.GroupCog, group_name="set"):
             interactive_link: str = ""):
         release_day = release_day.lower()
         puzzle = self.info.puzzles["wpc_" + release_day]
-        puzzle.release_time = self.info.next_monday(puzzle.release_time) if release_day == "monday" else self.info.next_wednesday(puzzle.release_time) if release_day == "wednesday" else self.info.next_friday(puzzle.release_time)
+
+        if release_day == "monday":
+            puzzle.release_time = self.info.next_monday(puzzle.release_time)
+        elif release_day == "wednesday":
+            puzzle.release_time = self.info.next_wednesday(puzzle.release_time)
+        else:
+            puzzle.release_time = self.info.next_friday(puzzle.release_time)
+        
         puzzle.week = week
         puzzle.submission_link = submission_link
         puzzle.interactive_link = interactive_link
@@ -77,7 +84,12 @@ class Setup(commands.GroupCog, group_name="set"):
             interactive_link: str = ""):
         release_day = release_day.lower()
         puzzle = self.info.puzzles["jff_" + release_day]
-        puzzle.release_time = self.info.next_monday(puzzle.release_time) if release_day == "monday" else self.info.next_friday(puzzle.release_time)
+
+        if release_day == "monday":
+            puzzle.release_time = self.info.next_monday(puzzle.release_time)
+        else:
+            puzzle.release_time = self.info.next_friday(puzzle.release_time)
+
         puzzle.week = week
         puzzle.submission_link = submission_link
         puzzle.interactive_link = interactive_link
