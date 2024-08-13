@@ -28,7 +28,7 @@ class DiscussionPuzzle(BasePuzzle):
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             self.get_tag(guild, mention),
-            f"𝗖𝗢𝗠𝗠𝗘𝗡𝗧 𝗜𝗙 𝗬𝗢𝗨 𝗞𝗡𝗢𝗪: 𝗪𝗘𝗘𝗞{self.week}\n\n",
+            f"𝗖𝗢𝗠𝗠𝗘𝗡𝗧 𝗜𝗙 𝗬𝗢𝗨 𝗞𝗡𝗢𝗪: 𝗪𝗘𝗘𝗞 {self.week}\n\n",
             f"If you think you know the pattern, comment an answer that follows it in <#{self.discussion_channel}>\n",
             f"We'll react with a :heart: if you're right and a :x: if you're wrong!\n\n"
         ]
