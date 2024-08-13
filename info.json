@@ -16,7 +16,7 @@
             "release_time": "05/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "REBUS",
+            "display_name": "𝗥𝗘𝗕𝗨𝗦",
             "role_name": "weekly puzzles",
             "submission_link": "",
             "interactive_link": ""
@@ -27,7 +27,7 @@
             "release_time": "07/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "CRYPTIC + LOGIC",
+            "display_name": "𝗖𝗥𝗬𝗣𝗧𝗜𝗖 + 𝗟𝗢𝗚𝗜𝗖",
             "role_name": "weekly puzzles",
             "submission_link": "",
             "interactive_link": ""
@@ -38,7 +38,7 @@
             "release_time": "09/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "MINIPUZZLE",
+            "display_name": "𝗠𝗜𝗡𝗜𝗣𝗨𝗭𝗭𝗟𝗘",
             "role_name": "weekly puzzles",
             "submission_link": "",
             "interactive_link": ""
@@ -49,7 +49,7 @@
             "release_time": "05/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "REBUS/CRYPTIC",
+            "display_name": "𝗥𝗘𝗕𝗨𝗦/𝗖𝗥𝗬𝗣𝗧𝗜𝗖",
             "submission_link": "",
             "interactive_link": ""
         },
@@ -59,7 +59,7 @@
             "release_time": "09/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "CROSSWORD/FREE",
+            "display_name": "𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗/𝗙𝗥𝗘𝗘",
             "submission_link": "",
             "interactive_link": ""
         },
@@ -69,7 +69,7 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "REBUS + CRYPTIC",
+            "display_name": "𝗥𝗘𝗕𝗨𝗦 + 𝗖𝗥𝗬𝗣𝗧𝗜𝗖",
             "role_name": "weekly puzzles",
             "submission_link": "",
             "interactive_link": ""
@@ -80,7 +80,7 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "MINI PUZZLE",
+            "display_name": "𝗠𝗜𝗡𝗜𝗣𝗨𝗭𝗭𝗟𝗘",
             "role_name": "weekly puzzles",
             "submission_link": "",
             "interactive_link": ""
@@ -91,7 +91,7 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "CROSSWORD",
+            "display_name": "𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗",
             "role_name": "crosswords",
             "interactive_link": ""
         },
@@ -101,7 +101,7 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "WORD SEARCH",
+            "display_name": "𝗪𝗢𝗥𝗗 𝗦𝗘𝗔𝗥𝗖𝗛",
             "role_name": "word searches",
             "interactive_link": ""
         },
@@ -111,7 +111,7 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "LOGIC PUZZLE",
+            "display_name": "𝗟𝗢𝗚𝗜𝗖 𝗣𝗨𝗭𝗭𝗟𝗘",
             "role_name": "logic puzzles",
             "interactive_link": ""
         },
@@ -121,7 +121,7 @@
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "CIYK",
+            "display_name": "𝗖𝗜𝗬𝗞",
             "role_name": "weekly games",
             "discussion_channel": 1001742642427744326
         }
