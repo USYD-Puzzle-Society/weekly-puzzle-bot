@@ -1,21 +1,21 @@
+from dataclasses import dataclass
 import discord
 
 
+@dataclass
 class BasePuzzle:
-    def __init__(self, channel: int, time: str, week: int, images: list, display_name: str):
-        self.release_channel = channel
-        self.release_time = time
-        self.week = week
-        self.image_urls = images
-        self.display_name = display_name
+    release_channel: int
+    release_time: str
+    week: int
+    image_urls: list
+    display_name: str
 
 
+@dataclass
 class DiscussionPuzzle(BasePuzzle):
-    def __init__(self, role_name: str, release_channel: int, discussion_channel: int, release_time: str, week: int, image_urls: list, display_name: str):
-        self.type = "discussion"
-        super().__init__(release_channel, release_time, week, image_urls, display_name)
-        self.role_name = role_name
-        self.discussion_channel = discussion_channel
+    type = "discussion"
+    role_name: str
+    discussion_channel: int
 
     def get_tag(self, guild: discord.Guild, mention: bool):
         if mention:
@@ -35,12 +35,11 @@ class DiscussionPuzzle(BasePuzzle):
         return " ".join(lines)
 
 
+@dataclass
 class ChillPuzzle(BasePuzzle):
-    def __init__(self, role_name: str, release_channel: int, release_time: str, week: int, image_urls: list, display_name: str, *, interactive_link: str = ""):
-        self.type = "chill"
-        super().__init__(release_channel, release_time, week, image_urls, display_name)
-        self.role_name = role_name
-        self.interactive_link = interactive_link
+    type = "chill"
+    role_name: str
+    interactive_link: str = ""
 
     def get_tag(self, guild: discord.Guild, mention: bool):
         if mention:
@@ -62,13 +61,12 @@ class ChillPuzzle(BasePuzzle):
         return " ".join(lines)
 
 
+@dataclass
 class WeeklyPuzzle(BasePuzzle):
-    def __init__(self, role_name: str, release_channel: int, release_time: str, week: int, image_urls: list, display_name: str, submission_link: str, *, interactive_link: str = ""):
-        self.type = "weekly"
-        super().__init__(release_channel, release_time, week, image_urls, display_name)
-        self.role_name = role_name
-        self.submission_link = submission_link
-        self.interactive_link = interactive_link
+    type = "weekly"
+    role_name: str
+    submission_link: str
+    interactive_link: str = ""
 
     def get_tag(self, guild: discord.Guild, mention: bool):
         if mention:
@@ -95,12 +93,11 @@ class WeeklyPuzzle(BasePuzzle):
         return " ".join(lines)
 
 
+@dataclass
 class JFFPuzzle(BasePuzzle):
-    def __init__(self, release_channel: int, release_time: str, week: int, image_urls: list, display_name: str, submission_link: str, *, interactive_link: str = ""):
-        self.type = "jff"
-        super().__init__(release_channel, release_time, week, image_urls, display_name)
-        self.submission_link = submission_link
-        self.interactive_link = interactive_link
+    type = "jff"
+    submission_link: str
+    interactive_link: str = ""
 
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
