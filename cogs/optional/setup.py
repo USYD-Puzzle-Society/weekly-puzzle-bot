@@ -270,4 +270,4 @@ class Setup(commands.GroupCog, group_name="set"):
 async def setup(bot: commands.Bot):
     puzzle_scheduler = bot.get_cog("PuzzleScheduler")
     info = bot.get_cog("Info")
-    await bot.add_cog(Setup(bot, puzzle_scheduler, info), guild=discord.Object(1267016354012336138))
+    await bot.add_cog(Setup(bot, puzzle_scheduler, info))
