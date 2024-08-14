@@ -11,119 +11,119 @@
     },
     "puzzles": {
         "wpc_monday": {
-            "type": "weekly",
             "release_channel": 892032997220573204,
             "release_time": "05/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "𝗥𝗘𝗕𝗨𝗦",
+            "display_name": "\ud835\udde5\ud835\uddd8\ud835\uddd5\ud835\udde8\ud835\udde6",
             "role_name": "weekly puzzles",
             "submission_link": "",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "weekly"
         },
         "wpc_wednesday": {
-            "type": "weekly",
             "release_channel": 892032997220573204,
-            "release_time": "07/08/2024 16:00",
-            "week": 2,
+            "release_time": "09/08/2024 16:00",
+            "week": 3,
             "image_urls": [],
-            "display_name": "𝗖𝗥𝗬𝗣𝗧𝗜𝗖 + 𝗟𝗢𝗚𝗜𝗖",
+            "display_name": "\ud835\uddd6\ud835\udde5\ud835\uddec\ud835\udde3\ud835\udde7\ud835\udddc\ud835\uddd6 + \ud835\udddf\ud835\udde2\ud835\uddda\ud835\udddc\ud835\uddd6",
             "role_name": "weekly puzzles",
-            "submission_link": "",
-            "interactive_link": ""
+            "submission_link": "https://google.com",
+            "interactive_link": "",
+            "type": "weekly"
         },
         "wpc_friday": {
-            "type": "weekly",
             "release_channel": 892032997220573204,
             "release_time": "09/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "𝗠𝗜𝗡𝗜𝗣𝗨𝗭𝗭𝗟𝗘",
+            "display_name": "\ud835\udde0\ud835\udddc\ud835\udde1\ud835\udddc\ud835\udde3\ud835\udde8\ud835\udded\ud835\udded\ud835\udddf\ud835\uddd8",
             "role_name": "weekly puzzles",
             "submission_link": "",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "weekly"
         },
         "jff_monday": {
-            "type": "jff",
             "release_channel": 892032997220573204,
             "release_time": "05/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "𝗥𝗘𝗕𝗨𝗦/𝗖𝗥𝗬𝗣𝗧𝗜𝗖",
+            "display_name": "\ud835\udde5\ud835\uddd8\ud835\uddd5\ud835\udde8\ud835\udde6/\ud835\uddd6\ud835\udde5\ud835\uddec\ud835\udde3\ud835\udde7\ud835\udddc\ud835\uddd6",
             "submission_link": "",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "jff"
         },
         "jff_friday": {
-            "type": "jff",
             "release_channel": 892032997220573204,
             "release_time": "09/08/2024 16:00",
             "week": 2,
             "image_urls": [],
-            "display_name": "𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗/𝗙𝗥𝗘𝗘",
+            "display_name": "\ud835\uddd6\ud835\udde5\ud835\udde2\ud835\udde6\ud835\udde6\ud835\uddea\ud835\udde2\ud835\udde5\ud835\uddd7/\ud835\uddd9\ud835\udde5\ud835\uddd8\ud835\uddd8",
             "submission_link": "",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "jff"
         },
         "rebus_cryptic": {
-            "type": "weekly",
             "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "𝗥𝗘𝗕𝗨𝗦 + 𝗖𝗥𝗬𝗣𝗧𝗜𝗖",
+            "display_name": "\ud835\udde5\ud835\uddd8\ud835\uddd5\ud835\udde8\ud835\udde6 + \ud835\uddd6\ud835\udde5\ud835\uddec\ud835\udde3\ud835\udde7\ud835\udddc\ud835\uddd6",
             "role_name": "weekly puzzles",
             "submission_link": "",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "weekly"
         },
         "mini_puzzle": {
-            "type": "weekly",
             "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "𝗠𝗜𝗡𝗜𝗣𝗨𝗭𝗭𝗟𝗘",
+            "display_name": "\ud835\udde0\ud835\udddc\ud835\udde1\ud835\udddc\ud835\udde3\ud835\udde8\ud835\udded\ud835\udded\ud835\udddf\ud835\uddd8",
             "role_name": "weekly puzzles",
             "submission_link": "",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "weekly"
         },
         "crossword": {
-            "type": "chill",
             "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗",
+            "display_name": "\ud835\uddd6\ud835\udde5\ud835\udde2\ud835\udde6\ud835\udde6\ud835\uddea\ud835\udde2\ud835\udde5\ud835\uddd7",
             "role_name": "crosswords",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "chill"
         },
         "word_search": {
-            "type": "chill",
             "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "𝗪𝗢𝗥𝗗 𝗦𝗘𝗔𝗥𝗖𝗛",
+            "display_name": "\ud835\uddea\ud835\udde2\ud835\udde5\ud835\uddd7 \ud835\udde6\ud835\uddd8\ud835\uddd4\ud835\udde5\ud835\uddd6\ud835\udddb",
             "role_name": "word searches",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "chill"
         },
         "logic_puzzle": {
-            "type": "chill",
             "release_channel": 892032997220573204,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "𝗟𝗢𝗚𝗜𝗖 𝗣𝗨𝗭𝗭𝗟𝗘",
+            "display_name": "\ud835\udddf\ud835\udde2\ud835\uddda\ud835\udddc\ud835\uddd6 \ud835\udde3\ud835\udde8\ud835\udded\ud835\udded\ud835\udddf\ud835\uddd8",
             "role_name": "logic puzzles",
-            "interactive_link": ""
+            "interactive_link": "",
+            "type": "chill"
         },
         "ciyk": {
-            "type": "discussion",
             "release_channel": 1001742642427744326,
             "release_time": "08/08/2022 12:00",
             "week": 0,
             "image_urls": [],
-            "display_name": "𝗖𝗜𝗬𝗞",
+            "display_name": "\ud835\uddd6\ud835\udddc\ud835\uddec\ud835\uddde",
             "role_name": "weekly games",
-            "discussion_channel": 1001742642427744326
+            "discussion_channel": 1001742642427744326,
+            "type": "discussion"
         }
     }
 }

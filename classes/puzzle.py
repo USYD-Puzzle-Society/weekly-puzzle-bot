@@ -29,9 +29,9 @@ class BasePuzzle:
 
 @dataclass
 class DiscussionPuzzle(BasePuzzle):
-    type = "discussion"
     role_name: str
     discussion_channel: int
+    type: str = "discussion"
 
     def get_tag(self, guild: discord.Guild, mention: bool):
         if mention:
@@ -53,9 +53,9 @@ class DiscussionPuzzle(BasePuzzle):
 
 @dataclass
 class ChillPuzzle(BasePuzzle):
-    type = "chill"
     role_name: str
     interactive_link: str = ""
+    type: str = "chill"
 
     def get_tag(self, guild: discord.Guild, mention: bool):
         if mention:
@@ -79,10 +79,10 @@ class ChillPuzzle(BasePuzzle):
 
 @dataclass
 class WeeklyPuzzle(BasePuzzle):
-    type = "weekly"
     role_name: str
     submission_link: str
     interactive_link: str = ""
+    type: str = "weekly"
 
     def get_tag(self, guild: discord.Guild, mention: bool):
         if mention:
@@ -111,9 +111,9 @@ class WeeklyPuzzle(BasePuzzle):
 
 @dataclass
 class JFFPuzzle(BasePuzzle):
-    type = "jff"
     submission_link: str
     interactive_link: str = ""
+    type: str = "jff"
 
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
