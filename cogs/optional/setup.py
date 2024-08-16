@@ -80,8 +80,7 @@ class Setup(commands.GroupCog, group_name="set"):
     @commands.has_role("Executives")
     async def set_jff(
             self, interaction: discord.Interaction, release_day: Literal["Monday", "Friday"], 
-            week: int, submission_link: str, 
-            interactive_link: str = ""):
+            week: int, interactive_link: str = ""):
         release_day = release_day.lower()
         puzzle = self.info.puzzles["jff_" + release_day]
 
@@ -91,7 +90,6 @@ class Setup(commands.GroupCog, group_name="set"):
             puzzle.release_time = self.info.next_friday(puzzle.release_time)
 
         puzzle.week = week
-        puzzle.submission_link = submission_link
         puzzle.interactive_link = interactive_link
 
         image_urls = await self.get_image_urls(interaction)
@@ -242,23 +240,30 @@ class Setup(commands.GroupCog, group_name="set"):
     @commands.has_role("Executives")
     async def set_links(
             self, interaction: discord.Interaction, puzzle_name: str, 
-            submission_link: str, interactive_link: str = ""):
+            submission_link: str = "", interactive_link: str = ""):
         puzzle_name = await self.info.check_puzzle_name(interaction, puzzle_name)
         if not puzzle_name:
             return
 
         puzzle = self.info.puzzles[puzzle_name]
 
-        message = ("The previous submission link for the puzzle was "
-            + f"{puzzle.submission_link}. "
-            + "The new submission link for the puzzle is "
-            + f"{submission_link}.")
+        message = ""
+
+        if submission_link:
+            message = ("The previous submission link for the puzzle was "
+                + f"{puzzle.submission_link}. "
+                + "The new submission link for the puzzle is "
+                + f"{submission_link}.")
         
         if interactive_link:
             message += ("\n\nThe previous interactive link for the puzzle was "
                 + f"{puzzle.interactive_link}. "
                 + "The new interactive link for the puzzle is "
                 + f"{interactive_link}.")
+
+        if not message:
+            await interaction.response.send_message("No changes have been made.")
+            return
         
         await interaction.response.send_message(message)
 
