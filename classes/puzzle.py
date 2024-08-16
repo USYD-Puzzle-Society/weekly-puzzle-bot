@@ -111,13 +111,17 @@ class WeeklyPuzzle(BasePuzzle):
 
 @dataclass
 class JFFPuzzle(BasePuzzle):
-    submission_link: str
+    submission_link: str = ""
     interactive_link: str = ""
     type: str = "jff"
 
     def get_text(self, guild: discord.Guild, mention: bool):
         lines = [
             f"𝗝𝗨𝗦𝗧-𝗙𝗢𝗥-𝗙𝗨𝗡: 𝗪𝗘𝗘𝗞 {self.bold_numbers[self.week]}\n",
-            f"\\- {self.display_name} -\n\n"
+            f"\\- {self.display_name} -"
         ]
+
+        if self.interactive_link:
+            lines.append(f"\n\nInteractive Version: {self.interactive_link}")
+
         return " ".join(lines)
