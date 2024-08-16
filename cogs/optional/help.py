@@ -1,3 +1,4 @@
+from typing import Literal
 import discord
 from discord.ext import commands
 
@@ -17,14 +18,18 @@ class Help(commands.Cog):
         ]
 
         self.help_setup = [
-            "/role <puzzle_name> <role_name>\n\n",
-            "/channel <puzzle_name> <channel_id>\n\n\n",
-            "/time <puzzle_name> <date> <time>\n\n\n",
-            "/week <puzzle_name> <week>\n\n\n",
-            "/images <puzzle_name>\n\n\n",
-            "/links <puzzle_name> <submission_link> <interactive_link>\n\n"
+            "/set wpc <release_day> <week> <submission_link> <interactive_link>\n\n\n",
+            "/set jff <release_day> <week> <interactive_link>\n\n",
+            "/set role <puzzle_name> <role_name>\n\n",
+            "/set channel <puzzle_name> <channel_id>\n\n",
+            "/set time <puzzle_name> <date> <time>\n\n\n",
+            "/set week <puzzle_name> <week>\n\n\n",
+            "/set images <puzzle_name>\n\n\n",
+            "/set links <puzzle_name> <submission_link> <interactive_link>\n\n"
         ]
         self.help_setup_desc = [
+            "Sets the release day, week number, submission link, and interactive link for the Weekly Puzzle Competition.\n\n",
+            "Sets the release day, week number, and interactive link for a Just For Fun puzzle.\n\n",
             "Sets the role for the specified puzzle.\n\n",
             "Sets the release channel for the specified puzzle.\n\n",
             "Sets the release time for the specified puzzle.\n\n",
@@ -107,7 +112,7 @@ class Help(commands.Cog):
         name="help",
         description="Displays the available commands. Specify a command to get more detailed information."
     )
-    async def help(self, interaction: discord.Interaction, command: str = None):
+    async def help(self, interaction: discord.Interaction, command: Literal["set", "show", "reactions"] = None):
         if not any(role.name == "Executives" for role in interaction.user.roles):
             await interaction.response.send_message(embed=self.get_reactions_embed())
             return
@@ -117,7 +122,7 @@ class Help(commands.Cog):
             return
 
         embeds = {
-            "setup": self.get_setup_embed,
+            "set": self.get_setup_embed,
             "show": self.get_show_embed,
             "reactions": self.get_reactions_embed
         }
