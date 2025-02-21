@@ -10,10 +10,9 @@ class Writers(commands.GroupCog):
         self.bot = bot
         self.writers = {
             1039852128342118450: "Albert",
-            419463237394759683: "Jayden",
-            528058352274636810: "Simon",
-            200214169612582913: "Stefan",
-            # 549152699589984256: "Maria",
+            381195322732445697: "Harrison",
+            306629020282388480: "Alessio",
+            550919908112728106: "Jill",
         }
         self.writers_role = "Writer Warriors"
         self.emojis = {
