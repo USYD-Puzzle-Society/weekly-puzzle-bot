@@ -13,6 +13,7 @@ class Writers(commands.GroupCog):
             381195322732445697: "Harrison",
             306629020282388480: "Alessio",
             550919908112728106: "Jill",
+            475441507592044545: "Max",
         }
         self.writers_role = "Writer Warriors"
         self.emojis = {
