@@ -18,14 +18,15 @@ class Setup(commands.GroupCog):
         self.datetime_format = "%d/%m/%Y %H:%M"
 
         self.day_to_wpc_puzzles = {
-            "Monday": "\- 𝗥𝗘𝗕𝗨𝗦 -",
-            "Wednesday": "\- 𝗖𝗥𝗬𝗣𝗧𝗜𝗖 + 𝗟𝗢𝗚𝗜𝗖 -",
+            # "Monday": "\- 𝗥𝗘𝗕𝗨𝗦 -",
+            "Wednesday": "\- 𝗥𝗘𝗕𝗨𝗦 + 𝗖𝗥𝗬𝗣𝗧𝗜𝗖 -",
             "Friday": "\- 𝗠𝗜𝗡𝗜𝗣𝗨𝗭𝗭𝗟𝗘 -",
         }
 
         self.day_to_jff_puzzles = {
-            "Monday": "\- 𝗥𝗘𝗕𝗨𝗦/𝗖𝗥𝗬𝗣𝗧𝗜𝗖 -",
-            "Friday": "\- 𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗/𝗙𝗥𝗘𝗘 -",
+            # "Monday": "\- 𝗥𝗘𝗕𝗨𝗦/𝗖𝗥𝗬𝗣𝗧𝗜𝗖 -",
+            # "Friday": "\- 𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗/𝗙𝗥𝗘𝗘 -",
+            "Monday": "\- 𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗 -"
         }
 
         # technically inefficient way of doing this
@@ -199,7 +200,7 @@ class Setup(commands.GroupCog):
     async def set_wpc(
         self,
         interaction: discord.Interaction,
-        release_day: Literal["Monday", "Wednesday", "Friday"],
+        release_day: Literal["Wednesday", "Friday"],
         week_num: int,
         submission_link: str,
         interactive_link: str = "",
@@ -246,19 +247,20 @@ class Setup(commands.GroupCog):
 
     @app_commands.command(
         name="jff",
-        description="Set the info for the WPC release. Year of release is assumed to be the current year.",
+        description="Set the info for the JFF release. Year of release is assumed to be the current year.",
     )
     @commands.has_role(EXEC_ROLE_NAME)
     async def set_jff(
         self,
         interaction: discord.Interaction,
-        release_day: Literal["Monday", "Friday"],
+        # release_day: Literal["Monday", "Friday"],
         week_num: int,
         interactive_link: str = "",
         release_time: str = "16:00",
     ):
         await interaction.response.defer()
 
+        release_day = "Monday"
         valid_time = self.check_valid_time(release_time)
         if not valid_time:
             await interaction.followup.send(
