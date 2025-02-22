@@ -36,7 +36,7 @@ class Start(commands.GroupCog):
     async def start_wpc(
         self,
         interaction: discord.Interaction,
-        release_day: Literal["Monday", "Wednesday", "Friday"],
+        release_day: Literal["Wednesday", "Friday"],
     ):
         await interaction.response.defer()
 
@@ -126,10 +126,13 @@ class Start(commands.GroupCog):
     )
     @commands.has_role(EXEC_ROLE_NAME)
     async def start_jff(
-        self, interaction: discord.Interaction, release_day: Literal["Monday", "Friday"]
+        self,
+        interaction: discord.Interaction,
+        # release_day: str = Literal["Monday", "Friday"]
     ):
         await interaction.response.defer()
 
+        release_day = "Monday"
         # get the info from info.json
         if os.path.exists(self.info_fp):
             with open(self.info_fp, "r") as f:
