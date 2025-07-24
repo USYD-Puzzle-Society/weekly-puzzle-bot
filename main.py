@@ -16,16 +16,19 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=command_prefix, help_command=None, intents=intents)
 
 
-# load all available cogs on startup
-@bot.command()
-@commands.has_role(exec_id)
-async def startup(ctx: commands.context.Context):
+# Function for loading all cogs
+async def load_all_cogs():
     for filename in os.listdir("cogs/"):
         if filename.endswith(".py"):
             await bot.load_extension(f"{cogs_dir}.{filename[:-3]}")
             print(f"Loaded {filename}")
-    await ctx.send(f"Loaded all cogs")
+    print("Loaded all cogs")
 
+# Run on bot startup
+@commands.Cog.listener()
+async def on_ready(self):
+    await self.bot.wait_until_ready()
+    await load_all_cogs()
 
 # command to load a cog
 @bot.command()
