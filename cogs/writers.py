@@ -8,7 +8,7 @@ WRITERS_ROLE_ID = "Writer Warriors"
 class Writers(commands.GroupCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.writers = {
+        self.test_solvers = {
             1039852128342118450: "Albert",
             381195322732445697: "Harrison",
             306629020282388480: "Alessio",
@@ -32,7 +32,7 @@ class Writers(commands.GroupCog):
     ):
         await interaction.response.defer(ephemeral=True)
         try:
-            writer = self.writers[interaction.user.id]
+            writer = self.test_solvers[interaction.user.id]
         except KeyError:
             await interaction.followup.send("You are not a writer!")
             return
@@ -45,7 +45,7 @@ class Writers(commands.GroupCog):
         thread_msg = f"Puzzle: <{puzzle_link}>\n\n"
         thread_msg += f"{writer}: {self.emojis['writer']}\n"
 
-        for w_id, w in sorted(list(self.writers.items()), key=lambda x: x[1]):
+        for w_id, w in sorted(list(self.test_solvers.items()), key=lambda x: x[1]):
             if w_id == interaction.user.id:
                 continue
             thread_msg += f"{w}: :x:\n"
@@ -72,7 +72,7 @@ class Writers(commands.GroupCog):
             return
 
         try:
-            testsolver = self.writers[interaction.user.id]
+            testsolver = self.test_solvers[interaction.user.id]
         except KeyError:
             await interaction.followup.send("You are not a testsolver!")
             return
