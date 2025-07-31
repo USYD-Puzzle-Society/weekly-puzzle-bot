@@ -7,7 +7,7 @@ TEST_SOLVER_ROLE_ID = "Test Solvers"
 
 GUILD_ID = 877860838344634429
 
-def member_is_writer(member: Member):
+def member_is_writer(member):
     for role in member.roles:
         if role.name == WRITERS_ROLE_ID:
             return True
@@ -49,10 +49,9 @@ class Writers(commands.GroupCog):
     ):
         await interaction.response.defer(ephemeral=True)
 
-        if interaction.user is Member:
-            if not member_is_writer(interaction.user):
-                await interaction.followup.send("You are not a writer!")
-                return
+        if not member_is_writer(interaction.user):
+            await interaction.followup.send("You are not a writer!")
+            return
 
         self.set_test_solvers()
 
