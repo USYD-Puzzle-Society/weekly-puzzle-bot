@@ -69,7 +69,7 @@ class Writers(commands.GroupCog):
                 continue
             thread_msg += f"{w}: :x:\n"
 
-        thread_msg += f"\n{discord.utils.get(interaction.guild.roles, name=self.writers_role).mention}"
+        thread_msg += f"\n{discord.utils.get(interaction.guild.roles, name=TEST_SOLVER_ROLE_ID).mention}"
 
         sent_msg = await puzz_thread.send(thread_msg)
         await sent_msg.pin()
