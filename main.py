@@ -11,7 +11,7 @@ cogs_dir = "cogs"
 with open(".token", "r") as token_file:
     TOKEN = token_file.readline().strip()
 
-command_prefix = "."
+command_prefix = "/"
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=command_prefix, help_command=None, intents=intents)
 
