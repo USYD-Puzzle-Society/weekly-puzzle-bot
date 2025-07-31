@@ -1,26 +1,43 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import app_commands, Member
 
 WRITERS_ROLE_ID = "Writer Warriors"
+TEST_SOLVER_ROLE_ID = "Test Solvers"
 
+GUILD_ID = 877860838344634429
+
+def member_is_writer(member: Member):
+    for role in member.roles:
+        if role.name == WRITERS_ROLE_ID:
+            return True
+    return False
 
 class Writers(commands.GroupCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.test_solvers = {
-            1039852128342118450: "Albert",
-            381195322732445697: "Harrison",
-            306629020282388480: "Alessio",
-            550919908112728106: "Jill",
-            475441507592044545: "Max",
-        }
+        self.set_test_solvers()
         self.writers_role = "Writer Warriors"
         self.emojis = {
             "writer": ":writing_hand:",
             "tick": ":white_check_mark:",
             "cross": ":x:",
         }
+
+    def set_test_solvers(self):
+        self.test_solvers = {}
+        server = self.bot.get_guild(GUILD_ID)
+        assert server
+
+        for member in server.members:
+            member_is_solver = False
+            for role in member.roles:
+                if role.name == TEST_SOLVER_ROLE_ID:
+                    member_is_solver = True
+
+            if member_is_solver:
+                self.test_solvers[member.id] = member.name
+            
 
     @app_commands.command(
         name="puzzthread",
@@ -31,17 +48,20 @@ class Writers(commands.GroupCog):
         self, interaction: discord.Interaction, puzzle_link: str, thread_title: str
     ):
         await interaction.response.defer(ephemeral=True)
-        try:
-            writer = self.test_solvers[interaction.user.id]
-        except KeyError:
-            await interaction.followup.send("You are not a writer!")
-            return
+
+        if interaction.user is Member:
+            if not member_is_writer(interaction.user):
+                await interaction.followup.send("You are not a writer!")
+                return
+
+        self.set_test_solvers()
 
         puzz_thread = await interaction.channel.create_thread(
             name=thread_title,
             auto_archive_duration=10080,
         )
 
+        writer = interaction.user.name
         thread_msg = f"Puzzle: <{puzzle_link}>\n\n"
         thread_msg += f"{writer}: {self.emojis['writer']}\n"
 
