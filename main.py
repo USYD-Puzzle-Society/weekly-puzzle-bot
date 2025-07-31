@@ -42,7 +42,7 @@ async def load(ctx: commands.context.Context, extension):
     description="Have bot load all commands",
 )
 @commands.has_role(exec_id)
-async def startup():
+async def startup(ctx):
     await load_all_cogs()
 
 # command to unload a cog
