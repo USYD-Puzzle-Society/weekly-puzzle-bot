@@ -27,8 +27,8 @@ async def load_all_cogs():
 # Run on bot startup
 @commands.Cog.listener()
 async def on_ready(self):
-    await self.bot.wait_until_ready()
     await load_all_cogs()
+    self.bot.run(TOKEN)
 
 # command to load a cog
 @bot.command()
@@ -80,6 +80,3 @@ async def clear(ctx: commands.context.Context):
         await ctx.send("Commands cleared.")
     except Exception as e:
         print(e)
-
-
-bot.run(TOKEN)
