@@ -25,10 +25,9 @@ async def load_all_cogs():
     print("Loaded all cogs")
 
 # Run on bot startup
-@commands.Cog.listener()
-async def on_ready(self):
+@bot.event
+async def on_ready():
     await load_all_cogs()
-    self.bot.run(TOKEN)
 
 # command to load a cog
 @bot.command()
