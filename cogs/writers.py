@@ -38,6 +38,8 @@ class Writers(commands.GroupCog):
             if member_is_solver:
                 if member.nick:
                     self.test_solvers[member.id] = member.nick
+                elif member.global_name:
+                    self.test_solvers[member.id] = member.global_name
                 else:
                     self.test_solvers[member.id] = member.name
             
