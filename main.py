@@ -37,6 +37,13 @@ async def load(ctx: commands.context.Context, extension):
     await bot.load_extension(f"{cogs_dir}.{extension}")
     await ctx.send(f"Loaded {extension} cog")
 
+@bot.command(
+    name="startup",
+    description="Have bot load all commands",
+)
+@commands.has_role(exec_id)
+async def startup():
+    await load_all_cogs()
 
 # command to unload a cog
 @bot.command()
