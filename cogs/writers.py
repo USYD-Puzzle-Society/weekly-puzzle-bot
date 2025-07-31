@@ -80,7 +80,7 @@ class Writers(commands.GroupCog):
         name="testsolve",
         description="Mark the puzzle in the thread as testsolved (by you!)",
     )
-    @commands.has_role(WRITERS_ROLE_ID)
+    @commands.has_role(TEST_SOLVER_ROLE_ID)
     async def testsolve(self, interaction: discord.Interaction, undo: bool = False):
         await interaction.response.defer(ephemeral=True)
 
@@ -89,6 +89,8 @@ class Writers(commands.GroupCog):
                 "Please use this command in a puzzle thread."
             )
             return
+
+        self.set_test_solvers()
 
         try:
             testsolver = self.test_solvers[interaction.user.id]
