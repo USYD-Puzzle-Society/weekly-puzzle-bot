@@ -25,7 +25,7 @@ class Writers(commands.GroupCog):
         }
 
     def set_test_solvers(self):
-        self.test_solvers = {}
+        self.test_solvers: dict[int, str] = {}
         server = self.bot.get_guild(GUILD_ID)
         assert server
 
@@ -36,7 +36,10 @@ class Writers(commands.GroupCog):
                     member_is_solver = True
 
             if member_is_solver:
-                self.test_solvers[member.id] = member.nick
+                if member.nick:
+                    self.test_solvers[member.id] = member.nick
+                else:
+                    self.test_solvers[member.id] = member.name
             
 
     @app_commands.command(
