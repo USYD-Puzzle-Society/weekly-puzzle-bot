@@ -36,7 +36,7 @@ class Writers(commands.GroupCog):
                     member_is_solver = True
 
             if member_is_solver:
-                self.test_solvers[member.id] = member.name
+                self.test_solvers[member.id] = member.nick
             
 
     @app_commands.command(
