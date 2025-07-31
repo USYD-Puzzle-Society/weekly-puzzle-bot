@@ -80,3 +80,5 @@ async def clear(ctx: commands.context.Context):
         await ctx.send("Commands cleared.")
     except Exception as e:
         print(e)
+
+bot.run(TOKEN)
