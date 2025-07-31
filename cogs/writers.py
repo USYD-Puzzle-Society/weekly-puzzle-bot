@@ -110,8 +110,8 @@ class Writers(commands.GroupCog):
         for i, line in enumerate(spl_msg):
             if testsolver in line:
                 # check writer status
-                # there should only be two words separated by a space in lines with testsolvers' names
-                _, status = line.split()
+                # Emoji status should be last word in the line
+                status = line.split()[-1]
                 if status == self.emojis["writer"]:
                     await interaction.followup.send(
                         "You can't testsolve your own puzzle bro..."
