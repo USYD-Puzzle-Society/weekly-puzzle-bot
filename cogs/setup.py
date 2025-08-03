@@ -102,7 +102,7 @@ class Setup(commands.GroupCog):
         interactive_link: str,
     ):
         lines = [
-            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK**{self.bold_numbers[week_num]}\n",
+            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK** {self.bold_numbers[week_num]}\n",
             f"{self.day_to_wpc_puzzles[dayname]}\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {submission_link}\n\n",
