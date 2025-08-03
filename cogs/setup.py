@@ -18,34 +18,34 @@ class Setup(commands.GroupCog):
         self.datetime_format = "%d/%m/%Y %H:%M"
 
         self.day_to_wpc_puzzles = {
-            # "Monday": "\- 𝗥𝗘𝗕𝗨𝗦 -",
-            "Wednesday": "\- 𝗥𝗘𝗕𝗨𝗦 + 𝗖𝗥𝗬𝗣𝗧𝗜𝗖 -",
-            "Friday": "\- 𝗠𝗜𝗡𝗜𝗣𝗨𝗭𝗭𝗟𝗘 -",
+            # "Monday": "\- **REBUS** -",
+            "Wednesday": "\- **REBUS + LOGIC** -",
+            "Friday": "\- **MINIPUZZLE + CRYPTIC** -",
         }
 
         self.day_to_jff_puzzles = {
-            # "Monday": "\- 𝗥𝗘𝗕𝗨𝗦/𝗖𝗥𝗬𝗣𝗧𝗜𝗖 -",
-            # "Friday": "\- 𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗/𝗙𝗥𝗘𝗘 -",
-            "Monday": "\- 𝗖𝗥𝗢𝗦𝗦𝗪𝗢𝗥𝗗 -"
+            # "Monday": "\- **REBUS/CRYPTIC** -",
+            # "Friday": "\- **CROSSWORD/FREE** -",
+            "Monday": "\- **CROSSWORD** -"
         }
 
         # technically inefficient way of doing this
         # but practically the semester only has 13 weeks
         # so this is faster to write
         self.bold_numbers = {
-            1: "𝟭",
-            2: "𝟮",
-            3: "𝟯",
-            4: "𝟰",
-            5: "𝟱",
-            6: "𝟲",
-            7: "𝟳",
-            8: "𝟴",
-            9: "𝟵",
-            10: "𝟭𝟬",
-            11: "𝟭𝟭",
-            12: "𝟭𝟮",
-            13: "𝟭𝟯",
+            1: "**1**",
+            2: "**2**",
+            3: "**3**",
+            4: "**4**",
+            5: "**5**",
+            6: "**6**",
+            7: "**7**",
+            8: "**8**",
+            9: "**9**",
+            10: "**10**",
+            11: "**11**",
+            12: "**12**",
+            13: "**13**",
         }
 
         self.wpc_channel_id = 892032997220573204
@@ -102,7 +102,7 @@ class Setup(commands.GroupCog):
         interactive_link: str,
     ):
         lines = [
-            f"\n\n𝗪𝗘𝗘𝗞𝗟𝗬 𝗣𝗨𝗭𝗭𝗟𝗘 𝗖𝗢𝗠𝗣𝗘𝗧𝗜𝗧𝗜𝗢𝗡: 𝗪𝗘𝗘𝗞 {self.bold_numbers[week_num]}\n",
+            f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK**{self.bold_numbers[week_num]}\n",
             f"{self.day_to_wpc_puzzles[dayname]}\n\n",
             "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
             f"Submit your answers here: {submission_link}\n\n",
