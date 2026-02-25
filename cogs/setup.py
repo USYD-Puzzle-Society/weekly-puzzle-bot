@@ -200,7 +200,7 @@ class Setup(commands.GroupCog):
     async def set_wpc(
         self,
         interaction: discord.Interaction,
-        release_day: Literal["Wednesday", "Friday"],
+        release_day: Literal["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         week_num: int,
         submission_link: str,
         interactive_link: str = "",
