@@ -18,15 +18,15 @@ class Setup(commands.GroupCog):
         self.datetime_format = "%d/%m/%Y %H:%M"
 
         self.day_to_wpc_puzzles = {
-            # "Monday": "\- **REBUS** -",
-            "Wednesday": "\- **REBUS + LOGIC** -",
-            "Friday": "\- **MINIPUZZLE + CRYPTIC** -",
+            "Monday": "\- **REBUS + CRYPTIC** -",
+            "Wednesday": "\- **CRYPTIC + MINIPUZZLE** -",
+            # "Friday": "\- **MINIPUZZLE + CRYPTIC** -",
         }
 
         self.day_to_jff_puzzles = {
             # "Monday": "\- **REBUS/CRYPTIC** -",
-            # "Friday": "\- **CROSSWORD/FREE** -",
-            "Monday": "\- **CROSSWORD** -"
+            "Friday": "\- **CROSSWORD** -",
+            # "Monday": "\- **CROSSWORD** -"
         }
 
         # technically inefficient way of doing this
@@ -200,7 +200,7 @@ class Setup(commands.GroupCog):
     async def set_wpc(
         self,
         interaction: discord.Interaction,
-        release_day: Literal["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        release_day: Literal["Monday", "Wednesday"],
         week_num: int,
         submission_link: str,
         interactive_link: str = "",
@@ -260,7 +260,7 @@ class Setup(commands.GroupCog):
     ):
         await interaction.response.defer()
 
-        release_day = "Monday"
+        release_day = "Friday"
         valid_time = self.check_valid_time(release_time)
         if not valid_time:
             await interaction.followup.send(
