@@ -36,7 +36,7 @@ class Start(commands.GroupCog):
     async def start_wpc(
         self,
         interaction: discord.Interaction,
-        release_day: Literal["Wednesday", "Friday"],
+        release_day: Literal["Monday", "Wednesday"],
     ):
         await interaction.response.defer()
 
@@ -132,7 +132,7 @@ class Start(commands.GroupCog):
     ):
         await interaction.response.defer()
 
-        release_day = "Monday"
+        release_day = "Friday"
         # get the info from info.json
         if os.path.exists(self.info_fp):
             with open(self.info_fp, "r") as f:
