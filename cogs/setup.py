@@ -200,7 +200,7 @@ class Setup(commands.GroupCog):
     async def set_wpc(
         self,
         interaction: discord.Interaction,
-        release_day: Literal["Monday", "Wednesday"],
+        release_day: Literal["Monday", "Wednesday", "Friday"],
         week_num: int,
         submission_link: str,
         interactive_link: str = "",
@@ -253,14 +253,13 @@ class Setup(commands.GroupCog):
     async def set_jff(
         self,
         interaction: discord.Interaction,
-        # release_day: Literal["Monday", "Friday"],
+        release_day: Literal["Monday", "Wednesday", "Friday"],
         week_num: int,
         interactive_link: str = "",
         release_time: str = "16:00",
     ):
         await interaction.response.defer()
 
-        release_day = "Friday"
         valid_time = self.check_valid_time(release_time)
         if not valid_time:
             await interaction.followup.send(
