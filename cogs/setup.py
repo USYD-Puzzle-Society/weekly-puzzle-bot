@@ -104,7 +104,7 @@ class Setup(commands.GroupCog):
         lines = [
             f"\n\n**WEEKLY PUZZLE COMPETITION: WEEK** {self.bold_numbers[week_num]}\n",
             f"{self.day_to_wpc_puzzles[dayname]}\n\n",
-            "_Hints will be unlimited after the top 3 solvers have finished!_\n\n",
+            "_Hints will be unlimited after 24 hours!_\n\n",
             f"Submit your answers here: {submission_link}\n\n",
             "_You can submit as many times as you want!_\n",
             "_Your highest score will be kept._",
