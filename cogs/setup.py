@@ -18,7 +18,7 @@ class Setup(commands.GroupCog):
         self.datetime_format = "%d/%m/%Y %H:%M"
 
         self.day_to_wpc_puzzles = {
-            "Monday": "\- **REBUS + CRYPTIC** -",
+            "Monday": "\- **REBUS + LOGIC** -",
             "Wednesday": "\- **CRYPTIC + MINIPUZZLE** -",
             # "Friday": "\- **MINIPUZZLE + CRYPTIC** -",
         }
